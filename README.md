@@ -3,6 +3,7 @@ Hidendra - Main Coder, Me_Goes_RAWR - Added entity locking
 LWC with support for the new 1.8 doors, fence gates, and iron trapdoors. Banners have optional support. If you currently use LWC, please see this wiki page: https://github.com/Hidendra/LWC/wiki/Bukkit-1.8
 Official build: http://www.spigotmc.org/resources/lwc.2150/
 
+Spigot: http://www.spigotmc.org/resources/lwc-unofficial-entity-locking.2162/
 
 LWC is the longest-lived single block protection plugin that protects both the block itself and contents of Chests, Furnaces, and Dispensers. It can also protect any other blocks, and by default will also protect Doors (Wooden + Iron), Signs and Trap Doors.
 THIS IS AN UNOFFICIAL BUILD.
