@@ -19,4 +19,3 @@ Entity Locking Info:
 - Mob locking. (ANY entity can be locked.)
 - Locking horses wont prevent people from riding them (So be careful!)
 - P.S.: Mob locking doesn't work very well....
-For more info please see the wiki.
