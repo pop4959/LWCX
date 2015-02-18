@@ -241,7 +241,8 @@ public class WorldGuard extends JavaModule {
                 // Handle the special value which tells us to not actually look up a region but
                 // check just the player's WG build permissions on the block. It may be in multiple
                 // regions or none; we don't care here. That's WorldGuard's domain.
-                if (!globalRegionManager.canBuild(event.getPlayer(), protection.getBlock())) {
+                if (!globalRegionManager.canBuild(event.getPlayer(), protection.getBlock())|| globalRegionManager.canBuild(event.getPlayer(),
+								(EntityBlock) protection.getBlock())) {
                     continue;
                 }
             } else if (regionName.startsWith("#")) {
@@ -313,7 +314,8 @@ public class WorldGuard extends JavaModule {
 
         // Are we enforcing building?
         if (configuration.getBoolean("worldguard.requireBuildRights", true)) {
-            if (!globalRegionManager.canBuild(player, block)) {
+            if (!globalRegionManager.canBuild(player, block) || globalRegionManager
+							.canBuild(player, (EntityBlock) block)) {
                 lwc.sendLocale(player, "lwc.worldguard.needbuildrights");
                 event.setCancelled(true);
                 return;
