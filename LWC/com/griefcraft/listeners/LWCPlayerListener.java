@@ -167,8 +167,10 @@ public class LWCPlayerListener implements Listener {
 				}
 				e.setCancelled(true);
 			}
-			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-				e.setCancelled(true);
+			if (p.hasPermission("lwc.lockentity." + entity.getType())) {
+				if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
+					e.setCancelled(true);
+				}
 			}
 			if ((((entity instanceof StorageMinecart)) || ((entity instanceof HopperMinecart)))
 					&& (protection != null)) {
@@ -190,14 +192,16 @@ public class LWCPlayerListener implements Listener {
 		if (entity instanceof Player) {
 			return;
 		}
-		if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-			e.setCancelled(true);
-		}
-		if (protection != null) {
-			if (canAccess) {
-				return;
+		if (entity instanceof ArmorStand) {
+			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
+				e.setCancelled(true);
 			}
-			e.setCancelled(true);
+			if (protection != null) {
+				if (canAccess) {
+					return;
+				}
+				e.setCancelled(true);
+			}
 		}
 	}
 
@@ -214,9 +218,11 @@ public class LWCPlayerListener implements Listener {
 		if ((entity instanceof Player)) {
 			return;
 		}
-		if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-			e.setCancelled(true);
-		}
+		if (p.hasPermission("lwc.lockentity." + entity.getType())) {
+				if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
+					e.setCancelled(true);
+				}
+			}
 		if (protection != null) {
 			if (canAccess) {
 				return;
