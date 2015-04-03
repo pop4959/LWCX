@@ -28,7 +28,7 @@
 
 package com.griefcraft.modules.doors;
 
-import com.griefcraft.bukkit.StoreageMinecartBlock;
+import com.griefcraft.bukkit.StorageNMS;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Flag;
 import com.griefcraft.model.Protection;
@@ -105,7 +105,7 @@ public class DoorsModule extends JavaModule {
         Block block = event.getEvent().getClickedBlock(); // The block they actually clicked :)
         Player player = event.getPlayer();
 
-        if (block instanceof StoreageMinecartBlock) {
+		if (block instanceof StorageNMS) {
 			return;
                 }
         

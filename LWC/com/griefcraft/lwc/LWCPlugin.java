@@ -28,6 +28,10 @@
 
 package com.griefcraft.lwc;
 
+import com.griefcraft.bukkit.ArmorStandListener;
+import com.griefcraft.bukkit.HopperNMS;
+import com.griefcraft.bukkit.NMS;
+import com.griefcraft.bukkit.StorageNMS;
 import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
@@ -41,8 +45,10 @@ import com.griefcraft.util.locale.LocaleClassLoader;
 import com.griefcraft.util.locale.UTF8Control;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -58,294 +64,364 @@ import java.util.jar.JarFile;
 
 public class LWCPlugin extends JavaPlugin {
 
-    /**
-     * The LWC instance
-     */
-    private LWC lwc;
+	/**
+	 * The LWC instance
+	 */
+	private LWC lwc;
 
-    /**
-     * The message parser to parse messages with
-     */
-    private MessageParser messageParser;
+	/**
+	 * The message parser to parse messages with
+	 */
+	private MessageParser messageParser;
 
-    /**
-     * LWC updater
-     */
-    private Updater updater;
+	/**
+	 * LWC updater
+	 */
+	private Updater updater;
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-        String commandName = command.getName().toLowerCase();
-        String argString = StringUtil.join(args, 0);
-        boolean isPlayer = (sender instanceof Player); // check if they're a player
+	@Override
+	public boolean onCommand(CommandSender sender, Command command,
+			String commandLabel, String[] args) {
+		String commandName = command.getName().toLowerCase();
+		String argString = StringUtil.join(args, 0);
+		boolean isPlayer = (sender instanceof Player); // check if they're a
+														// player
 
-        // these can only apply to players, not the console (who has absolute player :P)
-        if (isPlayer) {
-            // Aliases
-            String aliasCommand = null;
-            String[] aliasArgs = new String[0];
+		// these can only apply to players, not the console (who has absolute
+		// player :P)
+		if (isPlayer) {
+			// Aliases
+			String aliasCommand = null;
+			String[] aliasArgs = new String[0];
 
-            if (commandName.equals("cpublic")) {
-                aliasCommand = "create";
-                aliasArgs = new String[]{"public"};
-            } else if (commandName.equals("cpassword")) {
-                aliasCommand = "create";
-                aliasArgs = ("password " + argString).split(" ");
-            } else if (commandName.equals("cprivate") || commandName.equals("lock")) {
-                aliasCommand = "create";
-                aliasArgs = ("private " + argString).split(" ");
-            } else if (commandName.equals("cdonation")) {
-                aliasCommand = "create";
-                aliasArgs = ("donation " + argString).split(" ");
-            } else if (commandName.equals("cmodify")) {
-                aliasCommand = "modify";
-                aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
-            } else if (commandName.equals("cinfo")) {
-                aliasCommand = "info";
-            } else if (commandName.equals("cunlock")) {
-                aliasCommand = "unlock";
-                aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
-            } else if (commandName.equals("cremove") || commandName.equals("unlock")) {
-                aliasCommand = "remove";
-                aliasArgs = new String[]{"protection"};
-            } else if (commandName.equals("climits")) {
-                aliasCommand = "limits";
-                aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
-            } else if (commandName.equals("cadmin")) {
-                aliasCommand = "admin";
-                aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
-            } else if (commandName.equals("cremoveall")) {
-                aliasCommand = "remove";
-                aliasArgs = new String[]{"allprotections"};
-            }
+			if (commandName.equals("cpublic")) {
+				aliasCommand = "create";
+				aliasArgs = new String[] { "public" };
+			} else if (commandName.equals("cpassword")) {
+				aliasCommand = "create";
+				aliasArgs = ("password " + argString).split(" ");
+			} else if (commandName.equals("cprivate")
+					|| commandName.equals("lock")) {
+				aliasCommand = "create";
+				aliasArgs = ("private " + argString).split(" ");
+			} else if (commandName.equals("cdonation")) {
+				aliasCommand = "create";
+				aliasArgs = ("donation " + argString).split(" ");
+			} else if (commandName.equals("cmodify")) {
+				aliasCommand = "modify";
+				aliasArgs = argString.isEmpty() ? new String[0] : argString
+						.split(" ");
+			} else if (commandName.equals("cinfo")) {
+				aliasCommand = "info";
+			} else if (commandName.equals("cunlock")) {
+				aliasCommand = "unlock";
+				aliasArgs = argString.isEmpty() ? new String[0] : argString
+						.split(" ");
+			} else if (commandName.equals("cremove")
+					|| commandName.equals("unlock")) {
+				aliasCommand = "remove";
+				aliasArgs = new String[] { "protection" };
+			} else if (commandName.equals("climits")) {
+				aliasCommand = "limits";
+				aliasArgs = argString.isEmpty() ? new String[0] : argString
+						.split(" ");
+			} else if (commandName.equals("cadmin")) {
+				aliasCommand = "admin";
+				aliasArgs = argString.isEmpty() ? new String[0] : argString
+						.split(" ");
+			} else if (commandName.equals("cremoveall")) {
+				aliasCommand = "remove";
+				aliasArgs = new String[] { "allprotections" };
+			}
 
-            // Flag aliases
-            if (commandName.equals("credstone")) {
-                aliasCommand = "flag";
-                aliasArgs = ("redstone " + argString).split(" ");
-            } else if (commandName.equals("cmagnet")) {
-                aliasCommand = "flag";
-                aliasArgs = ("magnet " + argString).split(" ");
-            } else if (commandName.equals("cexempt")) {
-                aliasCommand = "flag";
-                aliasArgs = ("exemption " + argString).split(" ");
-            } else if (commandName.equals("cautoclose")) {
-                aliasCommand = "flag";
-                aliasArgs = ("autoclose " + argString).split(" ");
-            } else if (commandName.equals("callowexplosions") || commandName.equals("ctnt")) {
-                aliasCommand = "flag";
-                aliasArgs = ("allowexplosions " + argString).split(" ");
-            } else if (commandName.equals("chopper")) {
-                aliasCommand = "flag";
-                aliasArgs = ("hopper " + argString).split(" ");
-            }
+			// Flag aliases
+			if (commandName.equals("credstone")) {
+				aliasCommand = "flag";
+				aliasArgs = ("redstone " + argString).split(" ");
+			} else if (commandName.equals("cmagnet")) {
+				aliasCommand = "flag";
+				aliasArgs = ("magnet " + argString).split(" ");
+			} else if (commandName.equals("cexempt")) {
+				aliasCommand = "flag";
+				aliasArgs = ("exemption " + argString).split(" ");
+			} else if (commandName.equals("cautoclose")) {
+				aliasCommand = "flag";
+				aliasArgs = ("autoclose " + argString).split(" ");
+			} else if (commandName.equals("callowexplosions")
+					|| commandName.equals("ctnt")) {
+				aliasCommand = "flag";
+				aliasArgs = ("allowexplosions " + argString).split(" ");
+			} else if (commandName.equals("chopper")) {
+				aliasCommand = "flag";
+				aliasArgs = ("hopper " + argString).split(" ");
+			}
 
-            // Mode aliases
-            if (commandName.equals("cdroptransfer")) {
-                aliasCommand = "mode";
-                aliasArgs = ("droptransfer " + argString).split(" ");
-            } else if (commandName.equals("cpersist")) {
-                aliasCommand = "mode";
-                aliasArgs = ("persist " + argString).split(" ");
-            } else if (commandName.equals("cnospam")) {
-                aliasCommand = "mode";
-                aliasArgs = ("nospam " + argString).split(" ");
-            }
+			// Mode aliases
+			if (commandName.equals("cdroptransfer")) {
+				aliasCommand = "mode";
+				aliasArgs = ("droptransfer " + argString).split(" ");
+			} else if (commandName.equals("cpersist")) {
+				aliasCommand = "mode";
+				aliasArgs = ("persist " + argString).split(" ");
+			} else if (commandName.equals("cnospam")) {
+				aliasCommand = "mode";
+				aliasArgs = ("nospam " + argString).split(" ");
+			}
 
-            if (aliasCommand != null) {
-                lwc.getModuleLoader().dispatchEvent(new LWCCommandEvent(sender, aliasCommand, aliasArgs));
-                return true;
-            }
-        }
+			if (aliasCommand != null) {
+				lwc.getModuleLoader().dispatchEvent(
+						new LWCCommandEvent(sender, aliasCommand, aliasArgs));
+				return true;
+			}
+		}
 
-        if (args.length == 0) {
-            lwc.sendFullHelp(sender);
-            return true;
-        }
+		if (args.length == 0) {
+			lwc.sendFullHelp(sender);
+			return true;
+		}
 
-        ///// Dispatch command to modules
-        LWCCommandEvent evt = new LWCCommandEvent(sender, args[0].toLowerCase(), args.length > 1 ? StringUtil.join(args, 1).split(" ") : new String[0]);
-        lwc.getModuleLoader().dispatchEvent(evt);
+		// /// Dispatch command to modules
+		LWCCommandEvent evt = new LWCCommandEvent(sender,
+				args[0].toLowerCase(), args.length > 1 ? StringUtil.join(args,
+						1).split(" ") : new String[0]);
+		lwc.getModuleLoader().dispatchEvent(evt);
 
-        if (evt.isCancelled()) {
-            return true;
-        }
+		if (evt.isCancelled()) {
+			return true;
+		}
 
-        if (!isPlayer) {
-            lwc.sendLocale(sender, "lwc.commandnotsupported");
-            return true;
-        }
+		if (!isPlayer) {
+			lwc.sendLocale(sender, "lwc.commandnotsupported");
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public void onDisable() {
-        LWC.ENABLED = false;
+	public void onDisable() {
+		LWC.ENABLED = false;
 
-        if (lwc != null) {
-            lwc.destruct();
-        }
+		if (lwc != null) {
+			lwc.destruct();
+		}
 
-        // cancel all tasks we created
-        getServer().getScheduler().cancelTasks(this);
-    }
+		// cancel all tasks we created
+		getServer().getScheduler().cancelTasks(this);
+	}
 
-    public void onEnable() {
-        preload();
-        lwc = new LWC(this);
+	public static HopperNMS nms1;
+	public static StorageNMS nms2;
+	public static NMS nms;
 
-        LWCInfo.setVersion(getDescription().getVersion());
-        LWC.ENABLED = true;
+	@Override
+	public void onEnable() {
+		preload();
+		lwc = new LWC(this);
 
-        loadLocales();
-        loadDatabase();
+		LWCInfo.setVersion(getDescription().getVersion());
+		LWC.ENABLED = true;
 
-        // Load the rest of LWC
-        lwc.load();
+		loadLocales();
+		loadDatabase();
 
-        try {
-            registerEvents();
-        } catch (NoSuchFieldError e) {
-        }
-    }
+		// Load the rest of LWC
+		lwc.load();
+		Init(this.getServer(), null);
+		try {
+			registerEvents();
+		} catch (NoSuchFieldError e) {
+		}
+	}
 
-    /**
-     * Load the database
-     */
-    public void loadDatabase() {
-        String database = lwc.getConfiguration().getString("database.adapter");
+	/**
+	 * Load the database
+	 */
+	public void loadDatabase() {
+		String database = lwc.getConfiguration().getString("database.adapter");
 
-        if (database.equalsIgnoreCase("mysql")) {
-            Database.DefaultType = Database.Type.MySQL;
-        } else {
-            Database.DefaultType = Database.Type.SQLite;
-        }
-    }
+		if (database.equalsIgnoreCase("mysql")) {
+			Database.DefaultType = Database.Type.MySQL;
+		} else {
+			Database.DefaultType = Database.Type.SQLite;
+		}
+	}
 
-    /**
-     * Load LWC localizations
-     */
-    @SuppressWarnings("resource")
+	/**
+	 * Load LWC localizations
+	 */
+	@SuppressWarnings("resource")
 	public void loadLocales() {
-        LWCResourceBundle locale;
-        String localization = getCurrentLocale();
+		LWCResourceBundle locale;
+		String localization = getCurrentLocale();
 
-        // located in plugins/LWC/locale/, values in that overrides the ones in the default :-)
-        ResourceBundle optionalBundle = null;
+		// located in plugins/LWC/locale/, values in that overrides the ones in
+		// the default :-)
+		ResourceBundle optionalBundle = null;
 
-        try {
-            ResourceBundle defaultBundle;
+		try {
+			ResourceBundle defaultBundle;
 
-            // Open the LWC jar file
-            JarFile file = new JarFile(getFile());
+			// Open the LWC jar file
+			JarFile file = new JarFile(getFile());
 
-            // Attempt to load the default locale
-            defaultBundle = new PropertyResourceBundle(new InputStreamReader(file.getInputStream(file.getJarEntry("lang/lwc_en.properties")), "UTF-8"));
-            locale = new LWCResourceBundle(defaultBundle);
+			// Attempt to load the default locale
+			defaultBundle = new PropertyResourceBundle(new InputStreamReader(
+					file.getInputStream(file
+							.getJarEntry("lang/lwc_en.properties")), "UTF-8"));
+			locale = new LWCResourceBundle(defaultBundle);
 
-            try {
-                optionalBundle = ResourceBundle.getBundle("lwc", new Locale(localization), new LocaleClassLoader(), new UTF8Control());
-            } catch (MissingResourceException e) {
-            }
+			try {
+				optionalBundle = ResourceBundle.getBundle("lwc", new Locale(
+						localization), new LocaleClassLoader(),
+						new UTF8Control());
+			} catch (MissingResourceException e) {
+			}
 
-            if (optionalBundle != null) {
-                locale.addExtensionBundle(optionalBundle);
-            }
+			if (optionalBundle != null) {
+				locale.addExtensionBundle(optionalBundle);
+			}
 
-            // and now check if a bundled locale the same as the server's locale exists
-            try {
-                optionalBundle = new PropertyResourceBundle(new InputStreamReader(file.getInputStream(file.getJarEntry("lang/lwc_" + localization + ".properties")), "UTF-8"));
-            } catch (MissingResourceException e) {
-            } catch (NullPointerException e) {
-                // file wasn't found :p - that's ok
-            }
+			// and now check if a bundled locale the same as the server's locale
+			// exists
+			try {
+				optionalBundle = new PropertyResourceBundle(
+						new InputStreamReader(file.getInputStream(file
+								.getJarEntry("lang/lwc_" + localization
+										+ ".properties")), "UTF-8"));
+			} catch (MissingResourceException e) {
+			} catch (NullPointerException e) {
+				// file wasn't found :p - that's ok
+			}
 
-            // ensure both bundles aren't the same
-            if (defaultBundle == optionalBundle) {
-                optionalBundle = null;
-            }
+			// ensure both bundles aren't the same
+			if (defaultBundle == optionalBundle) {
+				optionalBundle = null;
+			}
 
-            if (optionalBundle != null) {
-                locale.addExtensionBundle(optionalBundle);
-            }
-        } catch (MissingResourceException e) {
-            log("We are missing the default locale in LWC.jar.. What happened to it? :-(");
-            throw e;
-        } catch (IOException e) {
-            log("Uh-oh: " + e.getMessage());
-            return;
-        }
+			if (optionalBundle != null) {
+				locale.addExtensionBundle(optionalBundle);
+			}
+		} catch (MissingResourceException e) {
+			log("We are missing the default locale in LWC.jar.. What happened to it? :-(");
+			throw e;
+		} catch (IOException e) {
+			log("Uh-oh: " + e.getMessage());
+			return;
+		}
 
-        // create the message parser
-        messageParser = new SimpleMessageParser(locale);
-    }
+		// create the message parser
+		messageParser = new SimpleMessageParser(locale);
+	}
 
-    /**
-     * Load shared libraries and other misc things
-     */
-    private void preload() {
-        updater = new Updater();
+	/**
+	 * Load shared libraries and other misc things
+	 */
+	private void preload() {
+		updater = new Updater();
 
-        // Set the SQLite native library path
-        String nativeLibraryFolder = updater.getOSSpecificFolder();
+		// Set the SQLite native library path
+		String nativeLibraryFolder = updater.getOSSpecificFolder();
 
-        if (nativeLibraryFolder != null) {
-            System.setProperty("org.sqlite.lib.path", nativeLibraryFolder);
-        }
-    }
+		if (nativeLibraryFolder != null) {
+			System.setProperty("org.sqlite.lib.path", nativeLibraryFolder);
+		}
+	}
 
-    /**
-     * Log a string to the console
-     *
-     * @param str
-     */
-    private void log(String str) {
-        getLogger().info(str);
-    }
+	/**
+	 * Log a string to the console
+	 *
+	 * @param str
+	 */
+	private void log(String str) {
+		getLogger().info(str);
+	}
 
-    /**
-     * Register all of the events used by LWC
-     */
-    private void registerEvents() {
-        PluginManager pluginManager = Bukkit.getServer().getPluginManager();
-        pluginManager.registerEvents(new LWCPlayerListener(this), this);
-        pluginManager.registerEvents(new LWCEntityListener(this), this);
-        pluginManager.registerEvents(new LWCBlockListener(this), this);
-        pluginManager.registerEvents(new LWCServerListener(this), this);
-    }
+	/**
+	 * Register all of the events used by LWC
+	 */
+	private void registerEvents() {
+		String packageName = this.getServer().getClass().getPackage().getName();
+		String version = packageName
+				.substring(packageName.lastIndexOf('.') + 1);
+		PluginManager pluginManager = Bukkit.getServer().getPluginManager();
+		pluginManager.registerEvents(new LWCPlayerListener(this), this);
+		pluginManager.registerEvents(new LWCEntityListener(this), this);
+		pluginManager.registerEvents(new LWCBlockListener(this), this);
+		pluginManager.registerEvents(new LWCServerListener(this), this);
+		if(version.startsWith("v1_8")){
+			pluginManager.registerEvents(new ArmorStandListener(), this);
+		}
+	}
 
-    /**
-     * @return the current locale in use
-     */
-    public String getCurrentLocale() {
-        return lwc.getConfiguration().getString("core.locale", "en");
-    }
+	/**
+	 * @return the current locale in use
+	 */
+	public String getCurrentLocale() {
+		return lwc.getConfiguration().getString("core.locale", "en");
+	}
 
-    /**
-     * @return the LWC instance
-     */
-    public LWC getLWC() {
-        return lwc;
-    }
+	/**
+	 * @return the LWC instance
+	 */
+	public LWC getLWC() {
+		return lwc;
+	}
 
-    /**
-     * Gets the message parser
-     * @return
-     */
-    public MessageParser getMessageParser() {
-        return messageParser;
-    }
+	/**
+	 * Gets the message parser
+	 * 
+	 * @return
+	 */
+	public MessageParser getMessageParser() {
+		return messageParser;
+	}
 
-    /**
-     * @return the Updater instance
-     */
-    public Updater getUpdater() {
-        return updater;
-    }
+	/**
+	 * @return the Updater instance
+	 */
+	public Updater getUpdater() {
+		return updater;
+	}
 
-    @Override
-    public File getFile() {
-        return super.getFile();
-    }
+	@Override
+	public File getFile() {
+		return super.getFile();
+	}
+
+	private Object Init(Server server, Entity entity) {
+		String packageName = server.getClass().getPackage().getName();
+		// Get full package string of CraftServer.
+		// org.bukkit.craftbukkit.version
+		String version = packageName
+				.substring(packageName.lastIndexOf('.') + 1);
+		// Get the last element of the package
+
+		try {
+			Class<?> clazz = Class.forName("com.griefcraft.bukkit." + version
+					+ ".EntityBlock");
+			Class<?> clazz1 = Class.forName("com.griefcraft.bukkit." + version
+					+ ".HopperMinecartBlock");
+			Class<?> clazz2 = Class.forName("com.griefcraft.bukkit." + version
+					+ ".StoreageMinecartBlock");
+			if (NMS.class.isAssignableFrom(clazz)) {
+				nms = (NMS) clazz.getConstructor(Entity.class).newInstance(
+						entity);
+				return nms;
+			}
+			if (HopperNMS.class.isAssignableFrom(clazz1)) {
+				nms1 = (HopperNMS) clazz1.getConstructor(Entity.class)
+						.newInstance(entity);
+				return nms1;
+			}
+			if (StorageNMS.class.isAssignableFrom(clazz2)) {
+				nms2 = (StorageNMS) clazz2.getConstructor(Entity.class)
+						.newInstance(entity);
+				return nms2;
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

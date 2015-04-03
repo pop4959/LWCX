@@ -28,7 +28,7 @@
 
 package com.griefcraft.lwc;
 
-import com.griefcraft.bukkit.EntityBlock;
+import com.griefcraft.bukkit.NMS;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.integration.ICurrency;
 import com.griefcraft.integration.IPermissions;
@@ -1006,8 +1006,8 @@ public class LWC {
 	 * @return
 	 */
 	public static String materialToString(Block block) {
-		if (block instanceof EntityBlock) {
-			return ((EntityBlock) block).getEntity().getClass().getSimpleName(); // TODO
+		if (block instanceof NMS) {
+			return ((NMS) block).getEntity().getClass().getSimpleName(); // TODO
 		}
 		return materialToString(block.getType());
 	}
@@ -1022,15 +1022,26 @@ public class LWC {
 	 */
 	public int fastRemoveProtectionsByPlayer(CommandSender sender,
 			String player, boolean shouldRemoveBlocks) {
-		// remove their protections first
+		UUID uuid = convert(player);
 		int ret = fastRemoveProtections(sender, "Lower(owner) = Lower('"
-				+ player + "')", shouldRemoveBlocks);
+				+ uuid + "')", shouldRemoveBlocks);
 
 		// invalid any history objects associated with the player
 		physicalDatabase.invalidateHistory(player);
 
 		return ret;
 	}
+	
+	
+	@SuppressWarnings("deprecation")
+	public static UUID convert(String uuid) {
+		if (Bukkit.getOfflinePlayer(uuid).isOnline() == true) {
+			return Bukkit.getPlayer(uuid).getUniqueId();
+		} else {
+			return Bukkit.getOfflinePlayer(uuid).getUniqueId();
+		}
+	}
+	
 
 	/**
 	 * Remove protections very quickly with raw SQL calls
@@ -1306,7 +1317,7 @@ public class LWC {
 		// is an eir block even though the client and server sees it differently
 		// (ie a chest).
 		// This was of course very problematic!
-		if (block.getType() == Material.AIR || block instanceof EntityBlock) {
+		if (block.getType() == Material.AIR || block instanceof NMS) {
 			// We won't be able to match any other blocks anyway, so the least
 			// we can do is attempt to load a protection
 			return physicalDatabase.loadProtection(block.getWorld().getName(),
@@ -1517,7 +1528,7 @@ public class LWC {
 	 */
 	public boolean isProtectable(Block block) {
 		Material material = block.getType();
-		if (block instanceof EntityBlock) {
+		if (block instanceof NMS) {
 			return true; // TODO
 		}
 

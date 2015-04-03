@@ -28,7 +28,7 @@
 
 package com.griefcraft.listeners;
 
-import com.griefcraft.bukkit.EntityBlock;
+import com.griefcraft.bukkit.NMS;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Flag;
@@ -65,7 +65,6 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -83,10 +82,10 @@ public class LWCPlayerListener implements Listener {
 	/**
 	 * The plugin instance
 	 */
-	private LWCPlugin plugin;
+	private static LWCPlugin plugin;
 
 	public LWCPlayerListener(LWCPlugin plugin) {
-		this.plugin = plugin;
+		LWCPlayerListener.plugin = plugin;
 	}
 
 	@EventHandler
@@ -167,37 +166,20 @@ public class LWCPlayerListener implements Listener {
 				}
 				e.setCancelled(true);
 			}
-			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-				e.setCancelled(true);
+			if (p.hasPermission("lwc.lockentity." + entity.getType())) {
+				if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
+					e.setCancelled(true);
+				}
+			} else if (p.hasPermission("lwc.lockentity.all")) {
+				if (LWCPlayerListener.onPlayerEntityInteract(p, entity,
+						e.isCancelled())) {
+					e.setCancelled(true);
+				}
 			}
 			if ((((entity instanceof StorageMinecart)) || ((entity instanceof HopperMinecart)))
 					&& (protection != null)) {
 				e.setCancelled(true);
 			}
-		}
-	}
-
-	@EventHandler
-	public void onEntityAtInteract(PlayerInteractAtEntityEvent e) {
-		Entity entity = e.getRightClicked();
-		int A = 50000 + entity.getUniqueId().hashCode();
-
-		LWC lwc = LWC.getInstance();
-		Protection protection = lwc.getPhysicalDatabase().loadProtection(
-				entity.getWorld().getName(), A, A, A);
-		Player p = e.getPlayer();
-		boolean canAccess = lwc.canAccessProtection(p, protection);
-		if (entity instanceof Player) {
-			return;
-		}
-		if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-			e.setCancelled(true);
-		}
-		if (protection != null) {
-			if (canAccess) {
-				return;
-			}
-			e.setCancelled(true);
 		}
 	}
 
@@ -211,11 +193,18 @@ public class LWCPlayerListener implements Listener {
 				entity.getWorld().getName(), A, A, A);
 		Player p = e.getPlayer();
 		boolean canAccess = lwc.canAccessProtection(p, protection);
-		if ((entity instanceof Player)) {
+		if (entity instanceof Player) {
 			return;
 		}
-		if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-			e.setCancelled(true);
+		if (p.hasPermission("lwc.lockentity." + entity.getType())) {
+			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
+				e.setCancelled(true);
+			}
+		} else if (p.hasPermission("lwc.lockentity.all")) {
+			if (LWCPlayerListener.onPlayerEntityInteract(p, entity,
+					e.isCancelled())) {
+				e.setCancelled(true);
+			}
 		}
 		if (protection != null) {
 			if (canAccess) {
@@ -239,9 +228,11 @@ public class LWCPlayerListener implements Listener {
 		}
 	}
 
-	private boolean onPlayerEntityInteract(Player player, Entity entity,
+	public static boolean onPlayerEntityInteract(Player player, Entity entity,
 			boolean cancelled) {
-		int A = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
+		String p = plugin.getServer().getClass().getPackage().getName();
+		p.substring(p.lastIndexOf('.') + 1);
+		int A = NMS.POSITION_OFFSET + entity.getUniqueId().hashCode();
 
 		// attempt to load the protection for this cart
 		LWC lwc = LWC.getInstance();
@@ -286,7 +277,7 @@ public class LWCPlayerListener implements Listener {
 
 			// events are only used when they already have an action pending
 			boolean canAdmin = lwc.canAdminProtection(player, protection);
-			EntityBlock fakeBlock = new EntityBlock(entity);
+			Block fakeBlock = LWCPlugin.nms.getEntityBlock(entity);
 			PlayerInteractEvent fakeEvent = new PlayerInteractEvent(player,
 					Action.RIGHT_CLICK_BLOCK, null, fakeBlock, null);
 
@@ -298,7 +289,7 @@ public class LWCPlayerListener implements Listener {
 				result = evt.getResult();
 			} else {
 				LWCBlockInteractEvent evt = new LWCBlockInteractEvent(
-						fakeEvent, fakeBlock, actions);
+						fakeEvent, (Block) fakeBlock, actions);
 				lwc.getModuleLoader().dispatchEvent(evt);
 
 				result = evt.getResult();
@@ -335,8 +326,8 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			if (result == Module.Result.DEFAULT) {
-				canAccess = lwc.enforceAccess(player, protection, fakeBlock,
-						canAccess);
+				canAccess = lwc.enforceAccess(player, protection,
+						(Block) fakeBlock, canAccess);
 			}
 
 			if (!canAccess || result == Module.Result.CANCEL) {
