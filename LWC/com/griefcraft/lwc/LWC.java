@@ -125,6 +125,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -932,6 +933,7 @@ public class LWC {
 	 * @param maxZ
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public Player findPlayer(int minX, int maxX, int minY, int maxY, int minZ,
 			int maxZ) {
 		for (Player player : plugin.getServer().getOnlinePlayers()) {
@@ -1022,17 +1024,17 @@ public class LWC {
 	 */
 	public int fastRemoveProtectionsByPlayer(CommandSender sender,
 			String player, boolean shouldRemoveBlocks) {
-		UUID uuid = convert(player);
+		UUID uuid = UUIDRegistry.getUUID(player);
 		int ret = fastRemoveProtections(sender, "Lower(owner) = Lower('"
-				+ uuid + "')", shouldRemoveBlocks);
+				+ (uuid != null ? uuid.toString() : player) + "')",
+				shouldRemoveBlocks);
 
 		// invalid any history objects associated with the player
 		physicalDatabase.invalidateHistory(player);
 
 		return ret;
 	}
-	
-	
+
 	@SuppressWarnings("deprecation")
 	public static UUID convert(String uuid) {
 		if (Bukkit.getOfflinePlayer(uuid).isOnline() == true) {
@@ -1041,7 +1043,6 @@ public class LWC {
 			return Bukkit.getOfflinePlayer(uuid).getUniqueId();
 		}
 	}
-	
 
 	/**
 	 * Remove protections very quickly with raw SQL calls
@@ -1303,10 +1304,10 @@ public class LWC {
 	 * @param block
 	 * @return
 	 */
-    public Protection findProtection(Block block) {
-        return findProtection(block.getState());
-    }
-	
+	public Protection findProtection(Block block) {
+		return findProtection(block.getState());
+	}
+
 	public Protection findProtection(BlockState block) {
 		// If the block type is AIR, then we have a problem .. but attempt to
 		// load a protection anyway
@@ -1386,58 +1387,83 @@ public class LWC {
 	 *            the z coordinate
 	 * @return the List of possible blocks
 	 */
-    public boolean isProtectable(BlockState state) {
-        Material material = state.getType();
+	public boolean isProtectable(BlockState state) {
+		Material material = state.getType();
 
-        if (material == null) {
-            return false;
-        }
+		if (material == null) {
+			return false;
+		}
 
-        return Boolean.parseBoolean(resolveProtectionConfiguration(state, "enabled"));
-    }
-    
-    
-    
-    @SuppressWarnings("deprecation")
+		return Boolean.parseBoolean(resolveProtectionConfiguration(state,
+				"enabled"));
+	}
+
+	public boolean isProtectable(EntityType state) {
+
+		return Boolean.parseBoolean(resolveProtectionConfiguration(state,
+				"enabled"));
+	}
+
+	@SuppressWarnings("deprecation")
 	public String resolveProtectionConfiguration(BlockState state, String node) {
-        Material material = state.getType();
-        String cacheKey = state.getRawData() + "-" + material.toString() + "-" + node;
-        if (protectionConfigurationCache.containsKey(cacheKey)) {
-            return protectionConfigurationCache.get(cacheKey);
-        }
+		Material material = state.getType();
+		String cacheKey = state.getRawData() + "-" + material.toString() + "-"
+				+ node;
+		if (protectionConfigurationCache.containsKey(cacheKey)) {
+			return protectionConfigurationCache.get(cacheKey);
+		}
 
-        List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<String>();
 
-        String materialName = normalizeMaterialName(material);
+		String materialName = normalizeMaterialName(material);
 
-        // add the name & the block id
-        names.add(materialName);
-        names.add(material.getId() + "");
-        names.add(material.getId() + ":" + state.getRawData());
-        names.add(materialName + ":" + state.getRawData());
+		// add the name & the block id
+		names.add(materialName);
+		names.add(state.getTypeId() + "");
+		names.add(state.getTypeId() + ":" + state.getRawData());
+		names.add(materialName + ":" + state.getRawData());
 
-        if (!materialName.equals(material.toString().toLowerCase())) {
-            names.add(material.toString().toLowerCase());
-        }
+		if (!materialName.equals(material.toString().toLowerCase())) {
+			names.add(material.toString().toLowerCase());
+		}
 
-        // Add the wildcards last so it can be overriden
-        names.add("*");
-        names.add(material.getId() + ":*");
+		// Add the wildcards last so it can be overriden
+		names.add("*");
+		names.add(state.getTypeId() + ":*");
 
-        String value = configuration.getString("protections." + node);
+		String value = configuration.getString("protections." + node);
 
-        for (String name : names) {
-            String temp = configuration.getString("protections.blocks." + name + "." + node);
+		for (String name : names) {
+			String temp = configuration.getString("protections.blocks." + name
+					+ "." + node);
 
-            if (temp != null && !temp.isEmpty()) {
-                value = temp;
-            }
-        }
+			if (temp != null && !temp.isEmpty()) {
+				value = temp;
+			}
+		}
 
-        protectionConfigurationCache.put(cacheKey, value);
-        return value;
-    }
+		protectionConfigurationCache.put(cacheKey, value);
+		return value;
+	}
 
+	public String resolveProtectionConfiguration(EntityType state, String node) {
+		String cacheKey = state + "-" + state + "-" + node;
+		if (protectionConfigurationCache.containsKey(cacheKey)) {
+			return protectionConfigurationCache.get(cacheKey);
+		}
+
+		String value = configuration.getString("protections." + node);
+
+		String temp = configuration.getString("protections.blocks." + state
+				+ "." + node);
+
+		if (temp != null && !temp.isEmpty()) {
+			value = temp;
+		}
+
+		protectionConfigurationCache.put(cacheKey, value);
+		return value;
+	}
 
 	/**
 	 * Check if a player has either access to lwc.admin or the specified node
