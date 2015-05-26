@@ -170,14 +170,11 @@ public class LWCPlayerListener implements Listener {
 				if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
 					e.setCancelled(true);
 				}
-<<<<<<< HEAD
 			} else if (p.hasPermission("lwc.lockentity.all")) {
 				if (LWCPlayerListener.onPlayerEntityInteract(p, entity,
 						e.isCancelled())) {
 					e.setCancelled(true);
 				}
-=======
->>>>>>> origin/master
 			}
 			if ((((entity instanceof StorageMinecart)) || ((entity instanceof HopperMinecart)))
 					&& (protection != null)) {
@@ -186,43 +183,6 @@ public class LWCPlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler
-	public void onEntityInteract(PlayerInteractEntityEvent e) {
-		Entity entity = e.getRightClicked();
-		int A = 50000 + entity.getUniqueId().hashCode();
-
-		LWC lwc = LWC.getInstance();
-		Protection protection = lwc.getPhysicalDatabase().loadProtection(
-				entity.getWorld().getName(), A, A, A);
-		Player p = e.getPlayer();
-		boolean canAccess = lwc.canAccessProtection(p, protection);
-		if (entity instanceof Player) {
-			return;
-		}
-<<<<<<< HEAD
-		if (p.hasPermission("lwc.lockentity." + entity.getType())) {
-			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-				e.setCancelled(true);
-			}
-		} else if (p.hasPermission("lwc.lockentity.all")) {
-			if (LWCPlayerListener.onPlayerEntityInteract(p, entity,
-					e.isCancelled())) {
-				e.setCancelled(true);
-			}
-		}
-=======
-		if (entity instanceof ArmorStand) {
-			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-				e.setCancelled(true);
-			}
-			if (protection != null) {
-				if (canAccess) {
-					return;
-				}
-				e.setCancelled(true);
-			}
-		}
-	}
 
 	@EventHandler
 	public void onEntityInteract(PlayerInteractEntityEvent e) {
@@ -242,7 +202,6 @@ public class LWCPlayerListener implements Listener {
 					e.setCancelled(true);
 				}
 			}
->>>>>>> origin/master
 		if (protection != null) {
 			if (canAccess) {
 				return;
