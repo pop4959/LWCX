@@ -54,7 +54,7 @@ public class WallMatcher implements ProtectionFinder.Matcher {
     /**
      * Those evil levers and buttons have all different bits for directions. Gah!
      */
-    public static final Set<Material> PROTECTABLES_LEVERS_ET_AL = EnumSet.of(Material.STONE_BUTTON, Material.LEVER);
+    public static final Set<Material> PROTECTABLES_LEVERS_ET_AL = EnumSet.of(Material.STONE_BUTTON, Material.LEVER, Material.WOOD_BUTTON);
 
     /**
      * Same as PROTECTABLE_WALL, except the facing direction is reversed,

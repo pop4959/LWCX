@@ -396,7 +396,7 @@ public class LimitsModule extends JavaModule {
         LWC lwc = event.getLWC();
         Player player = event.getPlayer();
         Block block = event.getBlock();
-
+        
         if (hasReachedLimit(player, block)) {
             lwc.sendLocale(player, "protection.exceeded");
             event.setCancelled(true);

@@ -933,7 +933,6 @@ public class LWC {
 	 * @param maxZ
 	 * @return
 	 */
-	@SuppressWarnings("deprecation")
 	public Player findPlayer(int minX, int maxX, int minY, int maxY, int minZ,
 			int maxZ) {
 		for (Player player : plugin.getServer().getOnlinePlayers()) {

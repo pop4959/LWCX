@@ -29,6 +29,7 @@
 package com.griefcraft.lwc;
 
 import com.griefcraft.bukkit.ArmorStandListener;
+import com.griefcraft.bukkit.FurnitureAPI;
 import com.griefcraft.bukkit.HopperNMS;
 import com.griefcraft.bukkit.NMS;
 import com.griefcraft.bukkit.StorageNMS;
@@ -50,6 +51,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -227,10 +229,7 @@ public class LWCPlugin extends JavaPlugin {
 		// Load the rest of LWC
 		lwc.load();
 		Init(this.getServer(), null);
-		try {
-			registerEvents();
-		} catch (NoSuchFieldError e) {
-		}
+		registerEvents();
 	}
 
 	/**
@@ -318,7 +317,6 @@ public class LWCPlugin extends JavaPlugin {
 	 */
 	private void preload() {
 		updater = new Updater();
-
 		// Set the SQLite native library path
 		String nativeLibraryFolder = updater.getOSSpecificFolder();
 
@@ -348,9 +346,17 @@ public class LWCPlugin extends JavaPlugin {
 		pluginManager.registerEvents(new LWCEntityListener(this), this);
 		pluginManager.registerEvents(new LWCBlockListener(this), this);
 		pluginManager.registerEvents(new LWCServerListener(this), this);
-		if(version.startsWith("v1_8")){
+		if (version.startsWith("v1_8") || version.startsWith("v1_9")) {
 			pluginManager.registerEvents(new ArmorStandListener(), this);
 		}
+		Plugin[] flib = pluginManager.getPlugins();
+		for (Plugin p : flib) {
+			if (p.getDescription().getName().equalsIgnoreCase("FurnitureLib")) {
+				pluginManager.registerEvents(new FurnitureAPI(), this);
+				System.out.println("[LWC] " + "Loaded FurnitureLib!!!");
+			}
+		}
+
 	}
 
 	/**

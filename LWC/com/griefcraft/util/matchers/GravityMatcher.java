@@ -34,7 +34,6 @@ import com.griefcraft.util.SetUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -44,28 +43,29 @@ import java.util.Set;
 @SuppressWarnings("deprecation")
 public class GravityMatcher implements ProtectionFinder.Matcher {
 
-    /**
-     * Blocks that are destroyed if the land below them is destroyed
-     */
-    public static final Set<Material> PROTECTABLES_POSTS = EnumSet.of(Material.SIGN_POST, Material.RAILS,
-            Material.POWERED_RAIL, Material.DETECTOR_RAIL, Material.LEVER, Material.STONE_BUTTON);
+	public static final Set<Material> PROTECTABLES_POSTS = EnumSet.of(
+			Material.SIGN_POST, Material.RAILS, Material.POWERED_RAIL,
+			Material.DETECTOR_RAIL, Material.LEVER, Material.STONE_BUTTON,
+			Material.WOOD_BUTTON);
 
-    static {
-        SetUtil.addToSetWithoutNull(PROTECTABLES_POSTS, Material.getMaterial(176)); // Standing banner
-    }
+	static {
+		SetUtil.addToSetWithoutNull(PROTECTABLES_POSTS,
+				Material.getMaterial(416));
+		SetUtil.addToSetWithoutNull(PROTECTABLES_POSTS,
+				Material.getMaterial(176)); // Standing banner
+	}
 
-    public boolean matches(ProtectionFinder finder) {
-        Block block = finder.getBaseBlock().getBlock();
+	public boolean matches(ProtectionFinder finder) {
+		Block block = finder.getBaseBlock().getBlock();
 
-        // Easy to match, just try to match the block above the base block :P
-        Block up = block.getRelative(BlockFace.UP);
+		// Easy to match, just try to match the block above the base block :P
+		Block up = block.getRelative(BlockFace.UP);
 
-        if (PROTECTABLES_POSTS.contains(up.getType())) {
-            finder.addBlock(up);
-            return true;
-        }
-
-        return false;
-    }
+		if (PROTECTABLES_POSTS.contains(up.getType())) {
+			finder.addBlock(up);
+			return true;
+		}
+		return false;
+	}
 
 }

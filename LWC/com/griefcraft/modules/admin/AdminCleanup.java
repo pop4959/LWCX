@@ -28,6 +28,7 @@
 
 package com.griefcraft.modules.admin;
 
+import com.griefcraft.bukkit.NMS;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
@@ -39,6 +40,7 @@ import com.griefcraft.util.Colors;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.sql.ResultSet;
@@ -211,16 +213,47 @@ public class AdminCleanup extends JavaModule {
                     // Get all of the blocks
                     getBlocks.get();
 
-                    for (Protection protection : protections) {
-                        Block block = protection.getBlock();
+                    for (final Protection protection : protections) {
+                        if (protection.getBlockId() == NMS.ENTITY_BLOCK_ID) {
+							final int fakeId = protection.getX()
+									- NMS.POSITION_OFFSET;
 
-                        // remove protections not found in the world
-                        if (block == null || !lwc.isProtectable(block)) {
-                            toRemove.add(protection.getId());
-                            removed ++;
+                            // checks if the entity exists
+                            Future<Boolean> entityExists = scheduler.callSyncMethod(lwc.getPlugin(), new Callable<Boolean>() {
+                                public Boolean call() throws Exception {
+                                    for (Entity entity : protection.getBlock().getWorld().getEntities()) {
+                                        if (entity.getUniqueId().hashCode() == fakeId) {
+                                            return true;
+                                        }
+                                    }
 
-                            if (!silent) {
-                                lwc.sendLocale(sender, "protection.admin.cleanup.removednoexist", "protection", protection.toString());
+                                    return false;
+                                }
+                            });
+
+                            try {
+                                boolean exists = entityExists.get();
+
+                                if (!exists) {
+                                    toRemove.add(protection.getId());
+                                    removed ++;
+
+                                    if (!silent) {
+                                        lwc.sendLocale(sender, "protection.admin.cleanup.removednoexist", "protection", protection.toString());
+                                    }
+                                }
+                            } catch (InterruptedException e) { }
+                        } else {
+                            Block block = protection.getBlock();
+
+                            // remove protections not found in the world
+                            if (block == null || !lwc.isProtectable(block)) {
+                                toRemove.add(protection.getId());
+                                removed ++;
+
+                                if (!silent) {
+                                    lwc.sendLocale(sender, "protection.admin.cleanup.removednoexist", "protection", protection.toString());
+                                }
                             }
                         }
 

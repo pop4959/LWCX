@@ -31,16 +31,17 @@ public class ArmorStandListener implements Listener {
 						e.isCancelled())) {
 					e.setCancelled(true);
 				}
-			} else if (p.hasPermission("lwc.lockentity.all")) {
+			} else if (p.hasPermission("lwc.lockentity.all") || p.isOp()) {
 				if (LWCPlayerListener.onPlayerEntityInteract(p, entity,
 						e.isCancelled())) {
 					e.setCancelled(true);
 				}
+			} else {
+				return;
 			}
 			if (protection != null) {
-				if (canAccess) {
+				if (canAccess)
 					return;
-				}
 				e.setCancelled(true);
 			}
 		}

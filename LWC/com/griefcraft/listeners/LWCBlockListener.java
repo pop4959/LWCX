@@ -346,6 +346,18 @@ public class LWCBlockListener implements Listener {
 			return;
 		}
 
+		Block moved = piston.getRelative(direction, 2);
+		for (BlockFace bf : POSSIBLE_FACES) {
+			if (moved.getTypeId() == 165) {
+				Block slime = moved.getRelative(direction);
+				Block sign = slime.getRelative(bf);
+				if ((lwc.findProtection(sign) != null)) {
+					event.setCancelled(true);
+					return;
+				}
+			}
+		}
+		
 		// Check the affected blocks
 		for (int i = 0; i < event.getLength() + 2; i++) {
 			Block block = piston.getRelative(direction, i);
@@ -439,7 +451,7 @@ public class LWCBlockListener implements Listener {
 		if (!lwc.isProtectable(block)) {
 			return;
 		}
-
+		
 		String autoRegisterType = lwc.resolveProtectionConfiguration(block,
 				"autoRegister");
 
