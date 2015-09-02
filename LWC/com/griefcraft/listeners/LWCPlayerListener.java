@@ -48,8 +48,6 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Hopper;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.minecart.HopperMinecart;
@@ -68,7 +66,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -92,7 +92,7 @@ public class LWCPlayerListener implements Listener {
 		LWCPlayerListener.plugin = plugin;
 	}
 
-	@EventHandler
+    @EventHandler
 	public void hangingBreakByEvent(HangingBreakByEntityEvent event) {
 		Entity entity = event.getEntity();
 		int A = 50000 + entity.getUniqueId().hashCode();
@@ -104,20 +104,11 @@ public class LWCPlayerListener implements Listener {
 		}
 		if (event.getRemover() instanceof Player) {
 			Player p = (Player) event.getRemover();
-			if (p.hasPermission("lwc.lockentity." + entity.getType())) {
-				if (onPlayerEntityInteract(p, entity, event.isCancelled())) {
-					event.setCancelled(true);
-				}
-			} else if (p.hasPermission("lwc.lockentity.all") || p.isOp()) {
-				if (LWCPlayerListener.onPlayerEntityInteract(p, entity,
-						event.isCancelled())) {
-					event.setCancelled(true);
-				}
-			} else {
-				return;
+			if (onPlayerEntityInteract(p, entity, event.isCancelled())) {
+				event.setCancelled(true);
 			}
-			if (protection != null) {
-				boolean canAccess = lwc.canAccessProtection(p, protection);
+			if (protection != null && !event.isCancelled()) {
+				boolean canAccess = lwc.canAdminProtection(p, protection);
 				if (canAccess) {
 					protection.remove();
 					return;
@@ -140,7 +131,7 @@ public class LWCPlayerListener implements Listener {
 				e.setCancelled(true);
 			}
 			Player p = (Player) e.getAttacker();
-			boolean canAccess = lwc.canAccessProtection(p, protection);
+			boolean canAccess = lwc.canAdminProtection(p, protection);
 			if (canAccess)
 				return;
 			e.setCancelled(true);
@@ -184,48 +175,11 @@ public class LWCPlayerListener implements Listener {
 		}
 		if (e.getDamager() instanceof Player) {
 			Player p = (Player) e.getDamager();
-			if (e.getFinalDamage() >= 0.5) {
-				if (protection != null) {
-					boolean canAccess = lwc.canAccessProtection(p, protection);
-					if (canAccess) {
-						protection.remove();
-						return;
-					}
-					e.setCancelled(true);
-				}
-			}
-			if (entity instanceof ItemFrame) {
-				if (protection != null) {
-					boolean canAccess = lwc.canAccessProtection(p, protection);
-					if (canAccess)
-						return;
-					e.setCancelled(true);
-				}
-				return;
-			}
-			if (entity instanceof Painting) {
-				if (protection != null) {
-					boolean canAccess = lwc.canAccessProtection(p, protection);
-					if (canAccess)
-						return;
-					e.setCancelled(true);
-				}
-				return;
-			}
-			if (p.hasPermission("lwc.lockentity." + e.getEntityType())) {
-				if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-					e.setCancelled(true);
-				}
-			} else if (p.hasPermission("lwc.lockentity.all") || p.isOp()) {
-				if (LWCPlayerListener.onPlayerEntityInteract(p, entity,
-						e.isCancelled())) {
-					e.setCancelled(true);
-				}
-			} else {
-				return;
+			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
+				e.setCancelled(true);
 			}
 			if (protection != null) {
-				boolean canAccess = lwc.canAccessProtection(p, protection);
+				boolean canAccess = lwc.canAdminProtection(p, protection);
 				if (canAccess)
 					return;
 				e.setCancelled(true);
@@ -251,7 +205,24 @@ public class LWCPlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
+        Entity entity = e.getRightClicked();
+        int A = 50000 + entity.getUniqueId().hashCode();
+
+        LWC lwc = LWC.getInstance();
+        Protection protection = lwc.getPhysicalDatabase().loadProtection(
+                entity.getWorld().getName(), A, A, A);
+        Player p = e.getPlayer();
+        boolean canAccess = lwc.canAccessProtection(p, protection);
+        if (protection != null) {
+            if (canAccess)
+                return;
+            e.setCancelled(true);
+        }
+    }
+
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityInteract(PlayerInteractEntityEvent e) {
 		Entity entity = e.getRightClicked();
 		int A = 50000 + entity.getUniqueId().hashCode();
@@ -264,17 +235,8 @@ public class LWCPlayerListener implements Listener {
 		if (entity instanceof Player) {
 			return;
 		}
-		if (p.hasPermission("lwc.lockentity." + entity.getType())) {
-			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-				e.setCancelled(true);
-			}
-		} else if (p.hasPermission("lwc.lockentity.all") || p.isOp()) {
-			if (LWCPlayerListener.onPlayerEntityInteract(p, entity,
-					e.isCancelled())) {
-				e.setCancelled(true);
-			}
-		} else {
-			return;
+		if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
+			e.setCancelled(true);
 		}
 		if (protection != null) {
 			if (canAccess)
