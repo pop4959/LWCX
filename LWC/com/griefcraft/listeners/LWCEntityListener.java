@@ -30,6 +30,7 @@ package com.griefcraft.listeners;
 
 import java.util.UUID;
 
+import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Flag;
@@ -37,16 +38,12 @@ import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.util.Colors;
-import com.nitnelave.CreeperHeal.config.CreeperConfig;
-import com.nitnelave.CreeperHeal.config.WorldConfig;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,10 +52,8 @@ import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 public class LWCEntityListener implements Listener {
 
@@ -165,7 +160,7 @@ public class LWCEntityListener implements Listener {
 
         try {
             LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(
-                    player, LWCPlugin.nms.getEntityBlock(block));
+                    player, EntityBlock.getEntityBlock(block));
             lwc.getModuleLoader().dispatchEvent(evt);
 
             // something cancelled registration
@@ -175,16 +170,16 @@ public class LWCEntityListener implements Listener {
 
             // All good!
             Protection protection = lwc.getPhysicalDatabase()
-                    .registerProtection(block.getEntityId(), type,
+                    .registerProtection(EntityBlock.ENTITY_BLOCK_ID, type,
                             block.getWorld().getName(),
                             player.getUniqueId().toString(), "", A, A, A);
 
             if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(
-                    LWCPlugin.nms.getEntityBlock(block), "quiet"))) {
+                    EntityBlock.getEntityBlock(block), "quiet"))) {
                 lwc.sendLocale(player, "protection.onplace.create.finalize",
                         "type", lwc.getPlugin().getMessageParser()
                                 .parseMessage(autoRegisterType.toLowerCase()),
-                        "block", LWC.materialToString(LWCPlugin.nms
+                        "block", LWC.materialToString(EntityBlock
                                 .getEntityBlock(block)));
             }
 
@@ -261,68 +256,4 @@ public class LWCEntityListener implements Listener {
 			}
 		}
 	}
-
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityExplodeMonitor(EntityExplodeEvent event) {
-		if (!LWC.ENABLED || event.isCancelled()) {
-			return;
-		}
-
-		LWC lwc = LWC.getInstance();
-
-		for (Block block : event.blockList()) {
-			Protection protection = plugin.getLWC().findProtection(
-					block.getLocation());
-
-			if (protection != null) {
-				boolean ignoreExplosions = Boolean.parseBoolean(lwc
-						.resolveProtectionConfiguration(protection.getBlock(),
-								"ignoreExplosions"));
-
-				if (ignoreExplosions
-						|| protection.hasFlag(Flag.Type.ALLOWEXPLOSIONS)) {
-					// If creeper heal is active for the block, halt all
-					// thrusters!
-					if (isCreeperHealActive(event.getEntity())) {
-						break;
-					}
-
-					protection.remove();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Check if the CreeperHeal plugin is active. If it is, we shouldn't remove
-	 * protections
-	 *
-	 * @return
-	 */
-	private boolean isCreeperHealActive(Entity entity) {
-		if (entity == null) {
-			return false;
-		}
-
-		Plugin creeperHealPlugin = plugin.getServer().getPluginManager()
-				.getPlugin("CreeperHeal");
-
-		if (creeperHealPlugin != null) {
-			WorldConfig worldConfig = CreeperConfig
-					.loadWorld(entity.getWorld());
-
-			if (worldConfig == null) {
-				return false; // Uh-oh?
-			}
-
-			if (entity instanceof Creeper) {
-				return worldConfig.creepers;
-			} else if (entity instanceof TNTPrimed) {
-				return worldConfig.tnt;
-			}
-		}
-
-		return false;
-	}
-
 }

@@ -32,17 +32,10 @@ import com.griefcraft.bukkit.NMS;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.integration.ICurrency;
 import com.griefcraft.integration.IPermissions;
-import com.griefcraft.integration.currency.BOSECurrency;
-import com.griefcraft.integration.currency.EssentialsCurrency;
 import com.griefcraft.integration.currency.NoCurrency;
 import com.griefcraft.integration.currency.VaultCurrency;
-import com.griefcraft.integration.currency.iConomy5Currency;
-import com.griefcraft.integration.currency.iConomy6Currency;
-import com.griefcraft.integration.permissions.BukkitPermissions;
-import com.griefcraft.integration.permissions.PEXPermissions;
 import com.griefcraft.integration.permissions.SuperPermsPermissions;
 import com.griefcraft.integration.permissions.VaultPermissions;
-import com.griefcraft.integration.permissions.bPermissions;
 import com.griefcraft.io.BackupManager;
 import com.griefcraft.listeners.LWCMCPCSupport;
 import com.griefcraft.migration.ConfigPost300;
@@ -87,7 +80,6 @@ import com.griefcraft.modules.info.InfoModule;
 import com.griefcraft.modules.limits.LimitsModule;
 import com.griefcraft.modules.limits.LimitsV2;
 import com.griefcraft.modules.modes.BaseModeModule;
-import com.griefcraft.modules.modes.DropTransferModule;
 import com.griefcraft.modules.modes.NoSpamModule;
 import com.griefcraft.modules.modes.PersistModule;
 import com.griefcraft.modules.modify.ModifyModule;
@@ -1553,9 +1545,9 @@ public class LWC {
 	 */
 	public boolean isProtectable(Block block) {
 		Material material = block.getType();
-		if (block instanceof NMS) {
-			return true; // TODO
-		}
+        if (block instanceof NMS) {
+            return Boolean.parseBoolean(resolveProtectionConfiguration(((NMS) block).getEntity().getType(), "enabled"));
+        }
 
 		if (material == null) {
 			return false;
@@ -1687,12 +1679,6 @@ public class LWC {
 
 		if (resolvePlugin("Vault") != null) {
 			permissions = new VaultPermissions();
-		} else if (resolvePlugin("PermissionsBukkit") != null) {
-			permissions = new BukkitPermissions();
-		} else if (resolvePlugin("PermissionsEx") != null) {
-			permissions = new PEXPermissions();
-		} else if (resolvePlugin("bPermissions") != null) {
-			permissions = new bPermissions();
 		}
 
 		// Currency init
@@ -1700,27 +1686,6 @@ public class LWC {
 
 		if (resolvePlugin("Vault") != null) {
 			currency = new VaultCurrency();
-		} else if (resolvePlugin("iConomy") != null) {
-			// We need to figure out which iConomy plugin we have...
-			Plugin plugin = resolvePlugin("iConomy");
-
-			// get the class name
-			String className = plugin.getClass().getName();
-
-			// check for the iConomy5 package
-			try {
-				if (className.startsWith("com.iConomy")) {
-					currency = new iConomy5Currency();
-				} else {
-					// iConomy 6!
-					currency = new iConomy6Currency();
-				}
-			} catch (NoClassDefFoundError e) {
-			}
-		} else if (resolvePlugin("BOSEconomy") != null) {
-			currency = new BOSECurrency();
-		} else if (resolvePlugin("Essentials") != null) {
-			currency = new EssentialsCurrency();
 		}
 
 		plugin.getUpdater().init();
@@ -1874,7 +1839,6 @@ public class LWC {
 		// modes
 		registerModule(new BaseModeModule());
 		registerModule(new PersistModule());
-		registerModule(new DropTransferModule());
 		registerModule(new NoSpamModule());
 
 		// non-core modules but are included with LWC anyway

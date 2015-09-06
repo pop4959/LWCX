@@ -94,6 +94,7 @@ public class UUIDRegistry {
             Map<UUID, String> results = new NameFetcher(Arrays.asList(uuid)).call();
 
             if (results.containsKey(uuid)) {
+                updateCache(uuid, results.get(uuid));
                 return results.get(uuid);
             } else {
                 return null;

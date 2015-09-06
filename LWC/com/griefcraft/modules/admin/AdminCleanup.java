@@ -214,35 +214,35 @@ public class AdminCleanup extends JavaModule {
                     getBlocks.get();
 
                     for (final Protection protection : protections) {
-                        if (protection.getBlockId() == NMS.ENTITY_BLOCK_ID) {
-							final int fakeId = protection.getX()
-									- NMS.POSITION_OFFSET;
-
-                            // checks if the entity exists
-                            Future<Boolean> entityExists = scheduler.callSyncMethod(lwc.getPlugin(), new Callable<Boolean>() {
-                                public Boolean call() throws Exception {
-                                    for (Entity entity : protection.getBlock().getWorld().getEntities()) {
-                                        if (entity.getUniqueId().hashCode() == fakeId) {
-                                            return true;
-                                        }
-                                    }
-
-                                    return false;
-                                }
-                            });
-
-                            try {
-                                boolean exists = entityExists.get();
-
-                                if (!exists) {
-                                    toRemove.add(protection.getId());
-                                    removed ++;
-
-                                    if (!silent) {
-                                        lwc.sendLocale(sender, "protection.admin.cleanup.removednoexist", "protection", protection.toString());
-                                    }
-                                }
-                            } catch (InterruptedException e) { }
+                        if (protection.getBlockId() >= NMS.ENTITY_BLOCK_ID) {
+//							final int fakeId = protection.getX()
+//									- NMS.POSITION_OFFSET;
+//
+//                            // checks if the entity exists
+//                            Future<Boolean> entityExists = scheduler.callSyncMethod(lwc.getPlugin(), new Callable<Boolean>() {
+//                                public Boolean call() throws Exception {
+//                                    for (Entity entity : protection.getBlock().getWorld().getEntities()) {
+//                                        if (entity.getUniqueId().hashCode() == fakeId) {
+//                                            return true;
+//                                        }
+//                                    }
+//
+//                                    return false;
+//                                }
+//                            });
+//
+//                            try {
+//                                boolean exists = entityExists.get();
+//
+//                                if (!exists) {
+//                                    toRemove.add(protection.getId());
+//                                    removed ++;
+//
+//                                    if (!silent) {
+//                                        lwc.sendLocale(sender, "protection.admin.cleanup.removednoexist", "protection", protection.toString());
+//                                    }
+//                                }
+//                            } catch (InterruptedException e) { }
                         } else {
                             Block block = protection.getBlock();
 

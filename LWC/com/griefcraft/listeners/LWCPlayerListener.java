@@ -28,6 +28,7 @@
 
 package com.griefcraft.listeners;
 
+import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.bukkit.NMS;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
@@ -215,6 +216,9 @@ public class LWCPlayerListener implements Listener {
                 entity.getWorld().getName(), A, A, A);
         Player p = e.getPlayer();
         boolean canAccess = lwc.canAccessProtection(p, protection);
+        if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
+            e.setCancelled(true);
+        }
         if (protection != null) {
             if (canAccess)
                 return;
@@ -308,7 +312,7 @@ public class LWCPlayerListener implements Listener {
 
 			// events are only used when they already have an action pending
 			boolean canAdmin = lwc.canAdminProtection(player, protection);
-			Block fakeBlock = LWCPlugin.nms.getEntityBlock(entity);
+			Block fakeBlock = EntityBlock.getEntityBlock(entity);
 			PlayerInteractEvent fakeEvent = new PlayerInteractEvent(player,
 					Action.RIGHT_CLICK_BLOCK, null, fakeBlock, null);
 

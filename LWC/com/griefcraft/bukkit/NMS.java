@@ -19,6 +19,4 @@ public interface NMS extends Block {
 	public World getWorld();
 
 	public Entity getEntity();
-
-	public Block getEntityBlock(Entity entity);
 }
