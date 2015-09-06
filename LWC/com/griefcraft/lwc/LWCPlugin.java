@@ -28,12 +28,6 @@
 
 package com.griefcraft.lwc;
 
-import com.griefcraft.bukkit.ArmorStandListener;
-import com.griefcraft.bukkit.EntityBlock;
-//import com.griefcraft.bukkit.FurnitureAPI;
-import com.griefcraft.bukkit.HopperNMS;
-import com.griefcraft.bukkit.NMS;
-import com.griefcraft.bukkit.StorageNMS;
 import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
@@ -47,12 +41,9 @@ import com.griefcraft.util.locale.LocaleClassLoader;
 import com.griefcraft.util.locale.UTF8Control;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -334,25 +325,11 @@ public class LWCPlugin extends JavaPlugin {
 	 * Register all of the events used by LWC
 	 */
 	private void registerEvents() {
-		String packageName = this.getServer().getClass().getPackage().getName();
-		String version = packageName
-				.substring(packageName.lastIndexOf('.') + 1);
 		PluginManager pluginManager = Bukkit.getServer().getPluginManager();
 		pluginManager.registerEvents(new LWCPlayerListener(this), this);
 		pluginManager.registerEvents(new LWCEntityListener(this), this);
 		pluginManager.registerEvents(new LWCBlockListener(this), this);
 		pluginManager.registerEvents(new LWCServerListener(this), this);
-		if (version.startsWith("v1_8") || version.startsWith("v1_9")) {
-			pluginManager.registerEvents(new ArmorStandListener(), this);
-		}
-//		Plugin[] flib = pluginManager.getPlugins();
-//		for (Plugin p : flib) {
-//			if (p.getDescription().getName().equalsIgnoreCase("FurnitureLib")) {
-//				pluginManager.registerEvents(new FurnitureAPI(), this);
-//				System.out.println("[LWC] " + "Loaded FurnitureLib!!!");
-//			}
-//		}
-
 	}
 
 	/**

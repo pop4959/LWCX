@@ -40,7 +40,6 @@ import com.griefcraft.util.Colors;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.sql.ResultSet;

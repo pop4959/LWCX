@@ -69,7 +69,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -361,8 +360,7 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			if (result == Module.Result.DEFAULT) {
-				canAccess = lwc.enforceAccess(player, protection,
-						(Block) fakeBlock, canAccess);
+				canAccess = lwc.enforceAccess(player, protection, fakeBlock, canAccess);
 			}
 
 			if (!canAccess || result == Module.Result.CANCEL) {
