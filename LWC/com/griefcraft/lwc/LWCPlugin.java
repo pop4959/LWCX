@@ -28,11 +28,6 @@
 
 package com.griefcraft.lwc;
 
-import com.griefcraft.bukkit.ArmorStandListener;
-import com.griefcraft.bukkit.FurnitureAPI;
-import com.griefcraft.bukkit.HopperNMS;
-import com.griefcraft.bukkit.NMS;
-import com.griefcraft.bukkit.StorageNMS;
 import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
@@ -46,12 +41,9 @@ import com.griefcraft.util.locale.LocaleClassLoader;
 import com.griefcraft.util.locale.UTF8Control;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -211,10 +203,6 @@ public class LWCPlugin extends JavaPlugin {
 		getServer().getScheduler().cancelTasks(this);
 	}
 
-	public static HopperNMS nms1;
-	public static StorageNMS nms2;
-	public static NMS nms;
-
 	@Override
 	public void onEnable() {
 		preload();
@@ -228,7 +216,6 @@ public class LWCPlugin extends JavaPlugin {
 
 		// Load the rest of LWC
 		lwc.load();
-		Init(this.getServer(), null);
 		registerEvents();
 	}
 
@@ -338,25 +325,11 @@ public class LWCPlugin extends JavaPlugin {
 	 * Register all of the events used by LWC
 	 */
 	private void registerEvents() {
-		String packageName = this.getServer().getClass().getPackage().getName();
-		String version = packageName
-				.substring(packageName.lastIndexOf('.') + 1);
 		PluginManager pluginManager = Bukkit.getServer().getPluginManager();
 		pluginManager.registerEvents(new LWCPlayerListener(this), this);
 		pluginManager.registerEvents(new LWCEntityListener(this), this);
 		pluginManager.registerEvents(new LWCBlockListener(this), this);
 		pluginManager.registerEvents(new LWCServerListener(this), this);
-		if (version.startsWith("v1_8") || version.startsWith("v1_9")) {
-			pluginManager.registerEvents(new ArmorStandListener(), this);
-		}
-		Plugin[] flib = pluginManager.getPlugins();
-		for (Plugin p : flib) {
-			if (p.getDescription().getName().equalsIgnoreCase("FurnitureLib")) {
-				pluginManager.registerEvents(new FurnitureAPI(), this);
-				System.out.println("[LWC] " + "Loaded FurnitureLib!!!");
-			}
-		}
-
 	}
 
 	/**
@@ -393,41 +366,4 @@ public class LWCPlugin extends JavaPlugin {
 	public File getFile() {
 		return super.getFile();
 	}
-
-	private Object Init(Server server, Entity entity) {
-		String packageName = server.getClass().getPackage().getName();
-		// Get full package string of CraftServer.
-		// org.bukkit.craftbukkit.version
-		String version = packageName
-				.substring(packageName.lastIndexOf('.') + 1);
-		// Get the last element of the package
-
-		try {
-			Class<?> clazz = Class.forName("com.griefcraft.bukkit." + version
-					+ ".EntityBlock");
-			Class<?> clazz1 = Class.forName("com.griefcraft.bukkit." + version
-					+ ".HopperMinecartBlock");
-			Class<?> clazz2 = Class.forName("com.griefcraft.bukkit." + version
-					+ ".StoreageMinecartBlock");
-			if (NMS.class.isAssignableFrom(clazz)) {
-				nms = (NMS) clazz.getConstructor(Entity.class).newInstance(
-						entity);
-				return nms;
-			}
-			if (HopperNMS.class.isAssignableFrom(clazz1)) {
-				nms1 = (HopperNMS) clazz1.getConstructor(Entity.class)
-						.newInstance(entity);
-				return nms1;
-			}
-			if (StorageNMS.class.isAssignableFrom(clazz2)) {
-				nms2 = (StorageNMS) clazz2.getConstructor(Entity.class)
-						.newInstance(entity);
-				return nms2;
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
 }

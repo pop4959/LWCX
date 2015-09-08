@@ -32,17 +32,10 @@ import com.griefcraft.bukkit.NMS;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.integration.ICurrency;
 import com.griefcraft.integration.IPermissions;
-import com.griefcraft.integration.currency.BOSECurrency;
-import com.griefcraft.integration.currency.EssentialsCurrency;
 import com.griefcraft.integration.currency.NoCurrency;
 import com.griefcraft.integration.currency.VaultCurrency;
-import com.griefcraft.integration.currency.iConomy5Currency;
-import com.griefcraft.integration.currency.iConomy6Currency;
-import com.griefcraft.integration.permissions.BukkitPermissions;
-import com.griefcraft.integration.permissions.PEXPermissions;
 import com.griefcraft.integration.permissions.SuperPermsPermissions;
 import com.griefcraft.integration.permissions.VaultPermissions;
-import com.griefcraft.integration.permissions.bPermissions;
 import com.griefcraft.io.BackupManager;
 import com.griefcraft.listeners.LWCMCPCSupport;
 import com.griefcraft.migration.ConfigPost300;
@@ -80,14 +73,12 @@ import com.griefcraft.modules.destroy.DestroyModule;
 import com.griefcraft.modules.doors.DoorsModule;
 import com.griefcraft.modules.fix.FixModule;
 import com.griefcraft.modules.flag.BaseFlagModule;
-import com.griefcraft.modules.flag.MagnetModule;
 import com.griefcraft.modules.free.FreeModule;
 import com.griefcraft.modules.history.HistoryModule;
 import com.griefcraft.modules.info.InfoModule;
 import com.griefcraft.modules.limits.LimitsModule;
 import com.griefcraft.modules.limits.LimitsV2;
 import com.griefcraft.modules.modes.BaseModeModule;
-import com.griefcraft.modules.modes.DropTransferModule;
 import com.griefcraft.modules.modes.NoSpamModule;
 import com.griefcraft.modules.modes.PersistModule;
 import com.griefcraft.modules.modify.ModifyModule;
@@ -113,7 +104,6 @@ import com.griefcraft.util.Statistics;
 import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.UUIDRegistry;
 import com.griefcraft.util.config.Configuration;
-import com.griefcraft.util.locale.LocaleUtil;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 
 import org.apache.commons.lang.StringUtils;
@@ -131,9 +121,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.mcstats.Metrics;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -676,16 +664,14 @@ public class LWC {
 		}
 
 		// support for old protection dbs that do not contain the block id
-		if (block != null
-				&& (protection.getBlockId() <= 0 && block.getTypeId() != protection
+		if ((protection.getBlockId() <= 0 && block.getTypeId() != protection
 						.getBlockId())) {
 			protection.setBlockId(block.getTypeId());
 			protection.save();
 		}
 
 		// multi-world, update old protections
-		if (block != null
-				&& (protection.getWorld() == null || !block.getWorld()
+		if ((protection.getWorld() == null || !block.getWorld()
 						.getName().equals(protection.getWorld()))) {
 			protection.setWorld(block.getWorld().getName());
 			protection.save();
@@ -1553,9 +1539,9 @@ public class LWC {
 	 */
 	public boolean isProtectable(Block block) {
 		Material material = block.getType();
-		if (block instanceof NMS) {
-			return true; // TODO
-		}
+        if (block instanceof NMS) {
+            return Boolean.parseBoolean(resolveProtectionConfiguration(((NMS) block).getEntity().getType(), "enabled"));
+        }
 
 		if (material == null) {
 			return false;
@@ -1687,12 +1673,6 @@ public class LWC {
 
 		if (resolvePlugin("Vault") != null) {
 			permissions = new VaultPermissions();
-		} else if (resolvePlugin("PermissionsBukkit") != null) {
-			permissions = new BukkitPermissions();
-		} else if (resolvePlugin("PermissionsEx") != null) {
-			permissions = new PEXPermissions();
-		} else if (resolvePlugin("bPermissions") != null) {
-			permissions = new bPermissions();
 		}
 
 		// Currency init
@@ -1700,27 +1680,6 @@ public class LWC {
 
 		if (resolvePlugin("Vault") != null) {
 			currency = new VaultCurrency();
-		} else if (resolvePlugin("iConomy") != null) {
-			// We need to figure out which iConomy plugin we have...
-			Plugin plugin = resolvePlugin("iConomy");
-
-			// get the class name
-			String className = plugin.getClass().getName();
-
-			// check for the iConomy5 package
-			try {
-				if (className.startsWith("com.iConomy")) {
-					currency = new iConomy5Currency();
-				} else {
-					// iConomy 6!
-					currency = new iConomy6Currency();
-				}
-			} catch (NoClassDefFoundError e) {
-			}
-		} else if (resolvePlugin("BOSEconomy") != null) {
-			currency = new BOSECurrency();
-		} else if (resolvePlugin("Essentials") != null) {
-			currency = new EssentialsCurrency();
 		}
 
 		plugin.getUpdater().init();
@@ -1744,75 +1703,6 @@ public class LWC {
 
 		// We are now done loading!
 		moduleLoader.loadAll();
-
-		// Should we try metrics?
-		if (!configuration.getBoolean("optional.optOut", false)) {
-			try {
-				Metrics metrics = new Metrics(plugin);
-
-				// Create a line graph
-				Metrics.Graph lineGraph = metrics.createGraph("Protections");
-
-				// Add the total protections plotter
-				lineGraph.addPlotter(new Metrics.Plotter("Total") {
-					@Override
-					public int getValue() {
-						return physicalDatabase.getProtectionCount();
-					}
-				});
-
-				// Create a pie graph for individual protections
-				Metrics.Graph pieGraph = metrics
-						.createGraph("Protection percentages");
-
-				for (final Protection.Type type : Protection.Type.values()) {
-					if (type == Protection.Type.RESERVED1
-							|| type == Protection.Type.RESERVED2) {
-						continue;
-					}
-
-					// Create the plotter
-					Metrics.Plotter plotter = new Metrics.Plotter(
-							StringUtil.capitalizeFirstLetter(type.toString())
-									+ " Protections") {
-						@Override
-						public int getValue() {
-							return physicalDatabase.getProtectionCount(type);
-						}
-					};
-
-					// Add it to both graphs
-					lineGraph.addPlotter(plotter);
-					pieGraph.addPlotter(plotter);
-				}
-
-				// Locale
-				Metrics.Graph langGraph = metrics.createGraph("Locale");
-				langGraph.addPlotter(new Metrics.Plotter(LocaleUtil
-						.iso639ToEnglish(configuration.getString("core.locale",
-								"en"))) {
-					@Override
-					public int getValue() {
-						return 1;
-					}
-				});
-
-				// Database type
-				Metrics.Graph databaseGraph = metrics
-						.createGraph("Database Engine");
-				databaseGraph.addPlotter(new Metrics.Plotter(physicalDatabase
-						.getType().toString()) {
-					@Override
-					public int getValue() {
-						return 1;
-					}
-				});
-
-				metrics.start();
-			} catch (IOException e) {
-				log(e.getMessage());
-			}
-		}
 	}
 
 	/**
@@ -1869,12 +1759,10 @@ public class LWC {
 		// flags
 		registerModule(new BaseFlagModule());
 		registerModule(new RedstoneModule());
-		registerModule(new MagnetModule());
 
 		// modes
 		registerModule(new BaseModeModule());
 		registerModule(new PersistModule());
-		registerModule(new DropTransferModule());
 		registerModule(new NoSpamModule());
 
 		// non-core modules but are included with LWC anyway

@@ -28,6 +28,9 @@
 
 package com.griefcraft.listeners;
 
+import java.util.UUID;
+
+import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Flag;
@@ -35,22 +38,22 @@ import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.util.Colors;
-import com.nitnelave.CreeperHeal.config.CreeperConfig;
-import com.nitnelave.CreeperHeal.config.WorldConfig;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class LWCEntityListener implements Listener {
 
@@ -58,6 +61,8 @@ public class LWCEntityListener implements Listener {
 	 * The plugin instance
 	 */
 	private LWCPlugin plugin;
+	
+	private UUID placedArmorStandPlayer;
 
 	public LWCEntityListener(LWCPlugin plugin) {
 		this.plugin = plugin;
@@ -65,101 +70,129 @@ public class LWCEntityListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onHangingPlace(HangingPlaceEvent event) {
-		if (!LWC.ENABLED) {
-			return;
-		}
-
-		LWC lwc = plugin.getLWC();
 		Player player = event.getPlayer();
 		Entity block = event.getEntity();
-		int A = 50000 + block.getUniqueId().hashCode();
-
-		// Update the cache if a protection is matched here
-		Protection current = lwc.findProtection(block.getLocation());
-		if (current != null) {
-			if (!current.isBlockInWorld()) {
-				// Corrupted protection
-				lwc.log("Removing corrupted protection: " + current);
-				current.remove();
-			} else {
-				if (current.getProtectionFinder() != null) {
-					current.getProtectionFinder().fullMatchBlocks();
-					lwc.getProtectionCache().addProtection(current);
-				}
-
-				return;
-			}
-		}
-
-		if (!lwc.isProtectable(block.getType())) {
-			return;
-		}
-
-		String autoRegisterType = lwc.resolveProtectionConfiguration(
-				block.getType(), "autoRegister");
-
-		// is it auto protectable?
-		if (!autoRegisterType.equalsIgnoreCase("private")
-				&& !autoRegisterType.equalsIgnoreCase("public")) {
-			return;
-		}
-
-		if (!lwc.hasPermission(player, "lwc.create." + autoRegisterType,
-				"lwc.create", "lwc.protect")) {
-			return;
-		}
-
-		// Parse the type
-		Protection.Type type;
-
-		try {
-			type = Protection.Type.valueOf(autoRegisterType.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			// No auto protect type found
-			return;
-		}
-
-		// Is it okay?
-		if (type == null) {
-			player.sendMessage(Colors.Red + "LWC_INVALID_CONFIG_autoRegister");
-			return;
-		}
-
-		try {
-			LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(
-					player, LWCPlugin.nms.getEntityBlock(block));
-			lwc.getModuleLoader().dispatchEvent(evt);
-
-			// something cancelled registration
-			if (evt.isCancelled()) {
-				return;
-			}
-
-			// All good!
-			Protection protection = lwc.getPhysicalDatabase()
-					.registerProtection(block.getEntityId(), type,
-							block.getWorld().getName(),
-							player.getUniqueId().toString(), "", A, A, A);
-
-			if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(
-					LWCPlugin.nms.getEntityBlock(block), "quiet"))) {
-				lwc.sendLocale(player, "protection.onplace.create.finalize",
-						"type", lwc.getPlugin().getMessageParser()
-								.parseMessage(autoRegisterType.toLowerCase()),
-						"block", LWC.materialToString(LWCPlugin.nms
-								.getEntityBlock(block)));
-			}
-
-			if (protection != null) {
-				lwc.getModuleLoader().dispatchEvent(
-						new LWCProtectionRegistrationPostEvent(protection));
-			}
-		} catch (Exception e) {
-			lwc.sendLocale(player, "protection.internalerror", "id",
-					"PLAYER_INTERACT");
-			e.printStackTrace();
-		}
+		
+		entityCreatedByPlayer(block, player);
 	}
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onPlayerInteract(PlayerInteractEvent e) {
+        ItemStack inHand = e.getItem();
+        if (inHand != null && inHand.getType() == Material.ARMOR_STAND) {
+            placedArmorStandPlayer = e.getPlayer().getUniqueId();
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onCreateSpawn(CreatureSpawnEvent e) {
+        if (placedArmorStandPlayer != null) {
+            Player player = plugin.getServer().getPlayer(placedArmorStandPlayer);
+            Entity block = e.getEntity();
+            placedArmorStandPlayer = null;
+            if (player != null && block.getType() == EntityType.ARMOR_STAND) {
+                if (player.getWorld().equals(block.getWorld()) && player.getLocation().distanceSquared(block.getLocation()) <= 25) {
+                    entityCreatedByPlayer(block, player);
+                }
+            }
+        }
+    }
+
+    private void entityCreatedByPlayer(Entity block, Player player) {
+        if (!LWC.ENABLED) {
+            return;
+        }
+
+        LWC lwc = plugin.getLWC();
+
+        int A = 50000 + block.getUniqueId().hashCode();
+
+        // Update the cache if a protection is matched here
+        Protection current = lwc.findProtection(block.getLocation());
+        if (current != null) {
+            if (!current.isBlockInWorld()) {
+                // Corrupted protection
+                lwc.log("Removing corrupted protection: " + current);
+                current.remove();
+            } else {
+                if (current.getProtectionFinder() != null) {
+                    current.getProtectionFinder().fullMatchBlocks();
+                    lwc.getProtectionCache().addProtection(current);
+                }
+
+                return;
+            }
+        }
+
+        if (!lwc.isProtectable(block.getType())) {
+            return;
+        }
+
+        String autoRegisterType = lwc.resolveProtectionConfiguration(
+                block.getType(), "autoRegister");
+
+        // is it auto protectable?
+        if (!autoRegisterType.equalsIgnoreCase("private")
+                && !autoRegisterType.equalsIgnoreCase("public")) {
+            return;
+        }
+
+        if (!lwc.hasPermission(player, "lwc.create." + autoRegisterType,
+                "lwc.create", "lwc.protect")) {
+            return;
+        }
+
+        // Parse the type
+        Protection.Type type;
+
+        try {
+            type = Protection.Type.valueOf(autoRegisterType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            // No auto protect type found
+            return;
+        }
+
+        // Is it okay?
+        if (type == null) {
+            player.sendMessage(Colors.Red + "LWC_INVALID_CONFIG_autoRegister");
+            return;
+        }
+
+        try {
+            LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(
+                    player, EntityBlock.getEntityBlock(block));
+            lwc.getModuleLoader().dispatchEvent(evt);
+
+            // something cancelled registration
+            if (evt.isCancelled()) {
+                return;
+            }
+
+            // All good!
+            Protection protection = lwc.getPhysicalDatabase()
+                    .registerProtection(EntityBlock.ENTITY_BLOCK_ID, type,
+                            block.getWorld().getName(),
+                            player.getUniqueId().toString(), "", A, A, A);
+
+            if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(
+                    EntityBlock.getEntityBlock(block), "quiet"))) {
+                lwc.sendLocale(player, "protection.onplace.create.finalize",
+                        "type", lwc.getPlugin().getMessageParser()
+                                .parseMessage(autoRegisterType.toLowerCase()),
+                        "block", LWC.materialToString(EntityBlock
+                                .getEntityBlock(block)));
+            }
+
+            if (protection != null) {
+                lwc.getModuleLoader().dispatchEvent(
+                        new LWCProtectionRegistrationPostEvent(protection));
+            }
+        } catch (Exception e) {
+            lwc.sendLocale(player, "protection.internalerror", "id",
+                    "PLAYER_INTERACT");
+            e.printStackTrace();
+        }
+    }
 
 	@EventHandler
 	public void entityInteract(EntityInteractEvent event) {
@@ -223,68 +256,4 @@ public class LWCEntityListener implements Listener {
 			}
 		}
 	}
-
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityExplodeMonitor(EntityExplodeEvent event) {
-		if (!LWC.ENABLED || event.isCancelled()) {
-			return;
-		}
-
-		LWC lwc = LWC.getInstance();
-
-		for (Block block : event.blockList()) {
-			Protection protection = plugin.getLWC().findProtection(
-					block.getLocation());
-
-			if (protection != null) {
-				boolean ignoreExplosions = Boolean.parseBoolean(lwc
-						.resolveProtectionConfiguration(protection.getBlock(),
-								"ignoreExplosions"));
-
-				if (ignoreExplosions
-						|| protection.hasFlag(Flag.Type.ALLOWEXPLOSIONS)) {
-					// If creeper heal is active for the block, halt all
-					// thrusters!
-					if (isCreeperHealActive(event.getEntity())) {
-						break;
-					}
-
-					protection.remove();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Check if the CreeperHeal plugin is active. If it is, we shouldn't remove
-	 * protections
-	 *
-	 * @return
-	 */
-	private boolean isCreeperHealActive(Entity entity) {
-		if (entity == null) {
-			return false;
-		}
-
-		Plugin creeperHealPlugin = plugin.getServer().getPluginManager()
-				.getPlugin("CreeperHeal");
-
-		if (creeperHealPlugin != null) {
-			WorldConfig worldConfig = CreeperConfig
-					.loadWorld(entity.getWorld());
-
-			if (worldConfig == null) {
-				return false; // Uh-oh?
-			}
-
-			if (entity instanceof Creeper) {
-				return worldConfig.creepers;
-			} else if (entity instanceof TNTPrimed) {
-				return worldConfig.tnt;
-			}
-		}
-
-		return false;
-	}
-
 }

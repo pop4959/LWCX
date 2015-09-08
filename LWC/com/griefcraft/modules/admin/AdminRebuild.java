@@ -107,7 +107,7 @@ public class AdminRebuild extends JavaModule {
 
         Iterator<History> iter = fullHistory.iterator();
         while (iter.hasNext()) {
-            History history = (History) iter.next();
+            History history = iter.next();
 
             // Is it active?
             if (history.getProtection() != null) {
