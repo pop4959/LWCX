@@ -949,6 +949,7 @@ public class Protection {
 	/**
 	 * @return the Bukkit Player object of the owner
 	 */
+	@SuppressWarnings("deprecation")
 	public Player getBukkitOwner() {
 		UUID uuid = UUIDRegistry.getUUID(owner);
 		if (uuid == null) {

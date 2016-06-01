@@ -35,7 +35,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
-
+@SuppressWarnings("deprecation")
 public class VaultCurrency implements ICurrency {
 
     /**
@@ -81,12 +81,10 @@ public class VaultCurrency implements ICurrency {
         return economy.currencyNameSingular();
     }
 
-    @SuppressWarnings("deprecation")
-	public double getBalance(Player player) {
+    public double getBalance(Player player) {
         return economy.getBalance(player.getName());
     }
 
-    @SuppressWarnings("deprecation")
 	public boolean canAfford(Player player, double money) {
         return economy.has(player.getName(), money);
     }
@@ -95,14 +93,12 @@ public class VaultCurrency implements ICurrency {
         return false;
     }
 
-    @SuppressWarnings("deprecation")
-	public double addMoney(Player player, double money) {
+    public double addMoney(Player player, double money) {
         economy.depositPlayer(player.getName(), money);
         return getBalance(player);
     }
 
-    @SuppressWarnings("deprecation")
-	public double removeMoney(Player player, double money) {
+    public double removeMoney(Player player, double money) {
         economy.withdrawPlayer(player.getName(), money);
         return getBalance(player);
     }

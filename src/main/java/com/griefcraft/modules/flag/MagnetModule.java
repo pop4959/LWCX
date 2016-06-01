@@ -32,7 +32,10 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Flag;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
+import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.util.config.Configuration;
+import com.narrowtux.showcase.Showcase;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -114,7 +117,18 @@ public class MagnetModule extends JavaModule {
                             continue;
                         }
 
+                        if (isShowcaseItem(item)) {
+                            // it's being used by the Showcase plugin ... ignore it
+                            continue;
+                        }
 
+                        LWCMagnetPullEvent event = new LWCMagnetPullEvent(item);
+                        lwc.getModuleLoader().dispatchEvent(event);
+
+                        // has the event been cancelled?
+                        if (event.isCancelled()) {
+                            continue;
+                        }
                         // has the item been living long enough?
                         if (item.getPickupDelay() > item.getTicksLived()) {
                             continue; // a player wouldn't have had a chance to pick it up yet
@@ -215,6 +229,20 @@ public class MagnetModule extends JavaModule {
      * @param item
      * @return
      */
+    private boolean isShowcaseItem(Item item) {
+        if (item == null) {
+            return false;
+        }
+
+        // check for the showcase plugin
+        boolean hasShowcase = Bukkit.getServer().getPluginManager().getPlugin("Showcase") != null;
+
+        if (hasShowcase) {
+            return Showcase.instance.getItemByDrop(item) != null;
+        }
+
+        return false;
+    }
 
     @SuppressWarnings("deprecation")
 	@Override

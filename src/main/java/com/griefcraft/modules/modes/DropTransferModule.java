@@ -46,6 +46,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -91,7 +92,8 @@ public class DropTransferModule extends JavaModule {
         return -1;
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onDropItem(LWCDropItemEvent event) {
         Player bPlayer = event.getPlayer();
         Item item = event.getEvent().getItemDrop();

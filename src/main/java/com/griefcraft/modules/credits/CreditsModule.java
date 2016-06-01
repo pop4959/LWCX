@@ -125,7 +125,7 @@ public class CreditsModule extends JavaModule {
                 Colors.Red + "Core contributions",
                 "angelsl",
                 "morganm",
-                " ",
+                "Me_Goes_RAWR",
 
                 Colors.Red + "Translations",
                 Colors.Green + "German - " + Colors.White + "Dawodo",

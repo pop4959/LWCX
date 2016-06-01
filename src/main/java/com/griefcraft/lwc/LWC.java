@@ -108,7 +108,6 @@ import com.griefcraft.util.Statistics;
 import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.UUIDRegistry;
 import com.griefcraft.util.config.Configuration;
-import com.griefcraft.util.locale.LocaleUtil;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 
 import org.apache.commons.lang.StringUtils;
@@ -127,9 +126,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.mcstats.Metrics;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -1716,73 +1713,6 @@ public class LWC {
 		moduleLoader.loadAll();
 
 		// Should we try metrics?
-		if (!configuration.getBoolean("optional.optOut", false)) {
-			try {
-				Metrics metrics = new Metrics(plugin);
-
-				// Create a line graph
-				Metrics.Graph lineGraph = metrics.createGraph("Protections");
-
-				// Add the total protections plotter
-				lineGraph.addPlotter(new Metrics.Plotter("Total") {
-					@Override
-					public int getValue() {
-						return physicalDatabase.getProtectionCount();
-					}
-				});
-
-				// Create a pie graph for individual protections
-				Metrics.Graph pieGraph = metrics
-						.createGraph("Protection percentages");
-
-				for (final Protection.Type type : Protection.Type.values()) {
-					if (type == Protection.Type.RESERVED1
-							|| type == Protection.Type.RESERVED2) {
-						continue;
-					}
-
-					// Create the plotter
-					Metrics.Plotter plotter = new Metrics.Plotter(
-							StringUtil.capitalizeFirstLetter(type.toString())
-									+ " Protections") {
-						@Override
-						public int getValue() {
-							return physicalDatabase.getProtectionCount(type);
-						}
-					};
-
-					// Add it to both graphs
-					lineGraph.addPlotter(plotter);
-					pieGraph.addPlotter(plotter);
-				}
-
-				// Locale
-				Metrics.Graph langGraph = metrics.createGraph("Locale");
-				langGraph.addPlotter(new Metrics.Plotter(LocaleUtil
-						.iso639ToEnglish(configuration.getString("core.locale",
-								"en"))) {
-					@Override
-					public int getValue() {
-						return 1;
-					}
-				});
-
-				// Database type
-				Metrics.Graph databaseGraph = metrics
-						.createGraph("Database Engine");
-				databaseGraph.addPlotter(new Metrics.Plotter(physicalDatabase
-						.getType().toString()) {
-					@Override
-					public int getValue() {
-						return 1;
-					}
-				});
-
-				metrics.start();
-			} catch (IOException e) {
-				log(e.getMessage());
-			}
-		}
 	}
 
 	/**
@@ -2114,6 +2044,7 @@ public class LWC {
 	 *            the player to check
 	 * @return true if the player is NOT in persistent mode
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean notInPersistentMode(String player) {
 		return !wrapPlayer(Bukkit.getServer().getPlayer(player)).hasMode(
 				"persist");

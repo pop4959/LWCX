@@ -37,7 +37,6 @@ import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.TownyWorld;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -110,8 +109,7 @@ public class Towny extends JavaModule {
 
             // Does the town exist?
             try {
-                @SuppressWarnings("deprecation")
-				Town town = towny.getTownyUniverse().getTown(townName);
+                Town town = towny.getTownyUniverse().getTown(townName);
 
                 if (town == null) {
                     return;
@@ -140,8 +138,7 @@ public class Towny extends JavaModule {
      * Just a note: catching NotRegisteredException (which where an Exception is caught is where its thrown)
      * will throw a ClassNotFoundException when Towny is not installed.
      */
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onRegisterProtection(LWCProtectionRegisterEvent event) {
         if (event.isCancelled()) {
             return;
@@ -159,8 +156,7 @@ public class Towny extends JavaModule {
 
         try {
             try {
-                towny.getTownyUniverse();
-				world = TownyUniverse.getWorld(block.getWorld().getName());
+                world = towny.getTownyUniverse().getWorld(block.getWorld().getName());
             } catch (IncompatibleClassChangeError e) {
                 // Towny Advanced
                 try {

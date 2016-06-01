@@ -118,10 +118,8 @@ public class LWCPlayerListener implements Listener {
 						event.isCancelled())) {
 					event.setCancelled(true);
 				}
-			} else {
-				return;
 			}
-			if (protection != null) {
+			if (!event.isCancelled() && protection != null) {
 				boolean canAccess = lwc.canAccessProtection(p, protection);
 				if (canAccess) {
 					protection.remove();
@@ -190,6 +188,10 @@ public class LWCPlayerListener implements Listener {
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
+		if (e instanceof EntityDamageByEntityEvent
+				&& !(e.getCause() == DamageCause.BLOCK_EXPLOSION || e
+						.getCause() == DamageCause.ENTITY_EXPLOSION))
+			return;
 		Entity entity = e.getEntity();
 		int A = 50000 + entity.getUniqueId().hashCode();
 
@@ -204,6 +206,8 @@ public class LWCPlayerListener implements Listener {
 
 	@EventHandler
 	public void itemFrameItemRemoval(EntityDamageByEntityEvent e) {
+		if (e.isCancelled())
+			return;
 		Entity entity = e.getEntity();
 		int A = 50000 + entity.getUniqueId().hashCode();
 		LWC lwc = LWC.getInstance();
@@ -224,29 +228,21 @@ public class LWCPlayerListener implements Listener {
 		if (e.getDamager() instanceof Player) {
 			Player p = (Player) e.getDamager();
 			if (e.getFinalDamage() >= 0.5) {
-				if (protection != null) {
-					boolean canAccess = lwc.canAccessProtection(p, protection);
-					if (canAccess) {
-						protection.remove();
-						return;
-					}
+				if (protection != null
+						&& !lwc.canAccessProtection(p, protection)) {
 					e.setCancelled(true);
 				}
 			}
 			if (entity instanceof ItemFrame) {
-				if (protection != null) {
-					boolean canAccess = lwc.canAccessProtection(p, protection);
-					if (canAccess)
-						return;
+				if (protection != null
+						&& !lwc.canAccessProtection(p, protection)) {
 					e.setCancelled(true);
 				}
 				return;
 			}
 			if (entity instanceof Painting) {
-				if (protection != null) {
-					boolean canAccess = lwc.canAccessProtection(p, protection);
-					if (canAccess)
-						return;
+				if (protection != null
+						&& !lwc.canAccessProtection(p, protection)) {
 					e.setCancelled(true);
 				}
 				return;
@@ -263,10 +259,7 @@ public class LWCPlayerListener implements Listener {
 			} else {
 				return;
 			}
-			if (protection != null) {
-				boolean canAccess = lwc.canAccessProtection(p, protection);
-				if (canAccess)
-					return;
+			if (protection != null && !lwc.canAccessProtection(p, protection)) {
 				e.setCancelled(true);
 
 			}
@@ -447,8 +440,8 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			if (result == Module.Result.DEFAULT) {
-				canAccess = lwc.enforceAccess(player, protection,
-						entity, canAccess);
+				canAccess = lwc.enforceAccess(player, protection, entity,
+						canAccess);
 			}
 
 			if (!canAccess || result == Module.Result.CANCEL) {
@@ -770,6 +763,7 @@ public class LWCPlayerListener implements Listener {
 		LWCPlayer.removePlayer(event.getPlayer());
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		LWC lwc = LWC.getInstance();

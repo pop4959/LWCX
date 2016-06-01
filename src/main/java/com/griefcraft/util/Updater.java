@@ -40,6 +40,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.bukkit.Bukkit;
+import org.inventivetalent.update.spigot.SpigotUpdater;
 
 public class Updater {
 
@@ -63,27 +65,33 @@ public class Updater {
 	 */
 	private final Queue<UpdaterFile> fileQueue = new ConcurrentLinkedQueue<UpdaterFile>();
 
-	
-	
 	@SuppressWarnings("deprecation")
 	public void init() {
+		// verify we have local files (e.g sqlite.jar, etc)
 		verifyFiles();
 		downloadFiles();
 
 		final LWC lwc = LWC.getInstance();
-		if (lwc.getConfiguration().getBoolean("core.updateNotifier", true)) {
-			lwc.getPlugin().getServer().getScheduler()
-					.scheduleAsyncDelayedTask(lwc.getPlugin(), new Runnable() {
-						public void run() {
-							try {
-								new SpigotUpdater(lwc.getPlugin(), 2162);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
+		if (Bukkit.getPluginManager().getPlugin("SpigotUpdater") != null) {
+			if (lwc.getConfiguration().getBoolean("core.updateNotifier", true)) {
+				lwc.getPlugin()
+						.getServer()
+						.getScheduler()
+						.scheduleAsyncDelayedTask(lwc.getPlugin(),
+								new Runnable() {
+									public void run() {
+										try {
+											new SpigotUpdater(lwc.getPlugin(), 2162, true);
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+									}
 
-					});
-		}
+								});
+			}
+		} 
+		System.out.println("[LWC] SpigotUpdater not enabled. If you want to use the updater, please install this:");
+		System.out.println("[LWC] https://www.spigotmc.org/resources/api-spigotupdater.7563/");
 	}
 
 	/**

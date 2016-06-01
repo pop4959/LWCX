@@ -34,6 +34,7 @@ import com.griefcraft.scripting.event.LWCBlockInteractEvent;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCEntityInteractEvent;
+import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
@@ -124,7 +125,11 @@ public class JavaModule implements Module {
 
 	}
 
+	@Override
 	public void onProtectionInteractEntity(
 			LWCProtectionInteractEntityEvent event) {
+	}
+	public void onMagnetPull(LWCMagnetPullEvent event) {
+		
 	}
 }

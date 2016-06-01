@@ -28,6 +28,7 @@
 
 package com.griefcraft.lwc;
 
+import com.griefcraft.bukkit.ArmorStandListener;
 import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
@@ -325,11 +326,17 @@ public class LWCPlugin extends JavaPlugin {
 	 * Register all of the events used by LWC
 	 */
 	private void registerEvents() {
+		String packageName = this.getServer().getClass().getPackage().getName();
+		String version = packageName
+				.substring(packageName.lastIndexOf('.') + 1);
 		PluginManager pluginManager = Bukkit.getServer().getPluginManager();
 		pluginManager.registerEvents(new LWCPlayerListener(this), this);
 		pluginManager.registerEvents(new LWCEntityListener(this), this);
 		pluginManager.registerEvents(new LWCBlockListener(this), this);
 		pluginManager.registerEvents(new LWCServerListener(this), this);
+		if (version.contains("v1_8") || version.contains("v1_9")) {
+			pluginManager.registerEvents(new ArmorStandListener(), this);
+		}
 	}
 
 	/**

@@ -36,6 +36,7 @@ import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCEntityInteractEvent;
 import com.griefcraft.scripting.event.LWCEvent;
+import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
@@ -88,7 +89,7 @@ public class ModuleLoader {
 		 * Called when a valid protection is left clicked
 		 */
 		INTERACT_PROTECTION(5),
-		
+
 		INTERACT_PROTECTION_ENTITY(5),
 
 		/**
@@ -145,7 +146,9 @@ public class ModuleLoader {
 		/**
 		 * Called when LWC's config is reloaded
 		 */
-		RELOAD_EVENT;
+		RELOAD_EVENT,
+
+		MAGNET_PULL(1);
 
 		Event() {
 		}
@@ -278,6 +281,8 @@ public class ModuleLoader {
 					event = Event.REDSTONE;
 				} else if (parameter == LWCReloadEvent.class) {
 					event = Event.RELOAD_EVENT;
+				} else if (parameter == LWCMagnetPullEvent.class) {
+					event = Event.MAGNET_PULL;
 				}
 
 				// ok!
@@ -372,6 +377,8 @@ public class ModuleLoader {
 					module.onRedstone((LWCRedstoneEvent) event);
 				} else if (type == Event.RELOAD_EVENT) {
 					module.onReload((LWCReloadEvent) event);
+				} else if (type == Event.MAGNET_PULL) {
+					module.onMagnetPull((LWCMagnetPullEvent) event);
 				}
 			}
 		} catch (Throwable throwable) {
