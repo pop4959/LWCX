@@ -42,7 +42,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.io.IOUtils;
-import org.bukkit.Bukkit;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -76,25 +75,20 @@ public class Updater {
 		downloadFiles();
 
 		final LWC lwc = LWC.getInstance();
-		if (Bukkit.getPluginManager().getPlugin("SpigotUpdater") != null) {
-			if (lwc.getConfiguration().getBoolean("core.updateNotifier", true)) {
-				lwc.getPlugin().getServer().getScheduler().scheduleAsyncDelayedTask(lwc.getPlugin(), new Runnable() {
-					public void run() {
-						Object[] updates = Updater.getLastUpdate();
-						if (updates.length == 2) {
-							System.out.println("§6[§eEntityLWC§6] New update avaible:");
-							System.out.println("§6New version: §e" + updates[0]);
-							System.out.println(
-									"§6Your version: §e" + LWC.getInstance().getPlugin().getDescription().getVersion());
-							System.out.println("§6What's new: §e" + updates[1]);
-						}
+		if (lwc.getConfiguration().getBoolean("core.updateNotifier", true)) {
+			lwc.getPlugin().getServer().getScheduler().scheduleAsyncDelayedTask(lwc.getPlugin(), new Runnable() {
+				public void run() {
+					Object[] updates = Updater.getLastUpdate();
+					if (updates.length == 2) {
+						System.out.println("§6[§eEntityLWC§6] New update avaible:");
+						System.out.println("§6New version: §e" + updates[0]);
+						System.out.println(
+								"§6Your version: §e" + LWC.getInstance().getPlugin().getDescription().getVersion());
+						System.out.println("§6What's new: §e" + updates[1]);
 					}
+				}
 
-				});
-			}
-		} else {
-			System.out.println("[LWC] SpigotUpdater not enabled. If you want to use the updater, please install this:");
-			System.out.println("[LWC] https://www.spigotmc.org/resources/api-spigotupdater.7563/");
+			});
 		}
 	}
 
@@ -106,7 +100,7 @@ public class Updater {
 		if (Database.DefaultType == Database.Type.SQLite) {
 			// sqlite.jar
 			this.verifyFile(
-					new UpdaterFile(DEST_LIBRARY_FOLDER + "sqlite.jar", UPDATE_SITE + "/shared/lib/sqlite.jar"));
+					new UpdaterFile(DEST_LIBRARY_FOLDER + "sqlite.jar", UPDATE_SITE + "/lib/native/sqlite.jar"));
 
 			String nativeLibraryPath = getFullNativeLibraryPath();
 
@@ -114,8 +108,6 @@ public class Updater {
 				// Native library
 				this.verifyFile(new UpdaterFile(getFullNativeLibraryPath(),
 						UPDATE_SITE + "/shared/lib/" + nativeLibraryPath.replaceAll(DEST_LIBRARY_FOLDER, "")));
-				System.out
-						.println(UPDATE_SITE + "/shared/lib/" + nativeLibraryPath.replaceAll(DEST_LIBRARY_FOLDER, ""));
 			} else {
 				// XXX backwards compat:- nuke any old Linux binaries so that
 				// SQLite does not load them and then crash the JVM
