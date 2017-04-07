@@ -235,7 +235,6 @@ public class LWCPlugin extends JavaPlugin {
 	/**
 	 * Load LWC localizations
 	 */
-	@SuppressWarnings("resource")
 	public void loadLocales() {
 		LWCResourceBundle locale;
 		String localization = getCurrentLocale();
@@ -244,11 +243,10 @@ public class LWCPlugin extends JavaPlugin {
 		// the default :-)
 		ResourceBundle optionalBundle = null;
 
-		try {
+		try (JarFile file = new JarFile(getFile())) {
 			ResourceBundle defaultBundle;
 
 			// Open the LWC jar file
-			JarFile file = new JarFile(getFile());
 
 			// Attempt to load the default locale
 			defaultBundle = new PropertyResourceBundle(new InputStreamReader(
@@ -304,12 +302,6 @@ public class LWCPlugin extends JavaPlugin {
 	 */
 	private void preload() {
 		updater = new Updater();
-		// Set the SQLite native library path
-		String nativeLibraryFolder = updater.getOSSpecificFolder();
-
-		if (nativeLibraryFolder != null) {
-			System.setProperty("org.sqlite.lib.path", nativeLibraryFolder);
-		}
 	}
 
 	/**

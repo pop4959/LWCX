@@ -38,7 +38,6 @@ import com.griefcraft.scripting.event.LWCEntityInteractEvent;
 import com.griefcraft.scripting.event.LWCEvent;
 import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
-import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
@@ -353,9 +352,7 @@ public class ModuleLoader {
 					module.onProtectionInteract((LWCProtectionInteractEvent) event);
 				} else if (type == Event.INTERACT_BLOCK) {
 					module.onBlockInteract((LWCBlockInteractEvent) event);
-				} else if (type == Event.INTERACT_PROTECTION) {
-					module.onProtectionInteractEntity((LWCProtectionInteractEntityEvent) event);
-				} else if (type == Event.INTERACT_ENTITY) {
+				}else if (type == Event.INTERACT_ENTITY) {
 					module.onEntityInteract((LWCEntityInteractEvent) event);
 				} else if (type == Event.SEND_LOCALE) {
 					module.onSendLocale((LWCSendLocaleEvent) event);

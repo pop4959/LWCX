@@ -1445,7 +1445,7 @@ public class LWC {
 
 		String value = configuration.getString("protections." + node);
 
-		String temp = configuration.getString("protections.blocks." + state
+		String temp = configuration.getString("protections.blocks." + state.toString().toUpperCase()
 				+ "." + node);
 
 		if (temp != null && !temp.isEmpty()) {

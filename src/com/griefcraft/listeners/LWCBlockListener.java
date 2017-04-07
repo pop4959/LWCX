@@ -48,7 +48,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -422,18 +421,6 @@ public class LWCBlockListener implements Listener {
 	/**
 	 * Used for water flowing and removing the protection
 	 */
-	
-	public void onWaterRemove(BlockFromToEvent e){
-		Material m = e.getToBlock().getType();
-		if(m == Material.STATIONARY_WATER || m == Material.WATER){
-			if(plugin.getLWC().isProtectable(e.getBlock())){
-				if(plugin.getLWC().findProtection(e.getBlock()) != null){
-					e.setCancelled(true);
-				}
-			}
-		}
-	}
-	
 	
 	/**
 	 * Used for auto registering placed protections

@@ -41,6 +41,7 @@ import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import com.griefcraft.util.UUIDRegistry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -48,7 +49,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Hopper;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.ArmorStand;
+//import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -71,13 +72,14 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+//import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+//import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -102,18 +104,16 @@ public class LWCPlayerListener implements Listener {
 		if (plugin.getLWC().isProtectable(event.getEntity().getType())) {
 			int A = 50000 + entity.getUniqueId().hashCode();
 			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(
+					entity.getWorld().getName(), A, A, A);
 			if (event.getRemover() instanceof Projectile && protection != null) {
 				event.setCancelled(true);
 			}
 			if (event.getRemover() instanceof Player) {
 				Player p = (Player) event.getRemover();
-				if (p.hasPermission("lwc.lockentity." + entity.getType())) {
+				if (p.hasPermission("lwc.lockentity." + entity.getType())
+						|| p.hasPermission("lwc.lockentity.all") || p.isOp()) {
 					if (onPlayerEntityInteract(p, entity, event.isCancelled())) {
-						event.setCancelled(true);
-					}
-				} else if (p.hasPermission("lwc.lockentity.all") || p.isOp()) {
-					if (LWCPlayerListener.onPlayerEntityInteract(p, entity, event.isCancelled())) {
 						event.setCancelled(true);
 					}
 				}
@@ -135,7 +135,8 @@ public class LWCPlayerListener implements Listener {
 		if (plugin.getLWC().isProtectable(e.getVehicle().getType())) {
 			int A = 50000 + entity.getUniqueId().hashCode();
 			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(
+					entity.getWorld().getName(), A, A, A);
 			if ((((entity instanceof StorageMinecart)) || ((entity instanceof HopperMinecart)))
 					&& (protection != null)) {
 				if (e.getAttacker() instanceof Projectile) {
@@ -157,10 +158,13 @@ public class LWCPlayerListener implements Listener {
 			int A = 50000 + entity.getUniqueId().hashCode();
 
 			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(
+					entity.getWorld().getName(), A, A, A);
 			if (protection != null) {
-				if (event.getCause() == RemoveCause.PHYSICS || event.getCause() == RemoveCause.EXPLOSION
-						|| event.getCause() == RemoveCause.OBSTRUCTION || event.getCause() == RemoveCause.ENTITY) {
+				if (event.getCause() == RemoveCause.PHYSICS
+						|| event.getCause() == RemoveCause.EXPLOSION
+						|| event.getCause() == RemoveCause.OBSTRUCTION
+						|| event.getCause() == RemoveCause.ENTITY) {
 					event.setCancelled(true);
 				}
 			}
@@ -174,7 +178,8 @@ public class LWCPlayerListener implements Listener {
 			int A = 50000 + entity.getUniqueId().hashCode();
 
 			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(
+					entity.getWorld().getName(), A, A, A);
 			Player p = e.getPlayer();
 			boolean canAccess = lwc.canAccessProtection(p, protection);
 			if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
@@ -191,14 +196,16 @@ public class LWCPlayerListener implements Listener {
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e instanceof EntityDamageByEntityEvent
-				&& !(e.getCause() == DamageCause.BLOCK_EXPLOSION || e.getCause() == DamageCause.ENTITY_EXPLOSION))
+				&& !(e.getCause() == DamageCause.BLOCK_EXPLOSION || e
+						.getCause() == DamageCause.ENTITY_EXPLOSION))
 			return;
 		Entity entity = e.getEntity();
 		if (plugin.getLWC().isProtectable(e.getEntity().getType())) {
 			int A = 50000 + entity.getUniqueId().hashCode();
 
 			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(
+					entity.getWorld().getName(), A, A, A);
 			if (protection != null) {
 				if (e.getCause() != DamageCause.CONTACT)
 					e.setCancelled(true);
@@ -214,7 +221,8 @@ public class LWCPlayerListener implements Listener {
 		if (plugin.getLWC().isProtectable(e.getEntity().getType())) {
 			int A = 50000 + entity.getUniqueId().hashCode();
 			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(
+					entity.getWorld().getName(), A, A, A);
 			if (!(entity instanceof Player)) {
 				if (e.getDamager() instanceof Projectile) {
 					if (protection != null) {
@@ -227,15 +235,14 @@ public class LWCPlayerListener implements Listener {
 				}
 				if (e.getDamager() instanceof Player) {
 					Player p = (Player) e.getDamager();
-					if (protection != null && !lwc.canAccessProtection(p, protection)) {
+					if (protection != null
+							&& !lwc.canAccessProtection(p, protection)) {
 						e.setCancelled(true);
 					}
-					if (p.hasPermission("lwc.lockentity." + e.getEntityType())) {
+					if (p.hasPermission("lwc.lockentity." + e.getEntityType())
+							|| p.hasPermission("lwc.lockentity.all")
+							|| p.isOp()) {
 						if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-							e.setCancelled(true);
-						}
-					} else if (p.hasPermission("lwc.lockentity.all") || p.isOp()) {
-						if (LWCPlayerListener.onPlayerEntityInteract(p, entity, e.isCancelled())) {
 							e.setCancelled(true);
 						}
 					}
@@ -255,53 +262,32 @@ public class LWCPlayerListener implements Listener {
 			int A = 50000 + entity.getUniqueId().hashCode();
 			Player player = e.getEntity().getKiller();
 			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(
+					entity.getWorld().getName(), A, A, A);
 			if (protection != null) {
 				boolean canAccess = lwc.canAccessProtection(player, protection);
 				boolean canAdmin = lwc.canAdminProtection(player, protection);
 				try {
-					LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
-							LWCProtectionDestroyEvent.Method.ENTITY_DESTRUCTION, canAccess, canAdmin);
-					lwc.getModuleLoader().dispatchEvent(evt);
+					if (player != null) {
+						LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(
+								player,
+								protection,
+								LWCProtectionDestroyEvent.Method.ENTITY_DESTRUCTION,
+								canAccess, canAdmin);
+						lwc.getModuleLoader().dispatchEvent(evt);
+					} else {
+						protection.remove();
+					}
 				} catch (Exception ex) {
-					lwc.sendLocale(player, "protection.internalerror", "id", "BLOCK_BREAK");
+					if (player != null) {
+						lwc.sendLocale(player, "protection.internalerror",
+								"id", "ENTITY_BREAK");
+					}
+					lwc.sendLocale(Bukkit.getServer().getConsoleSender(),
+							"protection.internalerror", "id", "ENTITY_BREAK");
 					ex.printStackTrace();
 				}
 				protection.remove();
-			}
-		}
-	}
-
-	@EventHandler
-	public void onEntityAtInteract(PlayerInteractAtEntityEvent e) {
-		Entity entity = e.getRightClicked();
-		if (plugin.getLWC().isProtectable(entity.getType())) {
-			int A = 50000 + entity.getUniqueId().hashCode();
-
-			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
-			Player p = e.getPlayer();
-			boolean canAccess = lwc.canAccessProtection(p, protection);
-			if ((entity instanceof Player)) {
-				return;
-			}
-			if (entity instanceof ArmorStand) {
-				if (p.hasPermission("lwc.lockentity." + entity.getType())) {
-					if (LWCPlayerListener.onPlayerEntityInteract(p, entity, e.isCancelled())) {
-						e.setCancelled(true);
-					}
-				} else if ((p.hasPermission("lwc.lockentity.all")) || (p.isOp())) {
-					if (LWCPlayerListener.onPlayerEntityInteract(p, entity, e.isCancelled())) {
-						e.setCancelled(true);
-					}
-				} else {
-					return;
-				}
-				if (protection != null) {
-					if (canAccess)
-						return;
-					e.setCancelled(true);
-				}
 			}
 		}
 	}
@@ -313,51 +299,51 @@ public class LWCPlayerListener implements Listener {
 			int A = 50000 + entity.getUniqueId().hashCode();
 
 			LWC lwc = LWC.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(
+					entity.getWorld().getName(), A, A, A);
 			Player p = e.getPlayer();
 			boolean canAccess = lwc.canAccessProtection(p, protection);
-			if (entity instanceof Player) {
+			if (entity instanceof Player ) {
 				return;
 			}
-			if (p.hasPermission("lwc.lockentity." + entity.getType())) {
+			if (p.hasPermission("lwc.lockentity." + entity.getType()) || p.hasPermission("lwc.lockentity.all") || p.isOp()) {
 				if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
 					e.setCancelled(true);
 				}
-			} else if (p.hasPermission("lwc.lockentity.all") || p.isOp()) {
-				if (LWCPlayerListener.onPlayerEntityInteract(p, entity, e.isCancelled())) {
-					e.setCancelled(true);
-				}
-			} else {
-				return;
 			}
 			if (protection != null) {
 				if (canAccess)
 					return;
 				e.setCancelled(true);
 			}
+			return;
 		}
 	}
 
 	@EventHandler
 	public void storageMinecraftInventoryOpen(InventoryOpenEvent event) {
 		InventoryHolder holder = event.getInventory().getHolder();
-		if ((!(holder instanceof StorageMinecart)) && (!(holder instanceof HopperMinecart))) {
+		if ((!(holder instanceof StorageMinecart))
+				&& (!(holder instanceof HopperMinecart))) {
 			return;
 		}
 		Entity entity = (Entity) holder;
 		if (plugin.getLWC().isProtectable(entity.getType())) {
-			if (onPlayerEntityInteract((Player) event.getPlayer(), entity, event.isCancelled())) {
+			if (onPlayerEntityInteract((Player) event.getPlayer(), entity,
+					event.isCancelled())) {
 				event.setCancelled(true);
 			}
 		}
 	}
 
-	public static boolean onPlayerEntityInteract(Player player, Entity entity, boolean cancelled) {
+	public static boolean onPlayerEntityInteract(Player player, Entity entity,
+			boolean cancelled) {
 		int A = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
 
 		// attempt to load the protection for this cart
 		LWC lwc = LWC.getInstance();
-		Protection protection = lwc.getPhysicalDatabase().loadProtection(entity.getWorld().getName(), A, A, A);
+		Protection protection = lwc.getPhysicalDatabase().loadProtection(
+				entity.getWorld().getName(), A, A, A);
 		LWCPlayer lwcPlayer = lwc.wrapPlayer(player);
 
 		try {
@@ -369,7 +355,8 @@ public class LWCPlayerListener implements Listener {
 			// besides 'interacted')
 			int actionCount = actions.size();
 			boolean hasInteracted = actions.contains("interacted");
-			boolean hasPendingAction = (hasInteracted && actionCount > 1) || (!hasInteracted && actionCount > 0);
+			boolean hasPendingAction = (hasInteracted && actionCount > 1)
+					|| (!hasInteracted && actionCount > 0);
 
 			// If the event was cancelled and they have an action, warn them
 			if (cancelled) {
@@ -397,17 +384,18 @@ public class LWCPlayerListener implements Listener {
 			// events are only used when they already have an action pending
 			boolean canAdmin = lwc.canAdminProtection(player, protection);
 			Block fakeBlock = EntityBlock.getEntityBlock(entity);
-			PlayerInteractEvent fakeEvent = new PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, null, fakeBlock,
-					null);
+			PlayerInteractEvent fakeEvent = new PlayerInteractEvent(player,
+					Action.RIGHT_CLICK_BLOCK, null, fakeBlock, null);
 
 			if (protection != null) {
-				LWCProtectionInteractEvent evt = new LWCProtectionInteractEvent(fakeEvent, protection, actions,
-						canAccess, canAdmin);
+				LWCProtectionInteractEvent evt = new LWCProtectionInteractEvent(
+						fakeEvent, protection, actions, canAccess, canAdmin);
 				lwc.getModuleLoader().dispatchEvent(evt);
 
 				result = evt.getResult();
 			} else {
-				LWCBlockInteractEvent evt = new LWCBlockInteractEvent(fakeEvent, fakeBlock, actions);
+				LWCBlockInteractEvent evt = new LWCBlockInteractEvent(
+						fakeEvent, fakeBlock, actions);
 				lwc.getModuleLoader().dispatchEvent(evt);
 
 				result = evt.getResult();
@@ -418,8 +406,10 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			// optional.onlyProtectIfOwnerIsOnline
-			if (protection != null && !canAccess
-					&& lwc.getConfiguration().getBoolean("optional.onlyProtectWhenOwnerIsOnline", false)) {
+			if (protection != null
+					&& !canAccess
+					&& lwc.getConfiguration().getBoolean(
+							"optional.onlyProtectWhenOwnerIsOnline", false)) {
 				Player owner = protection.getBukkitOwner();
 
 				// If they aren't online, allow them in :P
@@ -429,8 +419,10 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			// optional.onlyProtectIfOwnerIsOffline
-			if (protection != null && !canAccess
-					&& lwc.getConfiguration().getBoolean("optional.onlyProtectWhenOwnerIsOffline", false)) {
+			if (protection != null
+					&& !canAccess
+					&& lwc.getConfiguration().getBoolean(
+							"optional.onlyProtectWhenOwnerIsOffline", false)) {
 				Player owner = protection.getBukkitOwner();
 
 				// If they aren't online, allow them in :P
@@ -440,14 +432,16 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			if (result == Module.Result.DEFAULT) {
-				canAccess = lwc.enforceAccess(player, protection, entity, canAccess);
+				canAccess = lwc.enforceAccess(player, protection, entity,
+						canAccess);
 			}
 
 			if (!canAccess || result == Module.Result.CANCEL) {
 				return true;
 			}
 		} catch (Exception e) {
-			lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
+			lwc.sendLocale(player, "protection.internalerror", "id",
+					"PLAYER_INTERACT");
 			e.printStackTrace();
 			return true;
 		}
@@ -467,9 +461,11 @@ public class LWCPlayerListener implements Listener {
 		// if the initiator is the same as the source it is a dropper i.e.
 		// depositing items
 		if (event.getInitiator() == event.getSource()) {
-			result = handleMoveItemEvent(event.getInitiator(), event.getDestination());
+			result = handleMoveItemEvent(event.getInitiator(),
+					event.getDestination());
 		} else {
-			result = handleMoveItemEvent(event.getInitiator(), event.getSource());
+			result = handleMoveItemEvent(event.getInitiator(),
+					event.getSource());
 		}
 
 		if (result) {
@@ -532,7 +528,8 @@ public class LWCPlayerListener implements Listener {
 		}
 
 		if (hopperLocation != null
-				&& Boolean.parseBoolean(lwc.resolveProtectionConfiguration(Material.HOPPER, "enabled"))) {
+				&& Boolean.parseBoolean(lwc.resolveProtectionConfiguration(
+						Material.HOPPER, "enabled"))) {
 			Protection hopperProtection = lwc.findProtection(hopperLocation);
 
 			if (hopperProtection != null) {
@@ -544,8 +541,10 @@ public class LWCPlayerListener implements Listener {
 			}
 		}
 
-		boolean denyHoppers = Boolean.parseBoolean(
-				lwc.resolveProtectionConfiguration(Material.getMaterial(protection.getBlockId()), "denyHoppers"));
+		boolean denyHoppers = Boolean.parseBoolean(lwc
+				.resolveProtectionConfiguration(
+						Material.getMaterial(protection.getBlockId()),
+						"denyHoppers"));
 
 		// xor = (a && !b) || (!a && b)
 		if (denyHoppers ^ protection.hasFlag(Flag.Type.HOPPER)) {
@@ -593,13 +592,14 @@ public class LWCPlayerListener implements Listener {
 		Player player = event.getPlayer();
 		LWCPlayer lwcPlayer = lwc.wrapPlayer(player);
 
-		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+		if (event.getAction() != Action.LEFT_CLICK_BLOCK
+				&& event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
-
+		//if(event.getHand() == EquipmentSlot.OFF_HAND) return;
 		Block block = event.getClickedBlock();
 		BlockState state;
-
+		
 		try {
 			state = block.getState();
 		} catch (NullPointerException e) {
@@ -612,7 +612,8 @@ public class LWCPlayerListener implements Listener {
 		// Prevent players with lwc.deny from interacting with blocks that have
 		// an inventory
 		if (state instanceof InventoryHolder && lwc.isProtectable(block)) {
-			if (!lwc.hasPermission(player, "lwc.protect") && lwc.hasPermission(player, "lwc.deny")
+			if (!lwc.hasPermission(player, "lwc.protect")
+					&& lwc.hasPermission(player, "lwc.deny")
 					&& !lwc.isAdmin(player) && !lwc.isMod(player)) {
 				lwc.sendLocale(player, "protection.interact.error.blocked");
 				event.setCancelled(true);
@@ -630,18 +631,21 @@ public class LWCPlayerListener implements Listener {
 			// besides 'interacted')
 			int actionCount = actions.size();
 			boolean hasInteracted = actions.contains("interacted");
-			boolean hasPendingAction = (hasInteracted && actionCount > 1) || (!hasInteracted && actionCount > 0);
+			boolean hasPendingAction = (hasInteracted && actionCount > 1)
+					|| (!hasInteracted && actionCount > 0);
 
 			if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-				boolean ignoreLeftClick = Boolean
-						.parseBoolean(lwc.resolveProtectionConfiguration(block, "ignoreLeftClick"));
+				boolean ignoreLeftClick = Boolean.parseBoolean(lwc
+						.resolveProtectionConfiguration(block,
+								"ignoreLeftClick"));
 
 				if (ignoreLeftClick) {
 					return;
 				}
 			} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				boolean ignoreRightClick = Boolean
-						.parseBoolean(lwc.resolveProtectionConfiguration(block, "ignoreRightClick"));
+				boolean ignoreRightClick = Boolean.parseBoolean(lwc
+						.resolveProtectionConfiguration(block,
+								"ignoreRightClick"));
 
 				if (ignoreRightClick) {
 					return;
@@ -675,13 +679,14 @@ public class LWCPlayerListener implements Listener {
 			boolean canAdmin = lwc.canAdminProtection(player, protection);
 
 			if (protection != null) {
-				LWCProtectionInteractEvent evt = new LWCProtectionInteractEvent(event, protection, actions, canAccess,
-						canAdmin);
+				LWCProtectionInteractEvent evt = new LWCProtectionInteractEvent(
+						event, protection, actions, canAccess, canAdmin);
 				lwc.getModuleLoader().dispatchEvent(evt);
 
 				result = evt.getResult();
 			} else {
-				LWCBlockInteractEvent evt = new LWCBlockInteractEvent(event, block, actions);
+				LWCBlockInteractEvent evt = new LWCBlockInteractEvent(event,
+						block, actions);
 				lwc.getModuleLoader().dispatchEvent(evt);
 
 				result = evt.getResult();
@@ -692,8 +697,10 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			// optional.onlyProtectIfOwnerIsOnline
-			if (protection != null && !canAccess
-					&& lwc.getConfiguration().getBoolean("optional.onlyProtectWhenOwnerIsOnline", false)) {
+			if (protection != null
+					&& !canAccess
+					&& lwc.getConfiguration().getBoolean(
+							"optional.onlyProtectWhenOwnerIsOnline", false)) {
 				Player owner = protection.getBukkitOwner();
 
 				// If they aren't online, allow them in :P
@@ -703,8 +710,10 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			// optional.onlyProtectIfOwnerIsOffline
-			if (protection != null && !canAccess
-					&& lwc.getConfiguration().getBoolean("optional.onlyProtectWhenOwnerIsOffline", false)) {
+			if (protection != null
+					&& !canAccess
+					&& lwc.getConfiguration().getBoolean(
+							"optional.onlyProtectWhenOwnerIsOffline", false)) {
 				Player owner = protection.getBukkitOwner();
 
 				// If they aren't online, allow them in :P
@@ -714,7 +723,8 @@ public class LWCPlayerListener implements Listener {
 			}
 
 			if (result == Module.Result.DEFAULT) {
-				canAccess = lwc.enforceAccess(player, protection, block, canAccess);
+				canAccess = lwc.enforceAccess(player, protection, block,
+						canAccess);
 			}
 
 			if (!canAccess || result == Module.Result.CANCEL) {
@@ -724,7 +734,8 @@ public class LWCPlayerListener implements Listener {
 		} catch (Exception e) {
 			event.setCancelled(true);
 			event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
-			lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
+			lwc.sendLocale(player, "protection.internalerror", "id",
+					"PLAYER_INTERACT");
 			e.printStackTrace();
 		}
 	}
@@ -740,7 +751,7 @@ public class LWCPlayerListener implements Listener {
 		LWCPlayer.removePlayer(event.getPlayer());
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation" })
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		LWC lwc = LWC.getInstance();
@@ -768,7 +779,8 @@ public class LWCPlayerListener implements Listener {
 		} catch (AbstractMethodError e) {
 			lwc.log("Caught issue with Bukkit's Inventory.getHolder() method! This is occuring NEAR the player: "
 					+ player.getName());
-			lwc.log("This player is located at: " + player.getLocation().toString());
+			lwc.log("This player is located at: "
+					+ player.getLocation().toString());
 			lwc.log("This should be reported to the Bukkit developers.");
 			e.printStackTrace();
 			return;
@@ -784,10 +796,12 @@ public class LWCPlayerListener implements Listener {
 			}
 		} catch (Exception e) {
 			Location ploc = player.getLocation();
-			String holderName = holder != null ? holder.getClass().getSimpleName() : "Unknown Block";
-			lwc.log("Exception with getting the location of a " + holderName + " has occurred NEAR the player: "
-					+ player.getName() + " [" + ploc.getBlockX() + " " + ploc.getBlockY() + " " + ploc.getBlockZ()
-					+ "]");
+			String holderName = holder != null ? holder.getClass()
+					.getSimpleName() : "Unknown Block";
+			lwc.log("Exception with getting the location of a " + holderName
+					+ " has occurred NEAR the player: " + player.getName()
+					+ " [" + ploc.getBlockX() + " " + ploc.getBlockY() + " "
+					+ ploc.getBlockZ() + "]");
 			lwc.log("The exact location of the block is not possible to obtain. This is caused by a Minecraft or Bukkit exception normally.");
 			e.printStackTrace();
 			return;
@@ -817,7 +831,8 @@ public class LWCPlayerListener implements Listener {
 			// Item their cursor has
 			ItemStack cursor = event.getCursor();
 
-			if (item == null || item.getType() == null || item.getType() == Material.AIR) {
+			if (item == null || item.getType() == null
+					|| item.getType() == Material.AIR) {
 				return;
 			}
 
@@ -825,7 +840,8 @@ public class LWCPlayerListener implements Listener {
 			// click (no shift)
 			// this is for when players are INSERTing items (i.e. item in hand
 			// and left clicking)
-			if (player.getItemInHand() == null && (!event.isRightClick() && !event.isShiftClick())) {
+			if (player.getItemInHand() == null
+					&& (!event.isRightClick() && !event.isShiftClick())) {
 				return;
 			}
 
@@ -838,7 +854,8 @@ public class LWCPlayerListener implements Listener {
 				// not switching it
 				// As long as the item isn't a degradable item, we can
 				// explicitly allow it if they have the same durability
-				if (item.getDurability() == cursor.getDurability() && item.getAmount() == cursor.getAmount()
+				if (item.getDurability() == cursor.getDurability()
+						&& item.getAmount() == cursor.getAmount()
 						&& enchantmentsEqual) {
 					return;
 				}

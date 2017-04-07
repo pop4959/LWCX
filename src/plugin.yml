@@ -1,12 +1,12 @@
 name: LWC
 main: com.griefcraft.lwc.LWCPlugin
-version: 1.7.3
+version: 1.8.0
 author: Hidendra, Me_Goes_RAWR
 description: >
              Inventory protection & management utilizing SQLite or MySQL as its backend
              Other blocks can also be protected individually, if configured.
 load: startup
-softdepend: [Vault, SpigotUpdater]
+softdepend: [Vault]
 
 commands:
   lwc:

@@ -75,7 +75,7 @@ public class LWCEntityListener implements Listener {
 		entityCreatedByPlayer(block, player);
 	}
 
-    @EventHandler(ignoreCancelled = true)
+   @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent e) {
         ItemStack inHand = e.getItem();
         if (inHand != null && inHand.getType() == Material.ARMOR_STAND) {
@@ -96,7 +96,6 @@ public class LWCEntityListener implements Listener {
             }
         }
     }
-
     private void entityCreatedByPlayer(Entity block, Player player) {
         if (!LWC.ENABLED) {
             return;

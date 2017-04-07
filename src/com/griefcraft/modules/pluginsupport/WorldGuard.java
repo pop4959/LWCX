@@ -1,3 +1,4 @@
+package com.griefcraft.modules.pluginsupport;
 /*
  * Copyright 2011 Tyler Blair. All rights reserved.
  *
@@ -26,16 +27,14 @@
  * either expressed or implied, of anybody else.
  */
 
-package com.griefcraft.modules.pluginsupport;
 
-import com.griefcraft.bukkit.EntityBlock;
+
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCCommandEvent;
-import com.griefcraft.scripting.event.LWCProtectionRegisterEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.config.Configuration;
@@ -51,7 +50,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -323,62 +321,6 @@ public class WorldGuard extends JavaModule {
 		}
 	}
 
-	@Override
-	public void onEntityRegisterProtection(
-			LWCProtectionRegisterEntityEvent event) {
-		if (worldGuard == null) {
-			return;
-		}
-
-		if (!configuration.getBoolean("worldguard.enabled", false)) {
-			return;
-		}
-
-		LWC lwc = event.getLWC();
-		Player player = event.getPlayer();
-		Entity entity = event.getEntity();
-		Block block = EntityBlock.getEntityBlock(entity);
-		// Load the region manager for the world
-		RegionContainer globalRegionManager = worldGuard.getRegionContainer();
-		RegionManager regionManager = globalRegionManager
-				.get(entity.getWorld());
-
-		// Are we enforcing building?
-		if (configuration.getBoolean("worldguard.requireBuildRights", true)) {
-			if (!worldGuard.canBuild(player, block)) {
-				lwc.sendLocale(player, "lwc.worldguard.needbuildrights");
-				event.setCancelled(true);
-				return;
-			}
-		}
-
-		// Create a vector for the region
-		Vector vector = BukkitUtil.toVector(block);
-
-		// Load the regions the block encompasses
-		List<String> regions = regionManager.getApplicableRegionsIDs(vector);
-
-		// Are they not in a region, and it's blocked there?
-		if (regions.size() == 0) {
-			if (!configuration.getBoolean(
-					"worldguard.allowProtectionsOutsideRegions", true)) {
-				lwc.sendLocale(player, "lwc.worldguard.notallowed");
-				event.setCancelled(true);
-			}
-		} else {
-			// check each region
-			for (String region : regions) {
-				// Should we deny them?
-				// we don't need to explicitly call isRegionAllowed because
-				// isRegionBlacklisted checks that as well
-				if (isRegionBlacklisted(region)) {
-					lwc.sendLocale(player, "lwc.worldguard.blacklisted");
-					event.setCancelled(true);
-					break;
-				}
-			}
-		}
-	}
 
 	@Override
 	public void onRegisterProtection(LWCProtectionRegisterEvent event) {

@@ -34,9 +34,13 @@ import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
+import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.TownyWorld;
+import com.palmergames.bukkit.towny.object.WorldCoord;
+
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -53,7 +57,7 @@ public class Towny extends JavaModule {
     /**
      * The Towny plugin
      */
-    private com.palmergames.bukkit.towny.Towny towny;
+    private com.palmergames.bukkit.towny.Towny towny = null;
 
     /**
      * Load the module
@@ -105,11 +109,9 @@ public class Towny extends JavaModule {
                 continue;
             }
 
-            String townName = permission.getName();
-
             // Does the town exist?
             try {
-                Town town = towny.getTownyUniverse().getTown(townName);
+                Town town = WorldCoord.parseWorldCoord(event.getProtection().getBlock()).getTownBlock().getTown();
 
                 if (town == null) {
                     return;
@@ -119,17 +121,14 @@ public class Towny extends JavaModule {
                 if (!town.hasResident(player.getName())) {
                     // Uh-oh!
                     event.setAccess(Permission.Access.NONE);
+                } else if (town.getMayor().getName().equalsIgnoreCase(player.getName())) {
+                	event.setAccess(Permission.Access.ADMIN);
                 } else {
                     // They're in the town :-)
-                    event.setAccess(Permission.Access.PLAYER);
-                }
-
-                // If they're the major, let them admin the protection
-                if (town.getMayor().getName().equalsIgnoreCase(player.getName())) {
-                    event.setAccess(Permission.Access.ADMIN);
+                	event.setAccess(Permission.Access.PLAYER);
                 }
             } catch (Exception e) {
-
+            	System.out.println(e.getMessage());
             }
         }
     }
@@ -156,7 +155,7 @@ public class Towny extends JavaModule {
 
         try {
             try {
-                world = towny.getTownyUniverse().getWorld(block.getWorld().getName());
+				world = WorldCoord.parseWorldCoord(block).getTownyWorld();
             } catch (IncompatibleClassChangeError e) {
                 // Towny Advanced
                 try {
@@ -183,7 +182,12 @@ public class Towny extends JavaModule {
             return;
         }
 
+        // attempt to get the town block
+        @SuppressWarnings("unused")
+		TownBlock townBlock;
+
         try {
+            townBlock = world.getTownBlock(Coord.parseCoord(block));
         } catch (Exception e) {
             // No world, don't let them protect it!
             trigger(event);

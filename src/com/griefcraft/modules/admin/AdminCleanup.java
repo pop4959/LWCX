@@ -215,13 +215,12 @@ public class AdminCleanup extends JavaModule {
 
                     for (final Protection protection : protections) {
                         if (protection.getBlockId() == EntityBlock.ENTITY_BLOCK_ID) {
-							final int fakeId = protection.getX()
-									- EntityBlock.POSITION_OFFSET;
-
+							final int fakeId = EntityBlock.ENTITY_BLOCK_ID;
                             // checks if the entity exists
                             Future<Boolean> entityExists = scheduler.callSyncMethod(lwc.getPlugin(), new Callable<Boolean>() {
                                 public Boolean call() throws Exception {
-                                    for (Entity entity : protection.getBlock().getWorld().getEntities()) {
+                                	if(protection.getBukkitWorld() == null) return false;
+                                    for (Entity entity : protection.getBukkitWorld().getEntities()) {
                                         if (entity.getUniqueId().hashCode() == fakeId) {
                                             return true;
                                         }
@@ -242,7 +241,10 @@ public class AdminCleanup extends JavaModule {
                                         lwc.sendLocale(sender, "protection.admin.cleanup.removednoexist", "protection", protection.toString());
                                     }
                                 }
-                            } catch (InterruptedException e) { }
+                            } catch (InterruptedException e) { 
+                                System.out.println("Exception caught during cleanup: " + e.getMessage());
+                                
+                            }
                         } else {
                             Block block = protection.getBlock();
 
@@ -282,6 +284,7 @@ public class AdminCleanup extends JavaModule {
                 sender.sendMessage("Cleanup completed. Removed " + removed + " protections out of " + checked + " checked protections.");
             } catch (Exception e) { // database.connect() throws Exception
                 System.out.println("Exception caught during cleanup: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 

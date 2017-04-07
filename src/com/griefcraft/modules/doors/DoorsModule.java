@@ -114,8 +114,8 @@ public class DoorsModule extends JavaModule {
 
 		// Are we looking at the top half?
 		// If we are, we need to get the bottom half instead
-		if (DoorMatcher.PROTECTABLES_DOORS.contains(block.getType())
-				&& (block.getData() & 0x8) == 0x8) {
+		if (!WallMatcher.PROTECTABLES_TRAP_DOORS.contains(block.getType())
+				&& !DoorMatcher.FENCE_GATES.contains(block.getType()) && (block.getData() & 0x8) == 0x8) {
 			// Inspect the bottom half instead, fool!
 			block = block.getRelative(BlockFace.DOWN);
 		}
@@ -131,8 +131,7 @@ public class DoorsModule extends JavaModule {
 			doubleDoorBlock = getDoubleDoor(block);
 
 			if (doubleDoorBlock != null) {
-				Protection other = lwc.findProtection(doubleDoorBlock
-						.getLocation());
+				Protection other = lwc.findProtection(doubleDoorBlock.getLocation());
 				if (!lwc.canAccessProtection(player, other)) {
 					doubleDoorBlock = null; // don't open the other door :-)
 				}
@@ -140,18 +139,12 @@ public class DoorsModule extends JavaModule {
 		}
 
 		// toggle the other side of the door open
-		boolean opensWhenClicked = (DoorMatcher.WOODEN_DOORS.contains(block
-				.getType())
-				|| DoorMatcher.FENCE_GATES.contains(block.getType()) || block
-				.getType() == Material.TRAP_DOOR);
-		changeDoorStates(true, (opensWhenClicked ? null : block) /*
-																 * opens when
-																 * clicked
-																 */,
-				doubleDoorBlock);
+		boolean opensWhenClicked = (DoorMatcher.WOODEN_DOORS.contains(block.getType())
+				|| DoorMatcher.FENCE_GATES.contains(block.getType()) || block.getType() == Material.TRAP_DOOR);
+		changeDoorStates(true,
+				(opensWhenClicked ? null : block) , doubleDoorBlock);
 
-		if (action == Action.OPEN_AND_CLOSE
-				|| protection.hasFlag(Flag.Type.AUTOCLOSE)) {
+		if (action == Action.OPEN_AND_CLOSE || protection.hasFlag(Flag.Type.AUTOCLOSE)) {
 			// Abuse the fact that we still use final variables inside the task
 			// The double door block object is initially only assigned if we
 			// need
@@ -166,18 +159,16 @@ public class DoorsModule extends JavaModule {
 			// Create the task
 			// If we are set to close the door after a set period, let's create
 			// a sync task for it
-			lwc.getPlugin().getServer().getScheduler()
-					.scheduleSyncDelayedTask(lwc.getPlugin(), new Runnable() {
-						public void run() {
+			lwc.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(lwc.getPlugin(), new Runnable() {
+				public void run() {
 
-							// Essentially all we need to do is reset the door
-							// states
-							// But DO NOT open the door if it's closed !
-							changeDoorStates(false, finalBlock,
-									finalDoubleDoorBlock);
+					// Essentially all we need to do is reset the door
+					// states
+					// But DO NOT open the door if it's closed !
+					changeDoorStates(false, finalBlock, finalDoubleDoorBlock);
 
-						}
-					}, wait);
+				}
+			}, wait);
 		}
 
 	}
@@ -195,40 +186,35 @@ public class DoorsModule extends JavaModule {
 	 * @param doors
 	 *            Blocks given must be the bottom block of the door
 	 */
-	@SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation")
 	private void changeDoorStates(boolean allowDoorToOpen, Block... doors) {
-		for (Block door : doors) {
-			if (door == null) {
-				continue;
-			}
+        for (Block door : doors) {
+            if (door == null) {
+                continue;
+            }
 
-			// If we aren't allowing the door to open, check if it's already
-			// closed
-			if (!allowDoorToOpen && (door.getData() & 0x4) == 0) {
-				// The door is already closed and we don't want to open it
-				// the bit 0x4 is set when the door is open
-				continue;
-			}
+            // If we aren't allowing the door to open, check if it's already closed
+            if (!allowDoorToOpen && (door.getData() & 0x4) == 0) {
+                // The door is already closed and we don't want to open it
+                // the bit 0x4 is set when the door is open
+                continue;
+            }
 
-			// Get the top half of the door
-			Block topHalf = door.getRelative(BlockFace.UP);
+            // Get the top half of the door
+            Block topHalf = door.getRelative(BlockFace.UP);
 
-			// Now xor both data values with 0x4, the flag that states if the
-			// door is open
-			door.setData((byte) (door.getData() ^ 0x4));
+            // Now xor both data values with 0x4, the flag that states if the door is open
+            door.setData((byte) (door.getData() ^ 0x4));
 
-			// Play the door open/close sound
-			door.getWorld().playEffect(door.getLocation(), Effect.DOOR_TOGGLE,
-					0);
+            // Play the door open/close sound
+            door.getWorld().playEffect(door.getLocation(), Effect.DOOR_TOGGLE, 0);
 
-			// Only change the block above it if it is something we can open or
-			// close
-			if (isValid(topHalf.getType())) {
-				topHalf.setData((byte) (topHalf.getData() ^ 0x4));
-			}
-		}
-	}
-
+            // Only change the block above it if it is something we can open or close
+            if (isValid(topHalf.getType())) {
+                topHalf.setData((byte) (topHalf.getData() ^ 0x4));
+            }
+        }
+    }
 	/**
 	 * Get the double door for the given block
 	 *

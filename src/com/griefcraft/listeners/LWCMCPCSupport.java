@@ -1,7 +1,6 @@
 package com.griefcraft.listeners;
 
 import com.griefcraft.lwc.LWC;
-import com.griefcraft.model.LWCPlayer;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import org.bukkit.entity.Player;
@@ -15,7 +14,6 @@ public class LWCMCPCSupport extends JavaModule {
     /**
      * The shared multiplayer block id used by transport pipes
      */
-    public static final int TRANSPORT_PIPE_ID = 166;
 
     /**
      * The LWC object
@@ -54,13 +52,12 @@ public class LWCMCPCSupport extends JavaModule {
             return;
         }
 
-        Player bPlayer = event.getPlayer();
-        LWCPlayer player = lwc.wrapPlayer(bPlayer);
+        Player player = event.getPlayer();
         String lowerPlayerName = player.getName().toLowerCase();
 
         if (blacklistedPlayers.contains(lowerPlayerName)) {
             event.setCancelled(true);
-            player.sendLocale("protection.accessdenied");
+            lwc.sendLocale(player, "protection.accessdenied");
         }
     }
 

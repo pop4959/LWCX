@@ -979,6 +979,7 @@ public class Protection {
 		return cachedBlock;
 	}
 
+	
 	/**
 	 * @return
 	 */

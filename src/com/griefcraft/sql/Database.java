@@ -32,14 +32,10 @@ package com.griefcraft.sql;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.ModuleException;
 import com.griefcraft.util.Statistics;
-import com.griefcraft.util.Updater;
 import com.griefcraft.util.config.Configuration;
 
 import org.bukkit.Bukkit;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
@@ -216,13 +212,7 @@ public abstract class Database {
         }
 
         // load the database jar
-        ClassLoader classLoader;
-
-        if (currentType == Type.SQLite) {
-            classLoader = new URLClassLoader(new URL[]{new URL("jar:file:" + new File(Updater.DEST_LIBRARY_FOLDER + currentType.getDriver()).getPath() + "!/")});
-        } else {
-            classLoader = Bukkit.getServer().getClass().getClassLoader();
-        }
+        ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
 
         // What class should we try to load?
         String className = "";

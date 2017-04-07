@@ -36,7 +36,6 @@ import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCEntityInteractEvent;
 import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
-import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
@@ -107,9 +106,6 @@ public interface Module {
      */
     public void onProtectionInteract(LWCProtectionInteractEvent event);
     
-    
-    public void onProtectionInteractEntity(LWCProtectionInteractEntityEvent event);
-
     /**
      * Called when an unprotected block is interacted with
      *
