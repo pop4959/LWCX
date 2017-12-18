@@ -60,8 +60,7 @@ public class AdminCleanup extends JavaModule {
      */
     private static int BATCH_SIZE = 250;
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onCommand(LWCCommandEvent event) {
         if (event.isCancelled()) {
             return;
@@ -92,8 +91,7 @@ public class AdminCleanup extends JavaModule {
         lwc.sendLocale(sender, "protection.admin.cleanup.start", "count", lwc.getPhysicalDatabase().getProtectionCount());
 
         // do the work in a separate thread so we don't fully lock the server
-        // new Thread(new Admin_Cleanup_Thread(lwc, sender)).start();
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(lwc.getPlugin(), new Admin_Cleanup_Thread(lwc, sender, silent));
+         new Thread(new Admin_Cleanup_Thread(lwc, sender, silent)).start();
     }
 
     /**

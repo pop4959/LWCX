@@ -39,10 +39,8 @@ import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.util.Colors;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -61,7 +59,7 @@ public class LWCEntityListener implements Listener {
 	 * The plugin instance
 	 */
 	private LWCPlugin plugin;
-	
+
 	private UUID placedArmorStandPlayer;
 
 	public LWCEntityListener(LWCPlugin plugin) {
@@ -75,134 +73,123 @@ public class LWCEntityListener implements Listener {
 		entityCreatedByPlayer(block, player);
 	}
 
-   @EventHandler(ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent e) {
-        ItemStack inHand = e.getItem();
-        if (inHand != null && inHand.getType() == Material.ARMOR_STAND) {
-            placedArmorStandPlayer = e.getPlayer().getUniqueId();
-        }
-    }
+	@EventHandler(ignoreCancelled = true)
+	public void onPlayerInteract(PlayerInteractEvent e) {
+		ItemStack inHand = e.getItem();
+		if (inHand != null) {
+			placedArmorStandPlayer = e.getPlayer().getUniqueId();
+		}
+	}
 
-    @EventHandler(ignoreCancelled = true)
-    public void onCreateSpawn(CreatureSpawnEvent e) {
-        if (placedArmorStandPlayer != null) {
-            Player player = plugin.getServer().getPlayer(placedArmorStandPlayer);
-            Entity block = e.getEntity();
-            placedArmorStandPlayer = null;
-            if (player != null && block.getType() == EntityType.ARMOR_STAND) {
-                if (player.getWorld().equals(block.getWorld()) && player.getLocation().distanceSquared(block.getLocation()) <= 25) {
-                    entityCreatedByPlayer(block, player);
-                }
-            }
-        }
-    }
-    private void entityCreatedByPlayer(Entity block, Player player) {
-        if (!LWC.ENABLED) {
-            return;
-        }
+	@EventHandler(ignoreCancelled = true)
+	public void onCreateSpawn(CreatureSpawnEvent e) {
+		if (placedArmorStandPlayer != null) {
+			Player player = plugin.getServer().getPlayer(placedArmorStandPlayer);
+			Entity block = e.getEntity();
+			placedArmorStandPlayer = null;
+			if (player != null) {
+				if (player.getWorld().equals(block.getWorld())
+						&& player.getLocation().distanceSquared(block.getLocation()) <= 25) {
+					entityCreatedByPlayer(block, player);
+				}
+			}
+		}
+	}
 
-        LWC lwc = plugin.getLWC();
+	private void entityCreatedByPlayer(Entity block, Player player) {
+		if (!LWC.ENABLED) {
+			return;
+		}
 
-        int A = 50000 + block.getUniqueId().hashCode();
+		LWC lwc = plugin.getLWC();
 
-        // Update the cache if a protection is matched here
-        Protection current = lwc.findProtection(block.getLocation());
-        if (current != null) {
-            if (!current.isBlockInWorld()) {
-                // Corrupted protection
-                lwc.log("Removing corrupted protection: " + current);
-                current.remove();
-            } else {
-                if (current.getProtectionFinder() != null) {
-                    current.getProtectionFinder().fullMatchBlocks();
-                    lwc.getProtectionCache().addProtection(current);
-                }
+		int A = 50000 + block.getUniqueId().hashCode();
 
-                return;
-            }
-        }
+		// Update the cache if a protection is matched here
+		Protection current = lwc.findProtection(block.getLocation());
+		if (current != null) {
+			if (!current.isBlockInWorld()) {
+				// Corrupted protection
+				lwc.log("Removing corrupted protection: " + current);
+				current.remove();
+			} else {
+				if (current.getProtectionFinder() != null) {
+					current.getProtectionFinder().fullMatchBlocks();
+					lwc.getProtectionCache().addProtection(current);
+				}
 
-        if (!lwc.isProtectable(block.getType())) {
-            return;
-        }
+				return;
+			}
+		}
 
-        String autoRegisterType = lwc.resolveProtectionConfiguration(
-                block.getType(), "autoRegister");
+		if (!lwc.isProtectable(block.getType())) {
+			return;
+		}
 
-        // is it auto protectable?
-        if (!autoRegisterType.equalsIgnoreCase("private")
-                && !autoRegisterType.equalsIgnoreCase("public")) {
-            return;
-        }
+		String autoRegisterType = lwc.resolveProtectionConfiguration(block.getType(), "autoRegister");
 
-        if (!lwc.hasPermission(player, "lwc.create." + autoRegisterType,
-                "lwc.create", "lwc.protect")) {
-            return;
-        }
+		// is it auto protectable?
+		if (!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public")) {
+			return;
+		}
 
-        // Parse the type
-        Protection.Type type;
+		if (!lwc.hasPermission(player, "lwc.create." + autoRegisterType, "lwc.create", "lwc.protect")) {
+			return;
+		}
 
-        try {
-            type = Protection.Type.valueOf(autoRegisterType.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            // No auto protect type found
-            return;
-        }
+		// Parse the type
+		Protection.Type type;
 
-        // Is it okay?
-        if (type == null) {
-            player.sendMessage(Colors.Red + "LWC_INVALID_CONFIG_autoRegister");
-            return;
-        }
+		try {
+			type = Protection.Type.valueOf(autoRegisterType.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			// No auto protect type found
+			return;
+		}
 
-        try {
-            LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(
-                    player, EntityBlock.getEntityBlock(block));
-            lwc.getModuleLoader().dispatchEvent(evt);
+		// Is it okay?
+		if (type == null) {
+			player.sendMessage(Colors.Red + "LWC_INVALID_CONFIG_autoRegister");
+			return;
+		}
 
-            // something cancelled registration
-            if (evt.isCancelled()) {
-                return;
-            }
+		try {
+			LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(player, EntityBlock.getEntityBlock(block));
+			lwc.getModuleLoader().dispatchEvent(evt);
 
-            // All good!
-            Protection protection = lwc.getPhysicalDatabase()
-                    .registerProtection(EntityBlock.ENTITY_BLOCK_ID, type,
-                            block.getWorld().getName(),
-                            player.getUniqueId().toString(), "", A, A, A);
+			// something cancelled registration
+			if (evt.isCancelled()) {
+				return;
+			}
 
-            if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(
-                    EntityBlock.getEntityBlock(block), "quiet"))) {
-                lwc.sendLocale(player, "protection.onplace.create.finalize",
-                        "type", lwc.getPlugin().getMessageParser()
-                                .parseMessage(autoRegisterType.toLowerCase()),
-                        "block", LWC.materialToString(EntityBlock
-                                .getEntityBlock(block)));
-            }
+			// All good!
+			Protection protection = lwc.getPhysicalDatabase().registerProtection(EntityBlock.ENTITY_BLOCK_ID, type,
+					block.getWorld().getName(), player.getUniqueId().toString(), "", A, A, A);
 
-            if (protection != null) {
-                lwc.getModuleLoader().dispatchEvent(
-                        new LWCProtectionRegistrationPostEvent(protection));
-            }
-        } catch (Exception e) {
-            lwc.sendLocale(player, "protection.internalerror", "id",
-                    "PLAYER_INTERACT");
-            e.printStackTrace();
-        }
-    }
+			if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(EntityBlock.getEntityBlock(block), "quiet"))) {
+				lwc.sendLocale(player, "protection.onplace.create.finalize", "type",
+						lwc.getPlugin().getMessageParser().parseMessage(autoRegisterType.toLowerCase()), "block",
+						LWC.materialToString(EntityBlock.getEntityBlock(block)));
+			}
+
+			if (protection != null) {
+				lwc.getModuleLoader().dispatchEvent(new LWCProtectionRegistrationPostEvent(protection));
+			}
+		} catch (Exception e) {
+			lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
+			e.printStackTrace();
+		}
+	}
 
 	@EventHandler
 	public void entityInteract(EntityInteractEvent event) {
 		Block block = event.getBlock();
 
-		Protection protection = plugin.getLWC().findProtection(
-				block.getLocation());
+		Protection protection = plugin.getLWC().findProtection(block.getLocation());
 
 		if (protection != null) {
-			boolean allowEntityInteract = Boolean.parseBoolean(plugin.getLWC()
-					.resolveProtectionConfiguration(block,
-							"allowEntityInteract"));
+			boolean allowEntityInteract = Boolean
+					.parseBoolean(plugin.getLWC().resolveProtectionConfiguration(block, "allowEntityInteract"));
 
 			if (!allowEntityInteract) {
 				event.setCancelled(true);
@@ -215,14 +202,12 @@ public class LWCEntityListener implements Listener {
 		Block block = event.getBlock();
 
 		// See if there is a protection there
-		Protection protection = plugin.getLWC().findProtection(
-				block.getLocation());
+		Protection protection = plugin.getLWC().findProtection(block.getLocation());
 
 		if (protection != null) {
 			// protections.allowEntityBreakDoor
-			boolean allowEntityBreakDoor = Boolean.parseBoolean(plugin.getLWC()
-					.resolveProtectionConfiguration(block,
-							"allowEntityBreakDoor"));
+			boolean allowEntityBreakDoor = Boolean
+					.parseBoolean(plugin.getLWC().resolveProtectionConfiguration(block, "allowEntityBreakDoor"));
 
 			if (!allowEntityBreakDoor) {
 				event.setCancelled(true);
@@ -239,16 +224,13 @@ public class LWCEntityListener implements Listener {
 		LWC lwc = LWC.getInstance();
 
 		for (Block block : event.blockList()) {
-			Protection protection = plugin.getLWC().findProtection(
-					block.getLocation());
+			Protection protection = plugin.getLWC().findProtection(block.getLocation());
 
 			if (protection != null) {
-				boolean ignoreExplosions = Boolean.parseBoolean(lwc
-						.resolveProtectionConfiguration(protection.getBlock(),
-								"ignoreExplosions"));
+				boolean ignoreExplosions = Boolean
+						.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "ignoreExplosions"));
 
-				if (!(ignoreExplosions || protection
-						.hasFlag(Flag.Type.ALLOWEXPLOSIONS))) {
+				if (!(ignoreExplosions || protection.hasFlag(Flag.Type.ALLOWEXPLOSIONS))) {
 					event.setCancelled(true);
 				}
 			}

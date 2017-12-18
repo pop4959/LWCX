@@ -36,7 +36,9 @@ import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCEntityInteractEvent;
 import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
+import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
+import com.griefcraft.scripting.event.LWCProtectionRegisterEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.scripting.event.LWCProtectionRemovePostEvent;
@@ -127,6 +129,8 @@ public interface Module {
      */
     public void onRegisterProtection(LWCProtectionRegisterEvent event);
 
+    
+    public void onEntityInteractProtection(LWCProtectionInteractEntityEvent event);
     /**
      * Called after a protection is registered
      *
@@ -149,5 +153,7 @@ public interface Module {
     public void onSendLocale(LWCSendLocaleEvent event);
 
 	public void onMagnetPull(LWCMagnetPullEvent event);
+	
+	public void onRegisterEntity(LWCProtectionRegisterEntityEvent event);
 
 }

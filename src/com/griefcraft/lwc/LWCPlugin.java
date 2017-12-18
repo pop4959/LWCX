@@ -34,6 +34,7 @@ import com.griefcraft.listeners.LWCPlayerListener;
 import com.griefcraft.listeners.LWCServerListener;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.sql.Database;
+import com.griefcraft.util.Metrics;
 import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.Updater;
 import com.griefcraft.util.locale.LWCResourceBundle;
@@ -50,10 +51,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
 import java.util.jar.JarFile;
 
 public class LWCPlugin extends JavaPlugin {
@@ -74,8 +78,7 @@ public class LWCPlugin extends JavaPlugin {
 	private Updater updater;
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String commandLabel, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		String commandName = command.getName().toLowerCase();
 		String argString = StringUtil.join(args, 0);
 		boolean isPlayer = (sender instanceof Player); // check if they're a
@@ -94,8 +97,7 @@ public class LWCPlugin extends JavaPlugin {
 			} else if (commandName.equals("cpassword")) {
 				aliasCommand = "create";
 				aliasArgs = ("password " + argString).split(" ");
-			} else if (commandName.equals("cprivate")
-					|| commandName.equals("lock")) {
+			} else if (commandName.equals("cprivate") || commandName.equals("lock")) {
 				aliasCommand = "create";
 				aliasArgs = ("private " + argString).split(" ");
 			} else if (commandName.equals("cdonation")) {
@@ -103,26 +105,21 @@ public class LWCPlugin extends JavaPlugin {
 				aliasArgs = ("donation " + argString).split(" ");
 			} else if (commandName.equals("cmodify")) {
 				aliasCommand = "modify";
-				aliasArgs = argString.isEmpty() ? new String[0] : argString
-						.split(" ");
+				aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
 			} else if (commandName.equals("cinfo")) {
 				aliasCommand = "info";
 			} else if (commandName.equals("cunlock")) {
 				aliasCommand = "unlock";
-				aliasArgs = argString.isEmpty() ? new String[0] : argString
-						.split(" ");
-			} else if (commandName.equals("cremove")
-					|| commandName.equals("unlock")) {
+				aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
+			} else if (commandName.equals("cremove") || commandName.equals("unlock")) {
 				aliasCommand = "remove";
 				aliasArgs = new String[] { "protection" };
 			} else if (commandName.equals("climits")) {
 				aliasCommand = "limits";
-				aliasArgs = argString.isEmpty() ? new String[0] : argString
-						.split(" ");
+				aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
 			} else if (commandName.equals("cadmin")) {
 				aliasCommand = "admin";
-				aliasArgs = argString.isEmpty() ? new String[0] : argString
-						.split(" ");
+				aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
 			} else if (commandName.equals("cremoveall")) {
 				aliasCommand = "remove";
 				aliasArgs = new String[] { "allprotections" };
@@ -141,8 +138,7 @@ public class LWCPlugin extends JavaPlugin {
 			} else if (commandName.equals("cautoclose")) {
 				aliasCommand = "flag";
 				aliasArgs = ("autoclose " + argString).split(" ");
-			} else if (commandName.equals("callowexplosions")
-					|| commandName.equals("ctnt")) {
+			} else if (commandName.equals("callowexplosions") || commandName.equals("ctnt")) {
 				aliasCommand = "flag";
 				aliasArgs = ("allowexplosions " + argString).split(" ");
 			} else if (commandName.equals("chopper")) {
@@ -163,8 +159,7 @@ public class LWCPlugin extends JavaPlugin {
 			}
 
 			if (aliasCommand != null) {
-				lwc.getModuleLoader().dispatchEvent(
-						new LWCCommandEvent(sender, aliasCommand, aliasArgs));
+				lwc.getModuleLoader().dispatchEvent(new LWCCommandEvent(sender, aliasCommand, aliasArgs));
 				return true;
 			}
 		}
@@ -175,9 +170,8 @@ public class LWCPlugin extends JavaPlugin {
 		}
 
 		// /// Dispatch command to modules
-		LWCCommandEvent evt = new LWCCommandEvent(sender,
-				args[0].toLowerCase(), args.length > 1 ? StringUtil.join(args,
-						1).split(" ") : new String[0]);
+		LWCCommandEvent evt = new LWCCommandEvent(sender, args[0].toLowerCase(),
+				args.length > 1 ? StringUtil.join(args, 1).split(" ") : new String[0]);
 		lwc.getModuleLoader().dispatchEvent(evt);
 
 		if (evt.isCancelled()) {
@@ -207,6 +201,47 @@ public class LWCPlugin extends JavaPlugin {
 	public void onEnable() {
 		preload();
 		lwc = new LWC(this);
+
+		Metrics m = new Metrics(this);
+
+		m.addCustomChart(new Metrics.AdvancedPie("protected_blocks", new Callable<Map<String, Integer>>() {
+			@Override
+			public Map<String, Integer> call() throws Exception {
+				Map<String, Integer> map = new HashMap<String, Integer>();
+				if (lwc.getPhysicalDatabase().getProtectionCount() >= 50000) {
+					map.put("Over 50k", 1);
+				} else if (lwc.getPhysicalDatabase().getProtectionCount() >= 25000) {
+					map.put("Over 25k", 1);
+				} else if (lwc.getPhysicalDatabase().getProtectionCount() >= 10000) {
+					map.put("Over 10k", 1);
+				} else if (lwc.getPhysicalDatabase().getProtectionCount() >= 5000) {
+					map.put("Over 5k", 1);
+				} else if (lwc.getPhysicalDatabase().getProtectionCount() >= 1000) {
+					map.put("Over 1k", 1);
+				} else {
+					map.put("Under 1k", 1);
+				}
+				return map;
+			}
+		}));
+
+		m.addCustomChart(new Metrics.SimplePie("used_language", new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return getCurrentLocale();
+			}
+		}));
+
+		m.addCustomChart(new Metrics.SimplePie("database_used", new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				String database = lwc.getConfiguration().getString("database.adapter");
+				if (database.equalsIgnoreCase("mysql"))
+					return "MySQL";
+				
+				return "SQLite";
+			}
+		}));
 
 		LWCInfo.setVersion(getDescription().getVersion());
 		LWC.ENABLED = true;
@@ -249,14 +284,12 @@ public class LWCPlugin extends JavaPlugin {
 			// Open the LWC jar file
 
 			// Attempt to load the default locale
-			defaultBundle = new PropertyResourceBundle(new InputStreamReader(
-					file.getInputStream(file
-							.getJarEntry("lang/lwc_en.properties")), "UTF-8"));
+			defaultBundle = new PropertyResourceBundle(
+					new InputStreamReader(file.getInputStream(file.getJarEntry("lang/lwc_en.properties")), "UTF-8"));
 			locale = new LWCResourceBundle(defaultBundle);
 
 			try {
-				optionalBundle = ResourceBundle.getBundle("lwc", new Locale(
-						localization), new LocaleClassLoader(),
+				optionalBundle = ResourceBundle.getBundle("lwc", new Locale(localization), new LocaleClassLoader(),
 						new UTF8Control());
 			} catch (MissingResourceException e) {
 			}
@@ -268,10 +301,8 @@ public class LWCPlugin extends JavaPlugin {
 			// and now check if a bundled locale the same as the server's locale
 			// exists
 			try {
-				optionalBundle = new PropertyResourceBundle(
-						new InputStreamReader(file.getInputStream(file
-								.getJarEntry("lang/lwc_" + localization
-										+ ".properties")), "UTF-8"));
+				optionalBundle = new PropertyResourceBundle(new InputStreamReader(
+						file.getInputStream(file.getJarEntry("lang/lwc_" + localization + ".properties")), "UTF-8"));
 			} catch (MissingResourceException e) {
 			} catch (NullPointerException e) {
 				// file wasn't found :p - that's ok

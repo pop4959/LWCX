@@ -55,7 +55,6 @@ import com.griefcraft.modules.admin.AdminFind;
 import com.griefcraft.modules.admin.AdminFlush;
 import com.griefcraft.modules.admin.AdminForceOwner;
 import com.griefcraft.modules.admin.AdminLocale;
-import com.griefcraft.modules.admin.AdminOwnerAll;
 import com.griefcraft.modules.admin.AdminPurge;
 import com.griefcraft.modules.admin.AdminPurgeBanned;
 import com.griefcraft.modules.admin.AdminQuery;
@@ -590,6 +589,7 @@ public class LWC {
 	 * @param ignore
 	 * @return
 	 */
+	@SuppressWarnings("unlikely-arg-type")
 	public List<Protection> findAdjacentProtectionsOnAllSides(Block block,
 			Block... ignore) {
 		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH,
@@ -1000,7 +1000,7 @@ public class LWC {
 	 */
 	public static String materialToString(Block block) {
 		if (block instanceof EntityBlock) {
-			return ((EntityBlock) block).getEntity().getClass().getSimpleName(); // TODO
+			return ((EntityBlock) block).getEntity().getType().toString(); // TODO
 		}
 		return materialToString(block.getType());
 	}
@@ -1408,6 +1408,7 @@ public class LWC {
 
 		String materialName = normalizeMaterialName(material);
 
+		
 		// add the name & the block id
 		names.add(materialName);
 		names.add(state.getTypeId() + "");
@@ -1422,6 +1423,10 @@ public class LWC {
 		names.add("*");
 		names.add(state.getTypeId() + ":*");
 
+        if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
+        	names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
+        }
+		
 		String value = configuration.getString("protections." + node);
 
 		for (String name : names) {
@@ -1595,6 +1600,10 @@ public class LWC {
 		names.add("*");
 		names.add(material.getId() + ":*");
 
+        if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
+        	names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
+        }
+		
 		String value = configuration.getString("protections." + node);
 
 		for (String name : names) {
@@ -1759,7 +1768,6 @@ public class LWC {
 		registerModule(new AdminRebuild());
 		registerModule(new AdminBackup());
 		registerModule(new AdminView());
-		registerModule(new AdminOwnerAll());
 
 		// /lwc setup
 		registerModule(new BaseSetupModule());

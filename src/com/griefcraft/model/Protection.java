@@ -951,13 +951,19 @@ public class Protection {
 	 */
 	public Player getBukkitOwner() {
 		UUID uuid = UUIDRegistry.getUUID(owner);
-		if (uuid == null) {
+		
+		if(uuid == null){
+			try{
 			uuid = UUID.fromString(owner);
+			}catch(Exception e){
+			uuid = null;
+			}
 		}
-
+		
 		if (uuid == null) {
 			return Bukkit.getServer().getPlayer(owner);
 		}
+		
 		return Bukkit.getServer().getPlayer(uuid);
 	}
 
@@ -978,7 +984,6 @@ public class Protection {
 		cachedBlock = world.getBlockAt(x, y, z);
 		return cachedBlock;
 	}
-
 	
 	/**
 	 * @return

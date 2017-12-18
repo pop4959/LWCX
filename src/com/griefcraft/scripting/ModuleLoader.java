@@ -38,7 +38,9 @@ import com.griefcraft.scripting.event.LWCEntityInteractEvent;
 import com.griefcraft.scripting.event.LWCEvent;
 import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
+import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
+import com.griefcraft.scripting.event.LWCProtectionRegisterEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.scripting.event.LWCProtectionRemovePostEvent;
@@ -147,7 +149,9 @@ public class ModuleLoader {
 		 */
 		RELOAD_EVENT,
 
-		MAGNET_PULL(1);
+		MAGNET_PULL(1),
+		
+		REGISTER_PROTECTION_ENTITY;
 
 		Event() {
 		}
@@ -282,6 +286,10 @@ public class ModuleLoader {
 					event = Event.RELOAD_EVENT;
 				} else if (parameter == LWCMagnetPullEvent.class) {
 					event = Event.MAGNET_PULL;
+				} else if (parameter == LWCProtectionInteractEntityEvent.class){
+					event = Event.INTERACT_PROTECTION_ENTITY;
+				} else if (parameter == LWCProtectionRegisterEntityEvent.class){
+					event = Event.REGISTER_PROTECTION_ENTITY;
 				}
 
 				// ok!
@@ -376,6 +384,10 @@ public class ModuleLoader {
 					module.onReload((LWCReloadEvent) event);
 				} else if (type == Event.MAGNET_PULL) {
 					module.onMagnetPull((LWCMagnetPullEvent) event);
+				} else if (type == Event.INTERACT_PROTECTION_ENTITY){
+					module.onEntityInteractProtection((LWCProtectionInteractEntityEvent)event);
+				} else if (type == Event.REGISTER_PROTECTION_ENTITY){
+					module.onRegisterEntity((LWCProtectionRegisterEntityEvent)event);
 				}
 			}
 		} catch (Throwable throwable) {

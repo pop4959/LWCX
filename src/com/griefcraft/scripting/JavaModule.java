@@ -36,7 +36,9 @@ import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCEntityInteractEvent;
 import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
+import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
+import com.griefcraft.scripting.event.LWCProtectionRegisterEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.scripting.event.LWCProtectionRemovePostEvent;
@@ -121,4 +123,13 @@ public class JavaModule implements Module {
 	public void onMagnetPull(LWCMagnetPullEvent event) {
 		
 	}
+
+	public void onEntityInteractProtection(LWCProtectionInteractEntityEvent event) {
+
+	}
+
+	public void onRegisterEntity(LWCProtectionRegisterEntityEvent event) {
+		
+	}
+	
 }

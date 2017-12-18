@@ -80,9 +80,8 @@ public class LWCBlockListener implements Listener {
 		loadAndProcessConfig();
 	}
 
-	public static final BlockFace[] POSSIBLE_FACES = { BlockFace.NORTH,
-			BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP,
-			BlockFace.DOWN };
+	public static final BlockFace[] POSSIBLE_FACES = { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
+			BlockFace.UP, BlockFace.DOWN };
 
 	@EventHandler
 	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
@@ -129,9 +128,8 @@ public class LWCBlockListener implements Listener {
 			// we don't have the block id of the block before it
 			// so we have to do some raw lookups (these are usually cache hits
 			// however, at least!)
-			Protection protection = lwc.getPhysicalDatabase().loadProtection(
-					block.getWorld().getName(), block.getX(), block.getY(),
-					block.getZ());
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(block.getWorld().getName(), block.getX(),
+					block.getY(), block.getZ());
 
 			if (protection != null) {
 				event.setCancelled(true);
@@ -178,8 +176,7 @@ public class LWCBlockListener implements Listener {
 		Block block = event.getBlock();
 
 		boolean ignoreBlockDestruction = Boolean
-				.parseBoolean(lwc.resolveProtectionConfiguration(block,
-						"ignoreBlockDestruction"));
+				.parseBoolean(lwc.resolveProtectionConfiguration(block, "ignoreBlockDestruction"));
 
 		if (ignoreBlockDestruction) {
 			return;
@@ -208,9 +205,7 @@ public class LWCBlockListener implements Listener {
 		// move
 		// the protection to the chest that is not destroyed, if it is not that
 		// one already.
-		if (protection.isOwner(player)
-				&& DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block
-						.getType())) {
+		if (protection.isOwner(player) && DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
 			Block doubleChest = lwc.findAdjacentDoubleChest(block);
 
 			if (doubleChest != null) {
@@ -228,8 +223,7 @@ public class LWCBlockListener implements Listener {
 				protection.radiusRemoveCache();
 
 				if (protection.getProtectionFinder() != null) {
-					protection.getProtectionFinder().removeBlock(
-							block.getState());
+					protection.getProtectionFinder().removeBlock(block.getState());
 				}
 
 				lwc.getProtectionCache().addProtection(protection);
@@ -239,10 +233,8 @@ public class LWCBlockListener implements Listener {
 		}
 
 		try {
-			LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(
-					player, protection,
-					LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION,
-					canAccess, canAdmin);
+			LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
+					LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION, canAccess, canAdmin);
 			lwc.getModuleLoader().dispatchEvent(evt);
 
 			if (evt.isCancelled() || !canAccess) {
@@ -250,8 +242,7 @@ public class LWCBlockListener implements Listener {
 			}
 		} catch (Exception e) {
 			event.setCancelled(true);
-			lwc.sendLocale(player, "protection.internalerror", "id",
-					"BLOCK_BREAK");
+			lwc.sendLocale(player, "protection.internalerror", "id", "BLOCK_BREAK");
 			e.printStackTrace();
 		}
 	}
@@ -273,7 +264,6 @@ public class LWCBlockListener implements Listener {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockPistonRetract(BlockPistonRetractEvent event) {
 		if ((!LWC.ENABLED) || (event.isCancelled())) {
@@ -290,21 +280,17 @@ public class LWCBlockListener implements Listener {
 		if (direction == null) {
 			return;
 		}
-		Block moved = piston.getRelative(direction, 2);
+		Block moved = piston.getRelative(direction);
 		for (BlockFace bf : POSSIBLE_FACES) {
-			if (moved.getTypeId() == 165) {
-				Block slime = moved.getRelative(direction);
-				Block sign = slime.getRelative(bf);
-				if ((lwc.findProtection(sign) != null)) {
-					event.setCancelled(true);
-					return;
-				}
+			Block slime = moved.getRelative(direction);
+			Block sign = slime.getRelative(bf, 1);
+			if ((lwc.findProtection(sign) != null)) {
+				event.setCancelled(true);
+				break;
 			}
 		}
-		if ((moved.getType() == Material.WOODEN_DOOR)
-				|| (moved.getType() == Material.IRON_DOOR_BLOCK)) {
-			Block below = moved.getRelative(BlockFace.DOWN).getRelative(
-					direction.getOppositeFace());
+		if ((moved.getType() == Material.WOODEN_DOOR) || (moved.getType() == Material.IRON_DOOR_BLOCK)) {
+			Block below = moved.getRelative(BlockFace.DOWN).getRelative(direction.getOppositeFace());
 			if (lwc.findProtection(below.getLocation()) != null) {
 				event.setCancelled(true);
 				return;
@@ -313,9 +299,16 @@ public class LWCBlockListener implements Listener {
 		if (lwc.findProtection(moved.getLocation()) != null) {
 			event.setCancelled(true);
 		}
+		for (Block meh : event.getBlocks()) {
+			Protection protection = (lwc.findProtection(meh.getLocation()));
+
+			if (protection != null) {
+				event.setCancelled(true);
+				break;
+			}
+		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockPistonExtend(BlockPistonExtendEvent event) {
 		if (!LWC.ENABLED || event.isCancelled()) {
@@ -346,27 +339,27 @@ public class LWCBlockListener implements Listener {
 			return;
 		}
 
-		Block moved = piston.getRelative(direction, 2);
+		Block moved = piston.getRelative(direction);
 		for (BlockFace bf : POSSIBLE_FACES) {
-			if (moved.getTypeId() == 165) {
+			if (moved.getType() == Material.SLIME_BLOCK) {
 				Block slime = moved.getRelative(direction);
-				Block sign = slime.getRelative(bf);
+				Block sign = slime.getRelative(bf, 1);
 				if ((lwc.findProtection(sign) != null)) {
 					event.setCancelled(true);
-					return;
+					break;
 				}
 			}
 		}
-		
-		// Check the affected blocks
-		for (int i = 0; i < event.getLength() + 2; i++) {
-			Block block = piston.getRelative(direction, i);
-			Protection protection = lwc.findProtection(block.getLocation());
-
-			// We don't want that!
-			if (block.getType() == Material.AIR) {
-				break;
+		if ((moved.getType() == Material.WOODEN_DOOR) || (moved.getType() == Material.IRON_DOOR_BLOCK)) {
+			Block below = moved.getRelative(BlockFace.DOWN).getRelative(direction.getOppositeFace());
+			if (lwc.findProtection(below.getLocation()) != null) {
+				event.setCancelled(true);
+				return;
 			}
+		}
+		// Check the affected blocks
+		for (Block meh : event.getBlocks()) {
+			Protection protection = (lwc.findProtection(meh.getLocation()));
 
 			if (protection != null) {
 				event.setCancelled(true);
@@ -395,19 +388,16 @@ public class LWCBlockListener implements Listener {
 		}
 
 		// check if the block is blacklisted
-		boolean blockIsBlacklisted = blacklistedBlocks.contains(block
-				.getTypeId())
-				|| blacklistedBlocks.contains(hashCode(block.getTypeId(),
-						block.getData()));
+		boolean blockIsBlacklisted = blacklistedBlocks.contains(block.getTypeId())
+				|| blacklistedBlocks.contains(hashCode(block.getTypeId(), block.getData()));
 
 		if (blockIsBlacklisted) {
 			// it's blacklisted, check for a protected chest
-			for (Protection protection : lwc
-					.findAdjacentProtectionsOnAllSides(block)) {
+			for (Protection protection : lwc.findAdjacentProtectionsOnAllSides(block)) {
 				if (protection != null) {
 					if (!lwc.canAccessProtection(player, protection)
-							|| (protection.getType() == Protection.Type.DONATION && !lwc
-									.canAdminProtection(player, protection))) {
+							|| (protection.getType() == Protection.Type.DONATION
+									&& !lwc.canAdminProtection(player, protection))) {
 						// they can't access the protection ..
 						event.setCancelled(true);
 						return;
@@ -417,15 +407,14 @@ public class LWCBlockListener implements Listener {
 		}
 	}
 
-	
 	/**
 	 * Used for water flowing and removing the protection
 	 */
-	
+
 	/**
 	 * Used for auto registering placed protections
 	 */
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onBlockPlaceMonitor(BlockPlaceEvent event) {
 		if (!LWC.ENABLED) {
 			return;
@@ -456,21 +445,23 @@ public class LWCBlockListener implements Listener {
 		if (!lwc.isProtectable(block)) {
 			return;
 		}
-		
-		String autoRegisterType = lwc.resolveProtectionConfiguration(block,
-				"autoRegister");
+
+		String autoRegisterType = lwc.resolveProtectionConfiguration(block, "autoRegister");
 
 		// is it auto protectable?
-		if (!autoRegisterType.equalsIgnoreCase("private")
-				&& !autoRegisterType.equalsIgnoreCase("public")) {
+		if (!lwc.hasPermission(player, "lwc.autoprotect") && !autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public")) {
 			return;
 		}
 
-		if (!lwc.hasPermission(player, "lwc.create." + autoRegisterType,
-				"lwc.create", "lwc.protect")) {
+		if (!lwc.hasPermission(player, "lwc.create." + autoRegisterType, "lwc.create", "lwc.protect")) {
 			return;
 		}
-
+		
+		// set the auto register type if they have the perm node
+		if (lwc.hasPermission(player, "lwc.autoprotect")) {
+			autoRegisterType = "private";
+		}
+		
 		// Parse the type
 		Protection.Type type;
 
@@ -490,8 +481,7 @@ public class LWCBlockListener implements Listener {
 		// If it's a chest, make sure they aren't placing it beside an already
 		// registered chest
 		if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
-			BlockFace[] faces = new BlockFace[] { BlockFace.NORTH,
-					BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
+			BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
 
 			for (BlockFace blockFace : faces) {
 				Block face = block.getRelative(blockFace);
@@ -507,8 +497,7 @@ public class LWCBlockListener implements Listener {
 		}
 
 		try {
-			LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(
-					player, block);
+			LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(player, block);
 			lwc.getModuleLoader().dispatchEvent(evt);
 
 			// something cancelled registration
@@ -518,27 +507,21 @@ public class LWCBlockListener implements Listener {
 
 			// All good!
 			@SuppressWarnings("deprecation")
-			Protection protection = lwc.getPhysicalDatabase()
-					.registerProtection(block.getTypeId(), type,
-							block.getWorld().getName(),
-							player.getUniqueId().toString(), "", block.getX(),
-							block.getY(), block.getZ());
+			Protection protection = lwc.getPhysicalDatabase().registerProtection(block.getTypeId(), type,
+					block.getWorld().getName(), player.getUniqueId().toString(), "", block.getX(), block.getY(),
+					block.getZ());
 
-			if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(block,
-					"quiet"))) {
-				lwc.sendLocale(player, "protection.onplace.create.finalize",
-						"type", lwc.getPlugin().getMessageParser()
-								.parseMessage(autoRegisterType.toLowerCase()),
-						"block", LWC.materialToString(block));
+			if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(block, "quiet"))) {
+				lwc.sendLocale(player, "protection.onplace.create.finalize", "type",
+						lwc.getPlugin().getMessageParser().parseMessage(autoRegisterType.toLowerCase()), "block",
+						LWC.materialToString(block));
 			}
 
 			if (protection != null) {
-				lwc.getModuleLoader().dispatchEvent(
-						new LWCProtectionRegistrationPostEvent(protection));
+				lwc.getModuleLoader().dispatchEvent(new LWCProtectionRegistrationPostEvent(protection));
 			}
 		} catch (Exception e) {
-			lwc.sendLocale(player, "protection.internalerror", "id",
-					"PLAYER_INTERACT");
+			lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
 			e.printStackTrace();
 		}
 	}
@@ -547,11 +530,8 @@ public class LWCBlockListener implements Listener {
 	 * Load and process the configuration
 	 */
 	public void loadAndProcessConfig() {
-		List<String> ids = LWC
-				.getInstance()
-				.getConfiguration()
-				.getStringList("optional.blacklistedBlocks",
-						new ArrayList<String>());
+		List<String> ids = LWC.getInstance().getConfiguration().getStringList("optional.blacklistedBlocks",
+				new ArrayList<String>());
 
 		for (String sId : ids) {
 			String[] idParts = sId.trim().split(":");

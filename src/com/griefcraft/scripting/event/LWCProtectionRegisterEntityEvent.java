@@ -40,7 +40,7 @@ public class LWCProtectionRegisterEntityEvent extends LWCPlayerEvent implements 
     private boolean cancelled;
 
     public LWCProtectionRegisterEntityEvent(Player player, Entity entity) {
-        super(ModuleLoader.Event.REGISTER_PROTECTION, player);
+        super(ModuleLoader.Event.REGISTER_PROTECTION_ENTITY, player);
         this.entity = entity;
     }
 

@@ -28,7 +28,8 @@
 
 package com.griefcraft.sql;
 
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.ModuleException;
 import com.griefcraft.util.Statistics;
@@ -41,408 +42,432 @@ import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Database {
 
-    public enum Type {
-        MySQL("mysql.jar"), //
-        SQLite("sqlite.jar"), //
-        NONE("nil"); //
+	public enum Type {
+		MySQL("mysql.jar"), //
+		SQLite("sqlite.jar"), //
+		NONE("nil"); //
 
-        private String driver;
+		private String driver;
 
-        Type(String driver) {
-            this.driver = driver;
-        }
+		Type(String driver) {
+			this.driver = driver;
+		}
 
-        public String getDriver() {
-            return driver;
-        }
+		public String getDriver() {
+			return driver;
+		}
 
-        /**
-         * Match the given string to a database type
-         *
-         * @param str
-         * @return
-         */
-        public static Type matchType(String str) {
-            for (Type type : values()) {
-                if (type.toString().equalsIgnoreCase(str)) {
-                    return type;
-                }
-            }
+		/**
+		 * Match the given string to a database type
+		 *
+		 * @param str
+		 * @return
+		 */
+		public static Type matchType(String str) {
+			for (Type type : values()) {
+				if (type.toString().equalsIgnoreCase(str)) {
+					return type;
+				}
+			}
 
-            return null;
-        }
+			return null;
+		}
 
-    }
+	}
 
-    /**
-     * The database engine being used for this connection
-     */
-    public Type currentType;
+	private Cache<String, PreparedStatement> statementCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(5, TimeUnit.MINUTES)
+			.removalListener(notif -> closeQuietly((PreparedStatement) notif.getValue())).build();
 
-    /**
-     * Store cached prepared statements.
-     * <p/>
-     * Since SQLite JDBC doesn't cache them.. we do it ourselves :S
-     */
-    private Map<String, PreparedStatement> statementCache = new HashMap<String, PreparedStatement>();
+	private void closeQuietly(PreparedStatement closeable) {
+		try {
+			if (closeable != null) {
+				setAutoCommit(false);
+				connection.commit();
+			}
+		} catch (Exception ignored) {}
+	}
 
-    /**
-     * The connection to the database
-     */
-    protected Connection connection = null;
+	/**
+	 * The database engine being used for this connection
+	 */
+	public Type currentType;
 
-    /**
-     * The default database engine being used. This is set via config
-     *
-     * @default SQLite
-     */
-    public static Type DefaultType = Type.NONE;
+	/**
+	 * Store cached prepared statements.
+	 * <p/>
+	 * Since SQLite JDBC doesn't cache them.. we do it ourselves :S
+	 */
+	// private Map<String, PreparedStatement> statementCache = new HashMap<String,
+	// PreparedStatement>();
 
-    /**
-     * If we are connected to sqlite
-     */
-    private boolean connected = false;
+	/**
+	 * The connection to the database
+	 */
+	protected Connection connection = null;
 
-    /**
-     * If the database has been loaded
-     */
-    protected boolean loaded = false;
+	/**
+	 * The default database engine being used. This is set via config
+	 *
+	 * @default SQLite
+	 */
+	public static Type DefaultType = Type.NONE;
 
-    /**
-     * The database prefix (only if we're using MySQL.)
-     */
-    protected String prefix = "";
+	/**
+	 * If we are connected to sqlite
+	 */
+	private boolean connected = false;
 
-    /**
-     * If the high level statement cache should be used. If this is false, already cached statements are ignored
-     */
-    private boolean useStatementCache = true;
+	/**
+	 * If the database has been loaded
+	 */
+	protected boolean loaded = false;
 
-    public Database() {
-        currentType = DefaultType;
+	/**
+	 * The database prefix (only if we're using MySQL.)
+	 */
+	protected String prefix = "";
 
-        prefix = LWC.getInstance().getConfiguration().getString("database.prefix", "");
-        if (prefix == null) {
-            prefix = "";
-        }
-    }
+	/**
+	 * If the high level statement cache should be used. If this is false, already
+	 * cached statements are ignored
+	 */
+	private boolean useStatementCache = true;
 
-    public Database(Type currentType) {
-        this();
-        this.currentType = currentType;
-    }
+	public Database() {
+		currentType = DefaultType;
 
-    /**
-     * Ping the database to keep the connection alive
-     */
-    public void pingDatabase() {
-        Statement stmt = null;
-        try {
-            stmt = connection.createStatement();
-            stmt.executeQuery("SELECT 1;");
-            stmt.close();
-        } catch (SQLException e) {
-            log("Keepalive packet (ping) failed!");
-            e.printStackTrace();
-        } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) { }
-        }
-    }
+		prefix = LWC.getInstance().getConfiguration().getString("database.prefix", "");
+		if (prefix == null) {
+			prefix = "";
+		}
+	}
 
-    /**
-     * Set the value of auto commit
-     *
-     * @param autoCommit
-     * @return TRUE if successful, FALSE if exception was thrown
-     */
-    public boolean setAutoCommit(boolean autoCommit) {
-        try {
-            // Commit the database if we are setting auto commit back to true
-            if (autoCommit) {
-                connection.commit();
-            }
+	public Database(Type currentType) {
+		this();
+		this.currentType = currentType;
+	}
 
-            connection.setAutoCommit(autoCommit);
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+	/**
+	 * Ping the database to keep the connection alive
+	 */
+	public void pingDatabase() {
+		Statement stmt = null;
+		try {
+			stmt = connection.createStatement();
+			stmt.executeQuery("SELECT 1;");
+			stmt.close();
+		} catch (SQLException e) {
+			log("Keepalive packet (ping) failed!");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+			}
+		}
+	}
 
-    /**
-     * @return the table prefix
-     */
-    public String getPrefix() {
-        return prefix;
-    }
+	/**
+	 * Set the value of auto commit
+	 *
+	 * @param autoCommit
+	 * @return TRUE if successful, FALSE if exception was thrown
+	 */
+	public boolean setAutoCommit(boolean autoCommit) {
+		try {
+			// Commit the database if we are setting auto commit back to true
+			if (autoCommit) {
+				connection.commit();
+			}
 
-    /**
-     * Print an exception to stdout
-     *
-     * @param exception
-     */
-    protected void printException(Exception exception) {
-        throw new ModuleException(exception);
-    }
+			connection.setAutoCommit(autoCommit);
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
-    /**
-     * Connect to MySQL
-     *
-     * @return if the connection was succesful
-     */
-    public boolean connect() throws Exception {
-        if (connection != null) {
-            return true;
-        }
+	/**
+	 * @return the table prefix
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
 
-        if (currentType == null || currentType == Type.NONE) {
-            log("Invalid database engine");
-            return false;
-        }
+	/**
+	 * Print an exception to stdout
+	 *
+	 * @param exception
+	 */
+	protected void printException(Exception exception) {
+		throw new ModuleException(exception);
+	}
 
-        // load the database jar
-        ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
+	/**
+	 * Connect to MySQL
+	 *
+	 * @return if the connection was succesful
+	 */
+	public boolean connect() throws Exception {
+		if (connection != null) {
+			return true;
+		}
 
-        // What class should we try to load?
-        String className = "";
-        if (currentType == Type.MySQL) {
-            className = "com.mysql.jdbc.Driver";
-        } else {
-            className = "org.sqlite.JDBC";
-        }
+		if (currentType == null || currentType == Type.NONE) {
+			log("Invalid database engine");
+			return false;
+		}
 
-        // Load the driver class
-        Driver driver = (Driver) classLoader.loadClass(className).newInstance();
+		// load the database jar
+		ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
 
-        // Create the properties to pass to the driver
-        Properties properties = new Properties();
+		// What class should we try to load?
+		String className = "";
+		if (currentType == Type.MySQL) {
+			className = "com.mysql.jdbc.Driver";
+		} else {
+			className = "org.sqlite.JDBC";
+		}
 
-        // if we're using mysql, append the database info
-        if (currentType == Type.MySQL) {
-            LWC lwc = LWC.getInstance();
-            properties.put("autoReconnect", "true");
-            properties.put("user", lwc.getConfiguration().getString("database.username"));
-            properties.put("password", lwc.getConfiguration().getString("database.password"));
-        }
+		// Load the driver class
+		Driver driver = (Driver) classLoader.loadClass(className).newInstance();
 
-        // Connect to the database
-        try {
-            connection = driver.connect("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(), properties);
-            connected = true;
-            return true;
-        } catch (SQLException e) {
-            log("Failed to connect to " + currentType + ": " + e.getErrorCode() + " - " + e.getMessage());
+		// Create the properties to pass to the driver
+		Properties properties = new Properties();
 
-            if (e.getCause() != null) {
-                log("Connection failure cause: " + e.getCause().getMessage());
-            }
-            return false;
-        }
-    }
+		// if we're using mysql, append the database info
+		if (currentType == Type.MySQL) {
+			LWC lwc = LWC.getInstance();
+			properties.put("autoReconnect", "true");
+			properties.put("user", lwc.getConfiguration().getString("database.username"));
+			properties.put("password", lwc.getConfiguration().getString("database.password"));
+		}
 
-    public void dispose() {
-        statementCache.clear();
+		// Connect to the database
+		try {
+			connection = driver.connect("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
+					properties);
+			connected = true;
+			return true;
+		} catch (SQLException e) {
+			log("Failed to connect to " + currentType + ": " + e.getErrorCode() + " - " + e.getMessage());
 
-        try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+			if (e.getCause() != null) {
+				log("Connection failure cause: " + e.getCause().getMessage());
+			}
+			return false;
+		}
+	}
 
-        connection = null;
-    }
+	public void dispose() {
+		statementCache.invalidateAll();
+		;
 
-    /**
-     * @return the connection to the database
-     */
-    public Connection getConnection() {
-        return connection;
-    }
+		try {
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-    /**
-     * @return the path where the database file should be saved
-     */
-    public String getDatabasePath() {
-        Configuration lwcConfiguration = LWC.getInstance().getConfiguration();
+		connection = null;
+	}
 
-        if (currentType == Type.MySQL) {
-            return "//" + lwcConfiguration.getString("database.host") + "/" + lwcConfiguration.getString("database.database");
-        }
+	/**
+	 * @return the connection to the database
+	 */
+	public Connection getConnection() {
+		return connection;
+	}
 
-        return lwcConfiguration.getString("database.path");
-    }
+	/**
+	 * @return the path where the database file should be saved
+	 */
+	public String getDatabasePath() {
+		Configuration lwcConfiguration = LWC.getInstance().getConfiguration();
 
-    /**
-     * @return the database engine type
-     */
-    public Type getType() {
-        return currentType;
-    }
+		if (currentType == Type.MySQL) {
+			return "//" + lwcConfiguration.getString("database.host") + "/"
+					+ lwcConfiguration.getString("database.database");
+		}
 
-    /**
-     * Load the database
-     */
-    public abstract void load();
+		return lwcConfiguration.getString("database.path");
+	}
 
-    /**
-     * Log a string to stdout
-     *
-     * @param str The string to log
-     */
-    public void log(String str) {
-        LWC.getInstance().log(str);
-    }
+	/**
+	 * @return the database engine type
+	 */
+	public Type getType() {
+		return currentType;
+	}
 
-    /**
-     * Prepare a statement unless it's already cached (and if so, just return it)
-     *
-     * @param sql
-     * @return
-     */
-    public PreparedStatement prepare(String sql) {
-        return prepare(sql, false);
-    }
+	/**
+	 * Load the database
+	 */
+	public abstract void load();
 
-    /**
-     * Prepare a statement unless it's already cached (and if so, just return it)
-     *
-     * @param sql
-     * @param returnGeneratedKeys
-     * @return
-     */
-    public PreparedStatement prepare(String sql, boolean returnGeneratedKeys) {
-        if (connection == null) {
-            return null;
-        }
+	/**
+	 * Log a string to stdout
+	 *
+	 * @param str
+	 *            The string to log
+	 */
+	public void log(String str) {
+		LWC.getInstance().log(str);
+	}
 
-        if (useStatementCache && statementCache.containsKey(sql)) {
-            Statistics.addQuery();
-            return statementCache.get(sql);
-        }
+	/**
+	 * Prepare a statement unless it's already cached (and if so, just return it)
+	 *
+	 * @param sql
+	 * @return
+	 */
+	public PreparedStatement prepare(String sql) {
+		return prepare(sql, false);
+	}
 
-        try {
-            PreparedStatement preparedStatement;
+	/**
+	 * Prepare a statement unless it's already cached (and if so, just return it)
+	 *
+	 * @param sql
+	 * @param returnGeneratedKeys
+	 * @return
+	 */
+	public PreparedStatement prepare(String sql, boolean returnGeneratedKeys) {
+		if (connection == null) {
+			return null;
+		}
 
-            if (returnGeneratedKeys) {
-                preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            } else {
-                preparedStatement = connection.prepareStatement(sql);
-            }
+		try {
+			if (useStatementCache) {
+				Statistics.addQuery();
+				return statementCache.get(sql, () -> prepareInternal(sql, returnGeneratedKeys));
+			}
 
-            statementCache.put(sql, preparedStatement);
-            Statistics.addQuery();
+			return prepareInternal(sql, returnGeneratedKeys);
+		} catch (Throwable ex) {
+			throw new RuntimeException("Failed to prepare statement " + sql, ex);
+		}
+	}
 
-            return preparedStatement;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+	private PreparedStatement prepareInternal(String sql, boolean returnGeneratedKeys) throws SQLException {
+		PreparedStatement preparedStatement;
 
-        return null;
-    }
+		if (returnGeneratedKeys) {
+			preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		} else {
+			preparedStatement = connection.prepareStatement(sql);
+		}
 
-    /**
-     * Add a column to a table
-     *
-     * @param table
-     * @param column
-     */
-    public boolean addColumn(String table, String column, String type) {
-        return executeUpdateNoException("ALTER TABLE " + table + " ADD " + column + " " + type);
-    }
+		if (useStatementCache) {
+			statementCache.put(sql, preparedStatement);
+		}
 
-    /**
-     * Add a column to a table
-     *
-     * @param table
-     * @param column
-     */
-    public boolean dropColumn(String table, String column) {
-        return executeUpdateNoException("ALTER TABLE " + table + " DROP COLUMN " + column);
-    }
+		Statistics.addQuery();
+		return preparedStatement;
+	}
 
-    /**
-     * Rename a table
-     *
-     * @param table
-     * @param newName
-     */
-    public boolean renameTable(String table, String newName) {
-        return executeUpdateNoException("ALTER TABLE " + table + " RENAME TO " + newName);
-    }
+	/**
+	 * Add a column to a table
+	 *
+	 * @param table
+	 * @param column
+	 */
+	public boolean addColumn(String table, String column, String type) {
+		return executeUpdateNoException("ALTER TABLE " + table + " ADD " + column + " " + type);
+	}
 
-    /**
-     * Drop a table
-     *
-     * @param table
-     */
-    public boolean dropTable(String table) {
-        return executeUpdateNoException("DROP TABLE " + table);
-    }
+	/**
+	 * Add a column to a table
+	 *
+	 * @param table
+	 * @param column
+	 */
+	public boolean dropColumn(String table, String column) {
+		return executeUpdateNoException("ALTER TABLE " + table + " DROP COLUMN " + column);
+	}
 
-    /**
-     * Execute an update, ignoring any exceptions
-     *
-     * @param query
-     * @return true if an exception was thrown
-     */
-    public boolean executeUpdateNoException(String query) {
-        Statement statement = null;
-        boolean exception = false;
+	/**
+	 * Rename a table
+	 *
+	 * @param table
+	 * @param newName
+	 */
+	public boolean renameTable(String table, String newName) {
+		return executeUpdateNoException("ALTER TABLE " + table + " RENAME TO " + newName);
+	}
 
-        try {
-            statement = connection.createStatement();
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            exception = true;
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
+	/**
+	 * Drop a table
+	 *
+	 * @param table
+	 */
+	public boolean dropTable(String table) {
+		return executeUpdateNoException("DROP TABLE " + table);
+	}
 
-        return exception;
-    }
+	/**
+	 * Execute an update, ignoring any exceptions
+	 *
+	 * @param query
+	 * @return true if an exception was thrown
+	 */
+	public boolean executeUpdateNoException(String query) {
+		Statement statement = null;
+		boolean exception = false;
 
-    /**
-     * @return true if connected to the database
-     */
-    public boolean isConnected() {
-        return connected;
-    }
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate(query);
+		} catch (SQLException e) {
+			exception = true;
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+			}
+		}
 
-    /**
-     * Returns true if the high level statement cache should be used. If this is false, already cached statements are ignored
-     *
-     * @return
-     */
-    public boolean useStatementCache() {
-        return useStatementCache;
-    }
+		return exception;
+	}
 
-    /**
-     * Set if the high level statement cache should be used.
-     *
-     * @param useStatementCache
-     * @return
-     */
-    public void setUseStatementCache(boolean useStatementCache) {
-        this.useStatementCache = useStatementCache;
-    }
+	/**
+	 * @return true if connected to the database
+	 */
+	public boolean isConnected() {
+		return connected;
+	}
+
+	/**
+	 * Returns true if the high level statement cache should be used. If this is
+	 * false, already cached statements are ignored
+	 *
+	 * @return
+	 */
+	public boolean useStatementCache() {
+		return useStatementCache;
+	}
+
+	/**
+	 * Set if the high level statement cache should be used.
+	 *
+	 * @param useStatementCache
+	 * @return
+	 */
+	public void setUseStatementCache(boolean useStatementCache) {
+		this.useStatementCache = useStatementCache;
+	}
 
 }

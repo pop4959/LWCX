@@ -32,157 +32,158 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.sql.Database;
 
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class DatabaseThread implements Runnable {
 
-    /**
-     * The LWC object
-     */
-    private final LWC lwc;
+	/**
+	 * The LWC object
+	 */
+	private final LWC lwc;
 
-    /**
-     * The protections waiting to be updated in the database
-     */
-    private final Queue<Protection> updateQueue = new ConcurrentLinkedQueue<Protection>();
+	/**
+	 * The protections waiting to be updated in the database
+	 */
+	private final Queue<Protection> updateQueue = new ConcurrentLinkedQueue<Protection>();
 
-    /**
-     * The thread we are running in
-     */
-    private final Thread thread = new Thread(this);
+	/**
+	 * The thread we are running in
+	 */
+	private final Thread thread = new Thread(this);
 
-    /**
-     * If the database thread is active and running
-     */
-    private boolean running = false;
+	/**
+	 * If the database thread is active and running
+	 */
+	private boolean running = false;
 
-    /**
-     * The last time the queue was flushed to the database
-     */
-    private long lastFlush = -1L;
+	/**
+	 * The last time the queue was flushed to the database
+	 */
+	private long lastFlush = -1L;
 
-    /**
-     * The time the next keepalive packet will be sent at
-     */
-    private long nextKeepalivePacket = 0;
+	/**
+	 * The time the next keepalive packet will be sent at
+	 */
+	private long nextKeepalivePacket = 0;
 
-    /**
-     * Interval between pinging the database
-     */
-    private int pingInterval = 0;
+	/**
+	 * Interval between pinging the database
+	 */
+	private int pingInterval = 0;
 
-    public DatabaseThread(LWC lwc) {
-        this.lwc = lwc;
-        this.running = true;
-        this.lastFlush = System.currentTimeMillis();
-        this.thread.start();
-        pingInterval = lwc.getConfiguration().getInt("database.ping_interval", 300);
-    }
+	public DatabaseThread(LWC lwc) {
+		this.lwc = lwc;
+		this.running = true;
+		this.lastFlush = System.currentTimeMillis();
+		this.thread.start();
+		pingInterval = lwc.getConfiguration().getInt("database.ping_interval", 300);
+	}
 
-    /**
-     * Adds a protection to the update queue so that it is flushed to the database asap
-     *
-     * @param protection
-     */
-    public void addProtection(Protection protection) {
-        updateQueue.offer(protection);
-    }
+	/**
+	 * Adds a protection to the update queue so that it is flushed to the database
+	 * asap
+	 *
+	 * @param protection
+	 */
+	public void addProtection(Protection protection) {
+		updateQueue.offer(protection);
+	}
 
-    /**
-     * Removes a protection from the update queue
-     *
-     * @param protection
-     */
-    public void removeProtection(Protection protection) {
-        updateQueue.remove(protection);
-    }
+	/**
+	 * Removes a protection from the update queue
+	 *
+	 * @param protection
+	 */
+	public void removeProtection(Protection protection) {
+		updateQueue.remove(protection);
+	}
 
-    /**
-     * Gets the current amount of protections queued to be updated
-     *
-     * @return the amount of protections queued to be updated
-     */
-    public int size() {
-        return updateQueue.size();
-    }
+	/**
+	 * Gets the current amount of protections queued to be updated
+	 *
+	 * @return the amount of protections queued to be updated
+	 */
+	public int size() {
+		return updateQueue.size();
+	}
 
-    /**
-     * Stop the database thread
-     */
-    public void stop() {
-        // stop running and interrupt the thread
-        running = false;
-        if (!thread.isInterrupted()) {
-            thread.interrupt();
-        }
+	/**
+	 * Stop the database thread
+	 */
+	public void stop() {
+		// stop running and interrupt the thread
+		running = false;
+		if (!thread.isInterrupted()) {
+			thread.interrupt();
+		}
 
-        // Flush the rest of the entries
-        flushDatabase();
-    }
+		// Flush the rest of the entries
+		flushDatabase();
+	}
 
-    /**
-     * Recommend a flush as soon as possible. This does not guarantee the database will be flushed immediately.
-     */
-    public void flush() {
-        lastFlush = System.currentTimeMillis() - 9999999L;
-    }
+	/**
+	 * Recommend a flush as soon as possible. This does not guarantee the database
+	 * will be flushed immediately.
+	 */
+	public void flush() {
+		lastFlush = System.currentTimeMillis() - 9999999L;
+	}
 
-    /**
-     * Flush the protections to the database
-     */
-    private void flushDatabase() {
-        if (!updateQueue.isEmpty()) {
-            Database database = lwc.getPhysicalDatabase();
-            database.setAutoCommit(false);
-            database.setUseStatementCache(false);
+	/**
+	 * Flush the protections to the database
+	 */
+	private void flushDatabase() {
+		if (!updateQueue.isEmpty()) {
+			Database database = lwc.getPhysicalDatabase();
+			// Begin iterating through the queue
+			Iterator<Protection> iter = updateQueue.iterator();
+			while (iter.hasNext()) {
+				Protection protection = iter.next();
+				iter.remove();
+				protection.saveNow();
+			}
+			try {
+				database.getConnection().commit();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 
-            // Begin iterating through the queue
-            Iterator<Protection> iter = updateQueue.iterator();
-            while (iter.hasNext()) {
-                Protection protection = iter.next();
-                iter.remove();
-                protection.saveNow();
-            }
+		// update the time we last flushed at
+		lastFlush = System.currentTimeMillis();
 
-            // Commit the changes to the database
-            database.setUseStatementCache(true);
-            database.setAutoCommit(true);
-        }
+		if (System.currentTimeMillis() > nextKeepalivePacket && lwc.getPhysicalDatabase().isConnected()) {
+			nextKeepalivePacket = System.currentTimeMillis() + (pingInterval * 1000);
+			lwc.getPhysicalDatabase().pingDatabase();
+		}
+	}
 
-        // update the time we last flushed at
-        lastFlush = System.currentTimeMillis();
+	public void run() {
+		while (running) {
+			// how many seconds between each flush
+			int interval = lwc.getConfiguration().getInt("core.flushInterval", 5);
 
-        if (System.currentTimeMillis() > nextKeepalivePacket && lwc.getPhysicalDatabase().isConnected()) {
-            nextKeepalivePacket = System.currentTimeMillis() + (pingInterval * 1000);
-            lwc.getPhysicalDatabase().pingDatabase();
-        }
-    }
+			if (interval > 120) {
+				interval = 120;
+			}
 
-    public void run() {
-        while (running) {
-            // how many seconds between each flush
-            int interval = lwc.getConfiguration().getInt("core.flushInterval", 5);
+			long currentTime = System.currentTimeMillis();
+			long intervalMilliseconds = interval * 1000L;
 
-            if (interval > 120) {
-                interval = 120;
-            }
+			// compare the current time to the last flush
+			if (currentTime - lastFlush > intervalMilliseconds) {
+				flushDatabase();
+			}
 
-            long currentTime = System.currentTimeMillis();
-            long intervalMilliseconds = interval * 1000L;
-
-            // compare the current time to the last flush
-            if (currentTime - lastFlush > intervalMilliseconds) {
-                flushDatabase();
-            }
-
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException e) {
-                running = false;
-            }
-        }
-    }
+			try {
+				Thread.sleep(1000L);
+			} catch (InterruptedException e) {
+				running = false;
+			}
+		}
+	}
 
 }
