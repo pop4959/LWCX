@@ -141,7 +141,7 @@ public class Protection {
 	/**
 	 * The block id
 	 */
-	private int blockId;
+	//private int blockId;
 
 	/**
 	 * The password for the chest
@@ -156,7 +156,11 @@ public class Protection {
 	/**
 	 * Unique id (in sql)
 	 */
-	private int id;
+    private int id;
+	
+	
+	
+	private String blockName;
 
 	/**
 	 * The owner of the chest
@@ -234,7 +238,7 @@ public class Protection {
 
 		Protection other = (Protection) object;
 
-		return id == other.id && x == other.x && y == other.y && z == other.z
+		return blockName == other.blockName && x == other.x && y == other.y && z == other.z
 				&& (owner != null && owner.equals(other.owner))
 				&& (world != null && world.equals(other.world));
 	}
@@ -616,24 +620,23 @@ public class Protection {
 	 *
 	 * @return
 	 */
-	@SuppressWarnings("deprecation")
 	public boolean isBlockInWorld() {
-		int storedBlockId = getBlockId();
+		String storedBlockId = getBlockName();
 		Block block = getBlock();
 
 		switch (block.getType()) {
 		case FURNACE:
 		case BURNING_FURNACE:
-			return storedBlockId == Material.FURNACE.getId()
-					|| storedBlockId == Material.BURNING_FURNACE.getId();
+			return storedBlockId == Material.FURNACE.name()
+					|| storedBlockId == Material.BURNING_FURNACE.name();
 
 		case STEP:
 		case DOUBLE_STEP:
-			return storedBlockId == Material.STEP.getId()
-					|| storedBlockId == Material.DOUBLE_STEP.getId();
+			return storedBlockId == Material.STEP.name()
+					|| storedBlockId == Material.DOUBLE_STEP.name();
 
 		default:
-			return storedBlockId == block.getTypeId();
+			return storedBlockId == block.getType().name();
 		}
 	}
 
@@ -641,10 +644,10 @@ public class Protection {
 		return data;
 	}
 
-	public int getBlockId() {
-		return blockId;
+	public String getBlockName() {
+		return blockName;
 	}
-
+	
 	public String getPassword() {
 		return password;
 	}
@@ -685,15 +688,15 @@ public class Protection {
 		return lastAccessed;
 	}
 
-	public void setBlockId(int blockId) {
+	public void setBlockName(String blockName) {
 		if (removed) {
 			return;
 		}
 
-		this.blockId = blockId;
+		this.blockName = blockName;
 		this.modified = true;
 	}
-
+	
 	public void setPassword(String password) {
 		if (removed) {
 			return;
@@ -880,37 +883,45 @@ public class Protection {
 		}
 	}
 
-	/**
-	 * Queue the protection to be saved
-	 */
-	public void save() {
-		if (removed) {
-			return;
-		}
+    /**
+     * Queue the protection to be saved
+     */
+    public void save() {
+        if (removed) {
+            return;
+        }
 
-		LWC.getInstance().getDatabaseThread().addProtection(this);
-	}
+        saveNow(); // LWC.getInstance().getDatabaseThread().addProtection(this);
+    }
+    
+    public void saveLastAccessed() {
+        if (removed) {
+            return;
+        }
+        
+        LWC.getInstance().getPhysicalDatabase().saveProtectionLastAccessed(this);
+    }
 
-	/**
-	 * Force a protection update to the live database
-	 */
-	public void saveNow() {
-		if (removed) {
-			return;
-		}
+    /**
+     * Force a protection update to the live database
+     */
+    public void saveNow() {
+        if (removed) {
+            return;
+        }
 
-		// encode JSON objects
-		encodeRights();
-		encodeFlags();
+        // encode JSON objects
+        encodeRights();
+        encodeFlags();
 
-		// only save the protection if it was modified
-		if (modified && !removing) {
-			LWC.getInstance().getPhysicalDatabase().saveProtection(this);
-		}
+        // only save the protection if it was modified
+        if (modified && !removing) {
+            LWC.getInstance().getPhysicalDatabase().saveProtection(this);
+        }
 
-		// check the cache for history updates
-		checkAndSaveHistory();
-	}
+        // check the cache for history updates
+        checkAndSaveHistory();
+    }
 
 	/**
 	 * Saves any of the history items for the Protection that have been modified
@@ -1017,7 +1028,7 @@ public class Protection {
 						+ Colors.Green
 						+ "Id=%d Owner=%s Location=[%s %d,%d,%d] Created=%s Flags=%s LastAccessed=%s",
 						typeToString(),
-						(blockId > 0 ? (LWC.materialToString(blockId))
+						(blockName != null ? (blockName)
 								: "Not yet cached"), id, owner, world, x, y, z,
 						creation, flagStr, lastAccessed);
 	}

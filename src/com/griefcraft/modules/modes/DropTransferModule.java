@@ -148,8 +148,7 @@ public class DropTransferModule extends JavaModule {
         item.remove();
     }
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onProtectionInteract(LWCProtectionInteractEvent event) {
         LWC lwc = event.getLWC();
         Protection protection = event.getProtection();
@@ -166,7 +165,7 @@ public class DropTransferModule extends JavaModule {
         if (!canAccess) {
             lwc.sendLocale(player, "protection.interact.dropxfer.noaccess");
         } else {
-            if (protection.getBlockId() != Material.CHEST.getId()) {
+            if (protection.getBlockName() != Material.CHEST.name()) {
                 lwc.sendLocale(player, "protection.interact.dropxfer.notchest");
                 player.removeAllActions();
                 event.setResult(Result.CANCEL);

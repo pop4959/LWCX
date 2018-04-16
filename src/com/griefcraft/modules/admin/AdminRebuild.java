@@ -85,8 +85,7 @@ public class AdminRebuild extends JavaModule {
      *
      * @param sender
      */
-    @SuppressWarnings("deprecation")
-	private void rebuildDatabase(CommandSender sender) {
+    private void rebuildDatabase(CommandSender sender) {
         LWC lwc = LWC.getInstance();
         sender.sendMessage("Now rebuilding the LWC database.");
 
@@ -147,7 +146,7 @@ public class AdminRebuild extends JavaModule {
             }
 
             // Create the protection!
-            Protection protection = lwc.getPhysicalDatabase().registerProtection(block.getTypeId(), Protection.Type.PRIVATE,
+            Protection protection = lwc.getPhysicalDatabase().registerProtection(block.getType().name(), Protection.Type.PRIVATE,
                     block.getWorld().getName(), creator, "", x, y, z);
 
             if (protection == null) {

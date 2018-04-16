@@ -93,10 +93,10 @@ public class FreeModule extends JavaModule {
 				}
 
 				protection.remove();
-				try {
+				if(protection.getBlock() instanceof EntityBlock) {
 					lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
-							((EntityBlock) protection.getBlock()).getEntity().getType().name());
-				} catch (Exception e) {
+							EntityBlock.getEntity().getType().name());
+				} else {
 					lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
 							LWC.materialToString(protection.getBlock()));
 				}
@@ -104,10 +104,10 @@ public class FreeModule extends JavaModule {
 
 			lwc.removeModes(player);
 		} else {
-			try {
+			if(protection.getBlock() instanceof EntityBlock) {
 				lwc.sendLocale(player, "protection.interact.error.notowner", "block",
-						((EntityBlock) protection.getBlock()).getEntity().getType().name());
-			} catch (Exception e) {
+						EntityBlock.getEntity().getType().name());
+			} else {
 				lwc.sendLocale(player, "protection.interact.error.notowner", "block",
 						LWC.materialToString(protection.getBlock()));
 			}

@@ -49,191 +49,211 @@ import org.bukkit.entity.Player;
 
 public class CreateModule extends JavaModule {
 
-    @Override
-    public void onProtectionInteract(LWCProtectionInteractEvent event) {
-        if (event.getResult() != Result.DEFAULT) {
-            return;
-        }
-
-        if (!event.hasAction("create")) {
-            return;
-        }
-
-        LWC lwc = event.getLWC();
-        Protection protection = event.getProtection();
-        Player player = event.getPlayer();
-
-        if (protection.isOwner(player)) {
-            lwc.sendLocale(player, "protection.interact.error.alreadyregistered", "block", LWC.materialToString(protection.getBlockId()));
-        } else {
-            lwc.sendLocale(player, "protection.interact.error.notowner", "block", LWC.materialToString(protection.getBlockId()));
-        }
-
-        lwc.removeModes(player);
-        event.setResult(Result.CANCEL);
-    }
-
-    @SuppressWarnings("deprecation")
 	@Override
-    public void onBlockInteract(LWCBlockInteractEvent event) {
-        if (event.getResult() != Result.DEFAULT) {
-            return;
-        }
+	public void onProtectionInteract(LWCProtectionInteractEvent event) {
+		if (event.getResult() != Result.DEFAULT) {
+			return;
+		}
 
-        if (!event.hasAction("create")) {
-            return;
-        }
+		if (!event.hasAction("create")) {
+			return;
+		}
 
-        LWC lwc = event.getLWC();
-        Block block = event.getBlock();
-        LWCPlayer player = lwc.wrapPlayer(event.getPlayer());
+		LWC lwc = event.getLWC();
+		Protection protection = event.getProtection();
+		Player player = event.getPlayer();
 
-        if (!lwc.isProtectable(block)) {
-            return;
-        }
+		if (protection.isOwner(player)) {
+			lwc.sendLocale(player, "protection.interact.error.alreadyregistered", "block", protection.getBlockName());
+		} else {
+			lwc.sendLocale(player, "protection.interact.error.notowner", "block", protection.getBlockName());
+		}
 
-        PhysDB physDb = lwc.getPhysicalDatabase();
+		lwc.removeModes(player);
+		event.setResult(Result.CANCEL);
+	}
 
-        Action action = player.getAction("create");
-        String actionData = action.getData();
-        String[] split = actionData.split(" ");
-        String protectionType = split[0].toLowerCase();
-        String protectionData = StringUtil.join(split, 1);
+	@Override
+	public void onBlockInteract(LWCBlockInteractEvent event) {
+		if (event.getResult() != Result.DEFAULT) {
+			return;
+		}
 
-        // check permissions again (DID THE LITTLE SHIT MOVE WORLDS??!?!?!?!?!?)
-        if (!lwc.hasPermission(event.getPlayer(), "lwc.create." + protectionType, "lwc.create", "lwc.protect")) {
-            lwc.sendLocale(player, "protection.accessdenied");
-            lwc.removeModes(player);
-            event.setResult(Result.CANCEL);
-            return;
-        }
+		if (!event.hasAction("create")) {
+			return;
+		}
 
-        String worldName = block.getWorld().getName();
-        int blockX;
-        int blockY;
-        int blockZ;
-        
-        if (block instanceof EntityBlock) {
-            Entity entity = ((EntityBlock) block).getEntity();
-            blockX = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
-            blockY = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
-            blockZ = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
-        } else {
-            blockX = block.getX();
-            blockY = block.getY();
-            blockZ = block.getZ();
-        }
+		LWC lwc = event.getLWC();
+		Block block = event.getBlock();
+		LWCPlayer player = lwc.wrapPlayer(event.getPlayer());
 
-        lwc.removeModes(player);
-        LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(player.getBukkitPlayer(), block);
-        lwc.getModuleLoader().dispatchEvent(evt);
+		if (!lwc.isProtectable(block)) {
+			return;
+		}
 
-        // another plugin cancelled the registration
-        if (evt.isCancelled()) {
-            return;
-        }
+		PhysDB physDb = lwc.getPhysicalDatabase();
 
-        // The created protection
-        Protection protection = null;
+		Action action = player.getAction("create");
+		String actionData = action.getData();
+		String[] split = actionData.split(" ");
+		String protectionType = split[0].toLowerCase();
+		String protectionData = StringUtil.join(split, 1);
 
-        if (protectionType.equals("public")) {
-            protection = physDb.registerProtection(block.getTypeId(), Protection.Type.PUBLIC, worldName, player.getUniqueId().toString(), "", blockX, blockY, blockZ);
-            lwc.sendLocale(player, "protection.interact.create.finalize");
-        } else if (protectionType.equals("password")) {
-            String password = lwc.encrypt(protectionData);
+		// check permissions again (DID THE LITTLE SHIT MOVE WORLDS??!?!?!?!?!?)
+		if (!lwc.hasPermission(event.getPlayer(), "lwc.create." + protectionType, "lwc.create", "lwc.protect")) {
+			lwc.sendLocale(player, "protection.accessdenied");
+			lwc.removeModes(player);
+			event.setResult(Result.CANCEL);
+			return;
+		}
 
-            protection = physDb.registerProtection(block.getTypeId(), Protection.Type.PASSWORD, worldName, player.getUniqueId().toString(), password, blockX, blockY, blockZ);
-            player.addAccessibleProtection(protection);
+		String worldName = block.getWorld().getName();
+		int blockX;
+		int blockY;
+		int blockZ;
 
-            lwc.sendLocale(player, "protection.interact.create.finalize");
-            lwc.sendLocale(player, "protection.interact.create.password");
-        } else if (protectionType.equals("private") || protectionType.equals("donation")) {
-            String[] rights = protectionData.split(" ");
+		if (block instanceof EntityBlock) {
+			Entity entity = EntityBlock.getEntity();
+			blockX = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
+			blockY = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
+			blockZ = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
+		} else {
+			blockX = block.getX();
+			blockY = block.getY();
+			blockZ = block.getZ();
+		}
 
-            protection = physDb.registerProtection(block.getTypeId(), Protection.Type.matchType(protectionType), worldName, player.getUniqueId().toString(), "", blockX, blockY, blockZ);
+		lwc.removeModes(player);
+		LWCProtectionRegisterEvent evt = new LWCProtectionRegisterEvent(player.getBukkitPlayer(), block);
+		lwc.getModuleLoader().dispatchEvent(evt);
 
-            lwc.sendLocale(player, "protection.interact.create.finalize");
-            lwc.processRightsModifications(player, protection, rights);
-        }
+		// another plugin cancelled the registration
+		if (evt.isCancelled()) {
+			return;
+		}
 
-        // tell the modules that a protection was registered
-        if (protection != null) {
-            // Fix the blocks that match it
-            protection.removeCache();
-            LWC.getInstance().getProtectionCache().addProtection(protection);
-            lwc.getModuleLoader().dispatchEvent(new LWCProtectionRegistrationPostEvent(protection));
-        }
+		// The created protection
+		Protection protection = null;
 
-        event.setResult(Result.CANCEL);
-    }
+		if (protectionType.equals("public")) {
+			if (block instanceof EntityBlock) {
+				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_NAME, Protection.Type.PUBLIC, worldName,
+						player.getUniqueId().toString(), "", blockX, blockY, blockZ);
+			} else {
+				protection = physDb.registerProtection(block.getType().name(), Protection.Type.PUBLIC, worldName,
+						player.getUniqueId().toString(), "", blockX, blockY, blockZ);
+			}
+			lwc.sendLocale(player, "protection.interact.create.finalize");
+		} else if (protectionType.equals("password")) {
+			String password = lwc.encrypt(protectionData);
 
-    @Override
-    public void onCommand(LWCCommandEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
+			if (block instanceof EntityBlock) {
+				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_NAME, Protection.Type.PASSWORD,
+						worldName, player.getUniqueId().toString(), password, blockX, blockY, blockZ);
+			} else {
+				protection = physDb.registerProtection(block.getType().name(), Protection.Type.PASSWORD, worldName,
+						player.getUniqueId().toString(), password, blockX, blockY, blockZ);
+			}
+			player.addAccessibleProtection(protection);
 
-        if (!event.hasFlag("c", "create")) {
-            return;
-        }
+			lwc.sendLocale(player, "protection.interact.create.finalize");
+			lwc.sendLocale(player, "protection.interact.create.password");
+		} else if (protectionType.equals("private") || protectionType.equals("donation")) {
+			String[] rights = protectionData.split(" ");
+			if (block instanceof EntityBlock) {
+				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_NAME,
+						Protection.Type.matchType(protectionType), worldName, player.getUniqueId().toString(), "",
+						blockX, blockY, blockZ);
+			} else {
+				protection = physDb.registerProtection(block.getType().name(),
+						Protection.Type.matchType(protectionType), worldName, player.getUniqueId().toString(), "",
+						blockX, blockY, blockZ);
+			}
 
-        LWC lwc = event.getLWC();
-        CommandSender sender = event.getSender();
-        String[] args = event.getArgs();
+			lwc.sendLocale(player, "protection.interact.create.finalize");
+			lwc.processRightsModifications(player, protection, rights);
+		}
 
-        if (!(sender instanceof Player)) {
-            return;
-        }
+		// tell the modules that a protection was registered
+		if (protection != null) {
+			// Fix the blocks that match it
+			protection.removeCache();
+			LWC.getInstance().getProtectionCache().addProtection(protection);
+			lwc.getModuleLoader().dispatchEvent(new LWCProtectionRegistrationPostEvent(protection));
+		}
 
-        if (args.length == 0) {
-            lwc.sendLocale(sender, "help.creation");
-            return;
-        }
+		event.setResult(Result.CANCEL);
+	}
 
-        LWCPlayer player = lwc.wrapPlayer(sender);
+	@Override
+	public void onCommand(LWCCommandEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 
-        String full = StringUtil.join(args, 0).trim();
-        String type = args[0].toLowerCase();
-        String data = StringUtil.join(args, 1);
-        event.setCancelled(true);
+		if (!event.hasFlag("c", "create")) {
+			return;
+		}
 
-        /**
-         * Allow individual enforcements with e.g lwc.create.private, or just the umbrella lwc.create for all
-         */
-        if (!lwc.hasPermission(sender, "lwc.create." + type, "lwc.create", "lwc.protect")) {
-            lwc.sendLocale(sender, "protection.accessdenied");
-            return;
-        }
+		LWC lwc = event.getLWC();
+		CommandSender sender = event.getSender();
+		String[] args = event.getArgs();
 
-        try {
-            switch (Protection.Type.matchType(type)) {
-                case PASSWORD:
-                    if (args.length < 2) {
-                        lwc.sendSimpleUsage(player, "/lwc -c password <Password>");
-                        return;
-                    }
+		if (!(sender instanceof Player)) {
+			return;
+		}
 
-                    String hiddenPass = StringUtil.transform(data, '*');
-                    lwc.sendLocale(player, "protection.create.password", "password", hiddenPass);
-                    break;
+		if (args.length == 0) {
+			lwc.sendLocale(sender, "help.creation");
+			return;
+		}
+
+		LWCPlayer player = lwc.wrapPlayer(sender);
+
+		String full = StringUtil.join(args, 0).trim();
+		String type = args[0].toLowerCase();
+		String data = StringUtil.join(args, 1);
+		event.setCancelled(true);
+
+		/**
+		 * Allow individual enforcements with e.g lwc.create.private, or just the
+		 * umbrella lwc.create for all
+		 */
+		if (!lwc.hasPermission(sender, "lwc.create." + type, "lwc.create", "lwc.protect")) {
+			lwc.sendLocale(sender, "protection.accessdenied");
+			return;
+		}
+
+		try {
+			switch (Protection.Type.matchType(type)) {
+			case PASSWORD:
+				if (args.length < 2) {
+					lwc.sendSimpleUsage(player, "/lwc -c password <Password>");
+					return;
+				}
+
+				String hiddenPass = StringUtil.transform(data, '*');
+				lwc.sendLocale(player, "protection.create.password", "password", hiddenPass);
+				break;
 			default:
 				break;
-            }
-        } catch (IllegalArgumentException e) {
-            // Invalid protection type!
-            lwc.sendLocale(player, "help.creation");
-            return;
-        }
+			}
+		} catch (IllegalArgumentException e) {
+			// Invalid protection type!
+			lwc.sendLocale(player, "help.creation");
+			return;
+		}
 
-        Action action = new Action();
-        action.setName("create");
-        action.setPlayer(player);
-        action.setData(full);
+		Action action = new Action();
+		action.setName("create");
+		action.setPlayer(player);
+		action.setData(full);
 
-        player.removeAllActions();
-        player.addAction(action);
+		player.removeAllActions();
+		player.addAction(action);
 
-        lwc.sendLocale(player, "protection.create.finalize", "type", lwc.getPlugin().getMessageParser().parseMessage(type));
-    }
+		lwc.sendLocale(player, "protection.create.finalize", "type",
+				lwc.getPlugin().getMessageParser().parseMessage(type));
+	}
 
 }

@@ -78,7 +78,6 @@ public class WorldGuard extends JavaModule {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onCommand(LWCCommandEvent event) {
 		if (event.isCancelled()) {
@@ -207,7 +206,7 @@ public class WorldGuard extends JavaModule {
 
 						// Protect it!
 						lwc.getPhysicalDatabase().registerProtection(
-								block.getTypeId(), Protection.Type.PRIVATE,
+								block.getType().name(), Protection.Type.PRIVATE,
 								world.getName(), ownerName, "", x, y, z);
 						registered++;
 					}

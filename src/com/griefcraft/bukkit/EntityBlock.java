@@ -18,27 +18,29 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
 public class EntityBlock implements Block{
+	private static Entity entity;
 	public static final int ENTITY_BLOCK_ID = 5000;
+	public static String ENTITY_BLOCK_NAME = "Entity";
 	public static final int POSITION_OFFSET = 50000;
-	private Entity entity;
 
 	public EntityBlock(Entity entity) {
-		this.entity = entity;
+		EntityBlock.entity = entity;
+		ENTITY_BLOCK_NAME = entity.getType().name();
 	}
 
 	@Override
 	public int getX() {
-		return 50000 + this.entity.getUniqueId().hashCode();
+		return 50000 + EntityBlock.entity.getUniqueId().hashCode();
 	}
 
 	@Override
 	public int getY() {
-		return 50000 + this.entity.getUniqueId().hashCode();
+		return 50000 + EntityBlock.entity.getUniqueId().hashCode();
 	}
 
 	@Override
 	public int getZ() {
-		return 50000 + this.entity.getUniqueId().hashCode();
+		return 50000 + EntityBlock.entity.getUniqueId().hashCode();
 	}
 
 	@Override
@@ -48,13 +50,13 @@ public class EntityBlock implements Block{
 
 	@Override
 	public World getWorld() {
-		return this.entity.getWorld();
+		return EntityBlock.entity.getWorld();
 	}
 
-	public Entity getEntity() {
-		return this.entity;
+	public static Entity getEntity() {
+		return entity;
 	}
-
+	
 	public static Block getEntityBlock(Entity entity) {
 		return new EntityBlock(entity);
 	}
@@ -169,14 +171,12 @@ public class EntityBlock implements Block{
 
 	@Override
 	public Location getLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		return entity.getLocation();
 	}
 
 	@Override
 	public Location getLocation(Location arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return entity.getLocation(arg0);
 	}
 
 	@Override

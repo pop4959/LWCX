@@ -29,7 +29,6 @@
 package com.griefcraft.util.matchers;
 
 import com.griefcraft.util.ProtectionFinder;
-import com.griefcraft.util.SetUtil;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -50,7 +49,7 @@ public class WallMatcher implements ProtectionFinder.Matcher {
 	 * Blocks that can be attached to the wall and be protected. This assumes
 	 * that the block is DESTROYED if the wall they are attached to is broken.
 	 */
-	public static final Set<Material> PROTECTABLES_WALL = EnumSet.of(Material.WALL_SIGN);
+	public static final Set<Material> PROTECTABLES_WALL = EnumSet.of(Material.WALL_SIGN, Material.WALL_BANNER);
 
 	/**
 	 * Those evil levers and buttons have all different bits for directions.
@@ -63,7 +62,7 @@ public class WallMatcher implements ProtectionFinder.Matcher {
 	 * Same as PROTECTABLE_WALL, except the facing direction is reversed, such
 	 * as trap doors
 	 */
-	public static final Set<Material> PROTECTABLES_TRAP_DOORS = EnumSet.of(Material.TRAP_DOOR);
+	public static final Set<Material> PROTECTABLES_TRAP_DOORS = EnumSet.of(Material.TRAP_DOOR, Material.IRON_TRAPDOOR);
 
 	/**
 	 * Possible faces around the base block that protections could be at
@@ -71,13 +70,6 @@ public class WallMatcher implements ProtectionFinder.Matcher {
 	public static final BlockFace[] POSSIBLE_FACES = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
 			BlockFace.WEST };
 
-	static {
-		SetUtil.addToSetWithoutNull(PROTECTABLES_WALL, Material.getMaterial(177)); // Wall
-																					// banner
-		SetUtil.addToSetWithoutNull(PROTECTABLES_TRAP_DOORS, Material.getMaterial(167)); // Iron
-																							// trap
-																							// door
-	}
 
 	public boolean matches(ProtectionFinder finder) {
 		// The block we are working on
@@ -139,24 +131,6 @@ public class WallMatcher implements ProtectionFinder.Matcher {
 			} else if (matchingFace == BlockFace.SOUTH && (direction & SOUTH) == SOUTH) {
 				return block;
 			} else if (matchingFace == BlockFace.NORTH && (direction & NORTH) == NORTH) {
-				return block;
-			}
-		}
-
-		// Blocks such as trap doors
-		else if (PROTECTABLES_TRAP_DOORS.contains(block.getType())) {
-			byte EAST = 0x2;
-			byte WEST = 0x3;
-			byte SOUTH = 0x0;
-			byte NORTH = 0x1;
-
-			if (matchingFace == BlockFace.WEST && (direction & EAST) == EAST) {
-				return block;
-			} else if (matchingFace == BlockFace.EAST && (direction & WEST) == WEST) {
-				return block;
-			} else if (matchingFace == BlockFace.NORTH && (direction & SOUTH) == SOUTH) {
-				return block;
-			} else if (matchingFace == BlockFace.SOUTH && (direction & NORTH) == NORTH) {
 				return block;
 			}
 		}

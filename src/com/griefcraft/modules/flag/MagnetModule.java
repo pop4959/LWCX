@@ -65,7 +65,7 @@ public class MagnetModule extends JavaModule {
 	/**
 	 * The item blacklist
 	 */
-	private List<Integer> itemBlacklist;
+	private List<String> itemBlacklist;
 
 	/**
 	 * The radius around the container in which to suck up items
@@ -90,7 +90,6 @@ public class MagnetModule extends JavaModule {
 	// does all of the work
 	// searches the worlds for items and magnet chests nearby
 	private class MagnetTask implements Runnable {
-		@SuppressWarnings("deprecation")
 		public void run() {
 			Server server = Bukkit.getServer();
 			LWC lwc = LWC.getInstance();
@@ -111,7 +110,7 @@ public class MagnetModule extends JavaModule {
 						ItemStack stack = item.getItemStack();
 
 						// check if it is in the blacklist
-						if (itemBlacklist.contains(stack.getTypeId())) {
+						if (itemBlacklist.contains(stack.getType().name())) {
 							continue;
 						}
 
@@ -196,7 +195,7 @@ public class MagnetModule extends JavaModule {
 				if (remaining.size() == 1) {
 					ItemStack other = remaining.values().iterator().next();
 
-					if (itemStack.getTypeId() == other.getTypeId() && itemStack.getAmount() == other.getAmount()) {
+					if (itemStack.getType().name() == other.getType().name() && itemStack.getAmount() == other.getAmount()) {
 						continue;
 					}
 				}
@@ -248,11 +247,10 @@ public class MagnetModule extends JavaModule {
 		return false;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void load(LWC lwc) {
 		enabled = configuration.getBoolean("magnet.enabled", false);
-		itemBlacklist = new ArrayList<Integer>();
+		itemBlacklist = new ArrayList<String>();
 		radius = configuration.getInt("magnet.radius", 3);
 		perSweep = configuration.getInt("magnet.perSweep", 20);
 
@@ -267,7 +265,7 @@ public class MagnetModule extends JavaModule {
 			Material material = Material.matchMaterial(item);
 
 			if (material != null) {
-				itemBlacklist.add(material.getId());
+				itemBlacklist.add(material.name());
 			}
 		}
 

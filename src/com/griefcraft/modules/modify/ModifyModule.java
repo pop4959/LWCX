@@ -86,7 +86,7 @@ public class ModifyModule extends JavaModule {
             lwc.removeModes(player);
             lwc.processRightsModifications(player, protection, rights);
         } else {
-            lwc.sendLocale(player, "protection.interact.error.notowner", "block", LWC.materialToString(protection.getBlockId()));
+            lwc.sendLocale(player, "protection.interact.error.notowner", "block", protection.getBlockName());
             lwc.removeModes(player);
         }
 

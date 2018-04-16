@@ -66,6 +66,7 @@ public class LWCEntityListener implements Listener {
 		this.plugin = plugin;
 	}
 
+
 	@EventHandler(ignoreCancelled = true)
 	public void onHangingPlace(HangingPlaceEvent event) {
 		Player player = event.getPlayer();
@@ -89,7 +90,7 @@ public class LWCEntityListener implements Listener {
 			placedArmorStandPlayer = null;
 			if (player != null) {
 				if (player.getWorld().equals(block.getWorld())
-						&& player.getLocation().distanceSquared(block.getLocation()) <= 25) {
+						&& player.getLocation().distanceSquared(block.getLocation()) <= 15) {
 					entityCreatedByPlayer(block, player);
 				}
 			}
@@ -106,7 +107,7 @@ public class LWCEntityListener implements Listener {
 		int A = 50000 + block.getUniqueId().hashCode();
 
 		// Update the cache if a protection is matched here
-		Protection current = lwc.findProtection(block.getLocation());
+		Protection current = lwc.findProtection((EntityBlock)block);
 		if (current != null) {
 			if (!current.isBlockInWorld()) {
 				// Corrupted protection
@@ -163,7 +164,7 @@ public class LWCEntityListener implements Listener {
 			}
 
 			// All good!
-			Protection protection = lwc.getPhysicalDatabase().registerProtection(EntityBlock.ENTITY_BLOCK_ID, type,
+			Protection protection = lwc.getPhysicalDatabase().registerProtection(EntityBlock.ENTITY_BLOCK_NAME, type,
 					block.getWorld().getName(), player.getUniqueId().toString(), "", A, A, A);
 
 			if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(EntityBlock.getEntityBlock(block), "quiet"))) {

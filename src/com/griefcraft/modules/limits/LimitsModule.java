@@ -122,14 +122,13 @@ public class LimitsModule extends JavaModule {
      * @param block
      * @return true if the player reached their limit
      */
-    @SuppressWarnings("deprecation")
-	public boolean hasReachedLimit(Player player, Block block) {
+    public boolean hasReachedLimit(Player player, Block block) {
         if (configuration == null) {
             return false;
         }
 
         LWC lwc = LWC.getInstance();
-        int limit = mapProtectionLimit(player, block.getTypeId());
+        int limit = mapProtectionLimit(player, block.getType().name());
 
         // if they're limit is unlimited, how could they get above it? :)
         if (limit == UNLIMITED) {
@@ -141,7 +140,7 @@ public class LimitsModule extends JavaModule {
 
         switch (type) {
             case CUSTOM:
-                protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName(), block.getTypeId());
+                protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName(), block.getType().name());
                 break;
 
             case DEFAULT:
@@ -203,8 +202,7 @@ public class LimitsModule extends JavaModule {
      * @param blockId
      * @return
      */
-    @SuppressWarnings("deprecation")
-	public int mapProtectionLimit(Player player, int blockId) {
+    public int mapProtectionLimit(Player player, String blockId) {
         if (configuration == null) {
             return 0;
         }
@@ -238,7 +236,7 @@ public class LimitsModule extends JavaModule {
                 limit = resolveInteger(player, blockId + "");
 
                 // and now try the name
-                if (limit == -1 && blockId > 0) {
+                if (limit == -1 && blockId != null) {
                     String name = StringUtils.replace(Material.getMaterial(blockId).toString().toLowerCase(), "block", "");
 
                     if (name.endsWith("_")) {

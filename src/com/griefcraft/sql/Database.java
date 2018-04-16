@@ -81,14 +81,13 @@ public abstract class Database {
 	}
 
 	private Cache<String, PreparedStatement> statementCache = CacheBuilder.newBuilder()
-			.expireAfterWrite(5, TimeUnit.MINUTES)
+			.expireAfterWrite(2, TimeUnit.SECONDS)
 			.removalListener(notif -> closeQuietly((PreparedStatement) notif.getValue())).build();
 
-	private void closeQuietly(PreparedStatement closeable) {
+	public void closeQuietly(PreparedStatement closeable) {
 		try {
 			if (closeable != null) {
-				setAutoCommit(false);
-				connection.commit();
+				closeable.execute();
 			}
 		} catch (Exception ignored) {}
 	}
@@ -257,6 +256,7 @@ public abstract class Database {
 			connection = driver.connect("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
 					properties);
 			connected = true;
+			setAutoCommit(false);
 			return true;
 		} catch (SQLException e) {
 			log("Failed to connect to " + currentType + ": " + e.getErrorCode() + " - " + e.getMessage());

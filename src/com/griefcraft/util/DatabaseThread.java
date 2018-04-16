@@ -32,10 +32,10 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.sql.Database;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 
 public class DatabaseThread implements Runnable {
 
@@ -138,6 +138,8 @@ public class DatabaseThread implements Runnable {
 	private void flushDatabase() {
 		if (!updateQueue.isEmpty()) {
 			Database database = lwc.getPhysicalDatabase();
+			database.setAutoCommit(false);
+			database.setUseStatementCache(false);
 			// Begin iterating through the queue
 			Iterator<Protection> iter = updateQueue.iterator();
 			while (iter.hasNext()) {
@@ -145,11 +147,9 @@ public class DatabaseThread implements Runnable {
 				iter.remove();
 				protection.saveNow();
 			}
-			try {
-				database.getConnection().commit();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			
+			database.setUseStatementCache(true);
+			database.setAutoCommit(true);
 		}
 
 		// update the time we last flushed at
@@ -163,26 +163,29 @@ public class DatabaseThread implements Runnable {
 
 	public void run() {
 		while (running) {
-			// how many seconds between each flush
-			int interval = lwc.getConfiguration().getInt("core.flushInterval", 5);
+            try {
+                // how many seconds between each flush
+                int interval = lwc.getConfiguration().getInt("core.flushInterval", 5);
 
-			if (interval > 120) {
-				interval = 120;
-			}
+                if (interval > 120) {
+                    interval = 120;
+                }
 
-			long currentTime = System.currentTimeMillis();
-			long intervalMilliseconds = interval * 1000L;
+                long currentTime = System.currentTimeMillis();
+                long intervalMilliseconds = interval * 1000L;
 
-			// compare the current time to the last flush
-			if (currentTime - lastFlush > intervalMilliseconds) {
-				flushDatabase();
-			}
+                // compare the current time to the last flush
+                if (currentTime - lastFlush > intervalMilliseconds) {
+                    flushDatabase();
+                }
 
-			try {
-				Thread.sleep(1000L);
-			} catch (InterruptedException e) {
-				running = false;
-			}
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException e) {
+                }
+            } catch (Throwable t) {
+                lwc.getPlugin().getLogger().log(Level.SEVERE, "Exception in Database Thread", t);
+            }
 		}
 	}
 

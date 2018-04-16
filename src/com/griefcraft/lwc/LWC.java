@@ -55,6 +55,7 @@ import com.griefcraft.modules.admin.AdminFind;
 import com.griefcraft.modules.admin.AdminFlush;
 import com.griefcraft.modules.admin.AdminForceOwner;
 import com.griefcraft.modules.admin.AdminLocale;
+import com.griefcraft.modules.admin.AdminOwnerAll;
 import com.griefcraft.modules.admin.AdminPurge;
 import com.griefcraft.modules.admin.AdminPurgeBanned;
 import com.griefcraft.modules.admin.AdminQuery;
@@ -223,10 +224,6 @@ public class LWC {
 	 * @param id
 	 * @return
 	 */
-	@SuppressWarnings("deprecation")
-	public static String materialToString(int id) {
-		return materialToString(Material.getMaterial(id));
-	}
 
 	/**
 	 * Get a string representation of a block material
@@ -239,8 +236,7 @@ public class LWC {
 			String materialName = normalizeMaterialName(material);
 
 			// attempt to match the locale
-			String locale = LWC.getInstance().getPlugin().getMessageParser()
-					.parseMessage(materialName.toLowerCase());
+			String locale = LWC.getInstance().getPlugin().getMessageParser().parseMessage(materialName.toLowerCase());
 
 			// if it starts with UNKNOWN_LOCALE, use the default material name
 			if (locale == null) {
@@ -263,8 +259,7 @@ public class LWC {
 	 * @return
 	 */
 	public static String normalizeMaterialName(Material material) {
-		String name = StringUtils.replace(material.toString().toLowerCase(),
-				"block", "");
+		String name = StringUtils.replace(material.toString().toLowerCase(), "block", "");
 
 		// some name normalizations
 		if (name.contains("sign")) {
@@ -336,8 +331,7 @@ public class LWC {
 	public Block findAdjacentDoubleChest(Block block) {
 		if (!DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
 			throw new UnsupportedOperationException(
-					"findAdjacentDoubleChest() cannot be called on a: "
-							+ block.getType());
+					"findAdjacentDoubleChest() cannot be called on a: " + block.getType());
 		}
 
 		return findAdjacentBlock(block, block.getType());
@@ -366,8 +360,7 @@ public class LWC {
 	 * @return
 	 */
 	public boolean canAccessProtection(Player player, int x, int y, int z) {
-		return canAccessProtection(player, physicalDatabase.loadProtection(
-				player.getWorld().getName(), x, y, z));
+		return canAccessProtection(player, physicalDatabase.loadProtection(player.getWorld().getName(), x, y, z));
 	}
 
 	/**
@@ -411,9 +404,7 @@ public class LWC {
 			break;
 
 		case PASSWORD:
-			if (protection.isOwner(player)
-					&& wrapPlayer(player).getAccessibleProtections().contains(
-							protection)) {
+			if (protection.isOwner(player) && wrapPlayer(player).getAccessibleProtections().contains(protection)) {
 				return true;
 			}
 
@@ -463,34 +454,25 @@ public class LWC {
 	public Map<Integer, ItemStack> depositItems(Block block, ItemStack itemStack) {
 		BlockState blockState;
 
-		if ((blockState = block.getState()) != null
-				&& (blockState instanceof InventoryHolder)) {
+		if ((blockState = block.getState()) != null && (blockState instanceof InventoryHolder)) {
 			Block doubleChestBlock = null;
 			InventoryHolder holder = (InventoryHolder) blockState;
 
-			if (DoubleChestMatcher.PROTECTABLES_CHESTS
-					.contains(block.getType())) {
+			if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
 				doubleChestBlock = findAdjacentDoubleChest(block);
-			} else if (block.getType() == Material.FURNACE
-					|| block.getType() == Material.BURNING_FURNACE) {
+			} else if (block.getType() == Material.FURNACE || block.getType() == Material.BURNING_FURNACE) {
 				Inventory inventory = holder.getInventory();
 
-				if (inventory.getItem(0) != null
-						&& inventory.getItem(1) != null) {
+				if (inventory.getItem(0) != null && inventory.getItem(1) != null) {
 					if (inventory.getItem(0).getType() == itemStack.getType()
-							&& inventory.getItem(0).getData().getData() == itemStack
-									.getData().getData()
-							&& inventory.getItem(0).getMaxStackSize() >= (inventory
-									.getItem(0).getAmount() + itemStack
-									.getAmount())) {
+							&& inventory.getItem(0).getData().getData() == itemStack.getData().getData()
+							&& inventory.getItem(0)
+									.getMaxStackSize() >= (inventory.getItem(0).getAmount() + itemStack.getAmount())) {
 						// ItemStack fits on Slot 0
-					} else if (inventory.getItem(1).getType() == itemStack
-							.getType()
-							&& inventory.getItem(1).getData().getData() == itemStack
-									.getData().getData()
-							&& inventory.getItem(1).getMaxStackSize() >= (inventory
-									.getItem(1).getAmount() + itemStack
-									.getAmount())) {
+					} else if (inventory.getItem(1).getType() == itemStack.getType()
+							&& inventory.getItem(1).getData().getData() == itemStack.getData().getData()
+							&& inventory.getItem(1)
+									.getMaxStackSize() >= (inventory.getItem(1).getAmount() + itemStack.getAmount())) {
 						// ItemStack fits on Slot 1
 					} else {
 						return null;
@@ -502,8 +484,7 @@ public class LWC {
 				return new HashMap<Integer, ItemStack>();
 			}
 
-			Map<Integer, ItemStack> remaining = holder.getInventory().addItem(
-					itemStack);
+			Map<Integer, ItemStack> remaining = holder.getInventory().addItem(itemStack);
 
 			// we have remainders, deal with it
 			if (remaining.size() > 0) {
@@ -512,10 +493,8 @@ public class LWC {
 
 				// is it a double chest ?????
 				if (doubleChestBlock != null) {
-					InventoryHolder holder2 = (InventoryHolder) doubleChestBlock
-							.getState();
-					remaining = holder2.getInventory().addItem(
-							remainingItemStack);
+					InventoryHolder holder2 = (InventoryHolder) doubleChestBlock.getState();
+					remaining = holder2.getInventory().addItem(remainingItemStack);
 				}
 
 				// recheck remaining in the event of double chest being used
@@ -536,17 +515,14 @@ public class LWC {
 	 * @param ignore
 	 * @return
 	 */
-	public Block findAdjacentBlock(Block block, Material material,
-			Block... ignore) {
-		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH,
-				BlockFace.EAST, BlockFace.WEST };
+	public Block findAdjacentBlock(Block block, Material material, Block... ignore) {
+		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
 		List<Block> ignoreList = Arrays.asList(ignore);
 
 		for (BlockFace face : faces) {
 			Block adjacentBlock = block.getRelative(face);
 
-			if (adjacentBlock.getType() == material
-					&& !ignoreList.contains(adjacentBlock)) {
+			if (adjacentBlock.getType() == material && !ignoreList.contains(adjacentBlock)) {
 				return adjacentBlock;
 			}
 		}
@@ -555,25 +531,23 @@ public class LWC {
 	}
 
 	/**
-	 * Find a block that is adjacent to another block on any of the block's 6
-	 * sides given a Material
+	 * Find a block that is adjacent to another block on any of the block's 6 sides
+	 * given a Material
 	 *
 	 * @param block
 	 * @param material
 	 * @param ignore
 	 * @return
 	 */
-	public Block findAdjacentBlockOnAllSides(Block block, Material material,
-			Block... ignore) {
-		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH,
-				BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN };
+	public Block findAdjacentBlockOnAllSides(Block block, Material material, Block... ignore) {
+		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
+				BlockFace.UP, BlockFace.DOWN };
 		List<Block> ignoreList = Arrays.asList(ignore);
 
 		for (BlockFace face : faces) {
 			Block adjacentBlock = block.getRelative(face);
 
-			if (adjacentBlock.getType() == material
-					&& !ignoreList.contains(adjacentBlock)) {
+			if (adjacentBlock.getType() == material && !ignoreList.contains(adjacentBlock)) {
 				return adjacentBlock;
 			}
 		}
@@ -582,18 +556,17 @@ public class LWC {
 	}
 
 	/**
-	 * Find a protection that is adjacent to another block on any of the block's
-	 * 6 sides
+	 * Find a protection that is adjacent to another block on any of the block's 6
+	 * sides
 	 *
 	 * @param block
 	 * @param ignore
 	 * @return
 	 */
 	@SuppressWarnings("unlikely-arg-type")
-	public List<Protection> findAdjacentProtectionsOnAllSides(Block block,
-			Block... ignore) {
-		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH,
-				BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN };
+	public List<Protection> findAdjacentProtectionsOnAllSides(Block block, Block... ignore) {
+		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
+				BlockFace.UP, BlockFace.DOWN };
 		List<Block> ignoreList = Arrays.asList(ignore);
 		List<Protection> found = new ArrayList<Protection>();
 
@@ -658,9 +631,7 @@ public class LWC {
 	 * @param block
 	 * @return true if the player was granted access
 	 */
-	@SuppressWarnings("deprecation")
-	public boolean enforceAccess(Player player, Protection protection,
-			Block block, boolean hasAccess) {
+	public boolean enforceAccess(Player player, Protection protection, Block block, boolean hasAccess) {
 		MessageParser parser = plugin.getMessageParser();
 
 		if (block == null || protection == null) {
@@ -669,16 +640,14 @@ public class LWC {
 
 		// support for old protection dbs that do not contain the block id
 		if (block != null
-				&& (protection.getBlockId() <= 0 && block.getTypeId() != protection
-						.getBlockId())) {
-			protection.setBlockId(block.getTypeId());
+				&& (protection.getBlockName() == null && block.getType().name() != protection.getBlockName())) {
+			protection.setBlockName(block.getType().name());
 			protection.save();
 		}
 
 		// multi-world, update old protections
 		if (block != null
-				&& (protection.getWorld() == null || !block.getWorld()
-						.getName().equals(protection.getWorld()))) {
+				&& (protection.getWorld() == null || !block.getWorld().getName().equals(protection.getWorld()))) {
 			protection.setWorld(block.getWorld().getName());
 			protection.save();
 		}
@@ -690,21 +659,19 @@ public class LWC {
 			// check that they aren't an admin and if they are, they need to be
 			// the owner of the protection or have access through /cmodify
 			if (protection.isOwner(player)
-					|| protection.getAccess(player.getName(),
-							Permission.Type.PLAYER) != Permission.Access.NONE) {
-				protection.setLastAccessed(timestamp);
-				protection.save();
+					|| protection.getAccess(player.getName(), Permission.Type.PLAYER) != Permission.Access.NONE) {
+				if (Math.abs(protection.getLastAccessed() - timestamp) > 5) {
+					                    protection.setLastAccessed(timestamp);
+					                    protection.saveLastAccessed();
+					                }
 			}
 		}
 
 		boolean permShowNotices = hasPermission(player, "lwc.shownotices");
-		if ((permShowNotices && configuration.getBoolean("core.showNotices",
-				true))
-				&& !Boolean.parseBoolean(resolveProtectionConfiguration(block,
-						"quiet"))) {
+		if ((permShowNotices && configuration.getBoolean("core.showNotices", true))
+				&& !Boolean.parseBoolean(resolveProtectionConfiguration(block, "quiet"))) {
 			boolean isOwner = protection.isOwner(player);
-			boolean showMyNotices = configuration.getBoolean(
-					"core.showMyNotices", true);
+			boolean showMyNotices = configuration.getBoolean("core.showMyNotices", true);
 
 			if (!isOwner || (isOwner && (showMyNotices || permShowNotices))) {
 				String owner;
@@ -717,23 +684,18 @@ public class LWC {
 				}
 
 				String blockName = materialToString(block);
-				String protectionTypeToString = parser.parseMessage(protection
-						.typeToString().toLowerCase());
+				String protectionTypeToString = parser.parseMessage(protection.typeToString().toLowerCase());
 
 				if (protectionTypeToString == null) {
 					protectionTypeToString = "Unknown";
 				}
 
-				if (parser.parseMessage("protection." + blockName.toLowerCase()
-						+ ".notice.protected") != null) {
-					sendLocale(player, "protection." + blockName.toLowerCase()
-							+ ".notice.protected", "type",
-							protectionTypeToString, "block", blockName,
-							"owner", owner);
+				if (parser.parseMessage("protection." + blockName.toLowerCase() + ".notice.protected") != null) {
+					sendLocale(player, "protection." + blockName.toLowerCase() + ".notice.protected", "type",
+							protectionTypeToString, "block", blockName, "owner", owner);
 				} else {
-					sendLocale(player, "protection.general.notice.protected",
-							"type", protectionTypeToString, "block", blockName,
-							"owner", owner);
+					sendLocale(player, "protection.general.notice.protected", "type", protectionTypeToString, "block",
+							blockName, "owner", owner);
 				}
 			}
 		}
@@ -742,13 +704,10 @@ public class LWC {
 			Protection.Type type = protection.getType();
 
 			if (type == Protection.Type.PASSWORD) {
-				sendLocale(player, "protection.general.locked.password",
-						"block", materialToString(block), "owner",
+				sendLocale(player, "protection.general.locked.password", "block", materialToString(block), "owner",
 						protection.getOwner());
-			} else if (type == Protection.Type.PRIVATE
-					|| type == Protection.Type.DONATION) {
-				sendLocale(player, "protection.general.locked.private",
-						"block", materialToString(block), "owner",
+			} else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION) {
+				sendLocale(player, "protection.general.locked.private", "block", materialToString(block), "owner",
 						protection.getOwner());
 			}
 		}
@@ -794,8 +753,7 @@ public class LWC {
 			return true;
 
 		case PASSWORD:
-			if (wrapPlayer(player).getAccessibleProtections().contains(
-					protection)) {
+			if (wrapPlayer(player).getAccessibleProtections().contains(protection)) {
 				return true;
 			}
 
@@ -806,14 +764,13 @@ public class LWC {
 				return true;
 			}
 
-			if (protection.getAccess(player.getUniqueId().toString(),
-					Permission.Type.PLAYER).ordinal() >= Permission.Access.PLAYER
-					.ordinal()) {
+			if (protection.getAccess(player.getUniqueId().toString(), Permission.Type.PLAYER)
+					.ordinal() >= Permission.Access.PLAYER.ordinal()) {
 				return true;
 			}
 
-			if (protection.getAccess(player.getName(), Permission.Type.PLAYER)
-					.ordinal() >= Permission.Access.PLAYER.ordinal()) {
+			if (protection.getAccess(player.getName(), Permission.Type.PLAYER).ordinal() >= Permission.Access.PLAYER
+					.ordinal()) {
 				return true;
 			}
 
@@ -824,17 +781,17 @@ public class LWC {
 				}
 
 				// Get the item they need to have
-				int item = Integer.parseInt(permission.getName());
+				String item = permission.getName();
 
 				// Are they wielding it?
-				if (player.getItemInHand().getTypeId() == item) {
+				if (player.getItemInHand().getType().name() == item) {
 					return true;
 				}
 			}
 
 			for (String groupName : permissions.getGroups(player)) {
-				if (protection.getAccess(groupName, Permission.Type.GROUP)
-						.ordinal() >= Permission.Access.PLAYER.ordinal()) {
+				if (protection.getAccess(groupName, Permission.Type.GROUP).ordinal() >= Permission.Access.PLAYER
+						.ordinal()) {
 					return true;
 				}
 			}
@@ -848,8 +805,7 @@ public class LWC {
 		LWCAccessEvent event = new LWCAccessEvent(player, protection, access);
 		moduleLoader.dispatchEvent(event);
 
-		return event.getAccess() == Permission.Access.PLAYER
-				|| event.getAccess() == Permission.Access.ADMIN;
+		return event.getAccess() == Permission.Access.PLAYER || event.getAccess() == Permission.Access.ADMIN;
 	}
 
 	/**
@@ -925,8 +881,7 @@ public class LWC {
 	 * @param maxZ
 	 * @return
 	 */
-	public Player findPlayer(int minX, int maxX, int minY, int maxY, int minZ,
-			int maxZ) {
+	public Player findPlayer(int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
 		for (Player player : plugin.getServer().getOnlinePlayers()) {
 			Location location = player.getLocation();
 			int plrX = location.getBlockX();
@@ -934,8 +889,7 @@ public class LWC {
 			int plrZ = location.getBlockZ();
 
 			// simple check of the ranges
-			if (plrX >= minX && plrX <= maxX && plrY >= plrY && plrY <= maxY
-					&& plrZ >= minZ && plrZ <= maxZ) {
+			if (plrX >= minX && plrX <= maxX && plrY >= plrY && plrY <= maxY && plrZ >= minZ && plrZ <= maxZ) {
 				return player;
 			}
 		}
@@ -964,8 +918,7 @@ public class LWC {
 
 		// broadcast an event if they are a player
 		if (sender instanceof Player) {
-			LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender,
-					key);
+			LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
 			moduleLoader.dispatchEvent(evt);
 
 			// did they cancel it?
@@ -975,9 +928,8 @@ public class LWC {
 		}
 
 		if (message == null) {
-			sender.sendMessage(Colors.Red + "LWC: " + Colors.White
-					+ "Undefined locale: \"" + Colors.Gray + key + Colors.White
-					+ "\"");
+			sender.sendMessage(Colors.Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Gray + key
+					+ Colors.White + "\"");
 			return;
 		}
 
@@ -1000,7 +952,7 @@ public class LWC {
 	 */
 	public static String materialToString(Block block) {
 		if (block instanceof EntityBlock) {
-			return ((EntityBlock) block).getEntity().getType().toString(); // TODO
+			return StringUtils.capitalize(EntityBlock.getEntity().getType().name().replace("_", " "));
 		}
 		return materialToString(block.getType());
 	}
@@ -1013,12 +965,10 @@ public class LWC {
 	 * @param shouldRemoveBlocks
 	 * @return
 	 */
-	public int fastRemoveProtectionsByPlayer(CommandSender sender,
-			String player, boolean shouldRemoveBlocks) {
+	public int fastRemoveProtectionsByPlayer(CommandSender sender, String player, boolean shouldRemoveBlocks) {
 		UUID uuid = UUIDRegistry.getUUID(player);
-		int ret = fastRemoveProtections(sender, "Lower(owner) = Lower('"
-				+ (uuid != null ? uuid.toString() : player) + "')",
-				shouldRemoveBlocks);
+		int ret = fastRemoveProtections(sender,
+				"Lower(owner) = Lower('" + (uuid != null ? uuid.toString() : player) + "')", shouldRemoveBlocks);
 
 		// invalid any history objects associated with the player
 		physicalDatabase.invalidateHistory(player);
@@ -1043,10 +993,8 @@ public class LWC {
 	 * @param shouldRemoveBlocks
 	 * @return
 	 */
-	public int fastRemoveProtections(CommandSender sender, String where,
-			boolean shouldRemoveBlocks) {
-		List<Integer> exemptedBlocks = configuration.getIntList(
-				"optional.exemptBlocks", new ArrayList<Integer>());
+	public int fastRemoveProtections(CommandSender sender, String where, boolean shouldRemoveBlocks) {
+		List<String> exemptedBlocks = configuration.getStringList("optional.exemptBlocks", new ArrayList<String>());
 		List<Integer> toRemove = new LinkedList<Integer>();
 		List<Block> removeBlocks = null;
 		int totalProtections = physicalDatabase.getProtectionCount();
@@ -1067,36 +1015,31 @@ public class LWC {
 		sender.sendMessage("Loading protections via STREAM mode");
 
 		try {
-			Statement resultStatement = physicalDatabase.getConnection()
-					.createStatement(ResultSet.TYPE_FORWARD_ONLY,
-							ResultSet.CONCUR_READ_ONLY);
+			Statement resultStatement = physicalDatabase.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY,
+					ResultSet.CONCUR_READ_ONLY);
 
 			if (physicalDatabase.getType() == Database.Type.MySQL) {
 				resultStatement.setFetchSize(Integer.MIN_VALUE);
 			}
 
 			String prefix = physicalDatabase.getPrefix();
-			ResultSet result = resultStatement
-					.executeQuery("SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
+			ResultSet result = resultStatement.executeQuery(
+					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
 							+ prefix + "protections" + where);
 
 			while (result.next()) {
-				Protection protection = physicalDatabase
-						.resolveProtection(result);
+				Protection protection = physicalDatabase.resolveProtection(result);
 				World world = protection.getBukkitWorld();
 
 				// check if the protection is exempt from being removed
-				if (protection.hasFlag(Flag.Type.EXEMPTION)
-						|| exemptedBlocks.contains(protection.getBlockId())) {
+				if (protection.hasFlag(Flag.Type.EXEMPTION) || exemptedBlocks.contains(protection.getBlockName())) {
 					continue;
 				}
 
 				count++;
 
-				if (count % 100000 == 0 || count == totalProtections
-						|| count == 1) {
-					sender.sendMessage(Colors.Red + count + " / "
-							+ totalProtections);
+				if (count % 100000 == 0 || count == totalProtections || count == 1) {
+					sender.sendMessage(Colors.Red + count + " / " + totalProtections);
 				}
 
 				if (world == null) {
@@ -1112,8 +1055,7 @@ public class LWC {
 				}
 
 				// Remove it from the cache if it's in there
-				Protection cached = protectionCache.getProtection(protection
-						.getCacheKey());
+				Protection cached = protectionCache.getProtection(protection.getCacheKey());
 				if (cached != null) {
 					cached.removeCache();
 				}
@@ -1144,8 +1086,7 @@ public class LWC {
 	 * @param sender
 	 * @param toRemove
 	 */
-	private void fullRemoveProtections(CommandSender sender,
-			List<Integer> toRemove) throws SQLException {
+	private void fullRemoveProtections(CommandSender sender, List<Integer> toRemove) throws SQLException {
 		StringBuilder deleteProtectionsQuery = new StringBuilder();
 		StringBuilder deleteHistoryQuery = new StringBuilder();
 		int total = toRemove.size();
@@ -1158,22 +1099,16 @@ public class LWC {
 		String prefix = getPhysicalDatabase().getPrefix();
 
 		// create the statement to use
-		Statement statement = getPhysicalDatabase().getConnection()
-				.createStatement();
+		Statement statement = getPhysicalDatabase().getConnection().createStatement();
 
 		while (iter.hasNext()) {
 			int protectionId = iter.next();
 
 			if (count % 10000 == 0) {
-				deleteProtectionsQuery.append("DELETE FROM ").append(prefix)
-						.append("protections WHERE id IN (")
+				deleteProtectionsQuery.append("DELETE FROM ").append(prefix).append("protections WHERE id IN (")
 						.append(protectionId);
-				deleteHistoryQuery
-						.append("UPDATE ")
-						.append(prefix)
-						.append("history SET status = "
-								+ History.Status.INACTIVE.ordinal()
-								+ " WHERE protectionId IN(")
+				deleteHistoryQuery.append("UPDATE ").append(prefix)
+						.append("history SET status = " + History.Status.INACTIVE.ordinal() + " WHERE protectionId IN(")
 						.append(protectionId);
 			} else {
 				deleteProtectionsQuery.append(",").append(protectionId);
@@ -1188,8 +1123,7 @@ public class LWC {
 				deleteProtectionsQuery.setLength(0);
 				deleteHistoryQuery.setLength(0);
 
-				sender.sendMessage(Colors.Green + "REMOVED " + (count + 1)
-						+ " / " + total);
+				sender.sendMessage(Colors.Green + "REMOVED " + (count + 1) + " / " + total);
 			}
 
 			count++;
@@ -1214,8 +1148,7 @@ public class LWC {
 			}
 
 			// possibility of a double chest
-			if (DoubleChestMatcher.PROTECTABLES_CHESTS
-					.contains(block.getType())) {
+			if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
 				Block doubleChest = findAdjacentDoubleChest(block);
 
 				if (doubleChest != null) {
@@ -1263,11 +1196,8 @@ public class LWC {
 	 */
 	@SuppressWarnings("deprecation")
 	public boolean blockEquals(Block block, Block block2) {
-		return block.getType() == block2.getType()
-				&& block.getX() == block2.getX()
-				&& block.getY() == block2.getY()
-				&& block.getZ() == block2.getZ()
-				&& block.getData() == block2.getData();
+		return block.getType() == block2.getType() && block.getX() == block2.getX() && block.getY() == block2.getY()
+				&& block.getZ() == block2.getZ() && block.getData() == block2.getData();
 	}
 
 	/**
@@ -1277,7 +1207,7 @@ public class LWC {
 	 * @return
 	 */
 	public Protection findProtection(Location location) {
-		String cacheKey = protectionCache.cacheKey(location);
+		String cacheKey = ProtectionCache.cacheKey(location);
 
 		if (protectionCache.isKnownNull(cacheKey)) {
 			return null;
@@ -1285,8 +1215,7 @@ public class LWC {
 
 		Protection protection = protectionCache.getProtection(cacheKey);
 
-		return protection != null ? protection : findProtection(location
-				.getBlock());
+		return protection != null ? protection : findProtection(location.getBlock());
 	}
 
 	/**
@@ -1306,34 +1235,34 @@ public class LWC {
 		// not exist anymore at all
 		// but is kept just incase. At one point getBlock() in Bukkit would
 		// sometimes say a block
-		// is an eir block even though the client and server sees it differently
+		// is an air block even though the client and server sees it differently
 		// (ie a chest).
 		// This was of course very problematic!
-		if (block.getType() == Material.AIR || block instanceof EntityBlock) {
+		if (block.getType() == Material.AIR || block.getBlock() instanceof EntityBlock) {
 			// We won't be able to match any other blocks anyway, so the least
 			// we can do is attempt to load a protection
-			return physicalDatabase.loadProtection(block.getWorld().getName(),
-					block.getX(), block.getY(), block.getZ());
+			return physicalDatabase.loadProtection(block.getWorld().getName(), block.getX(), block.getY(),
+					block.getZ());
 		}
-
-		// Create a protection finder
-		ProtectionFinder finder = new ProtectionFinder(this);
-
-		// Search for a protection
-		boolean result = finder.matchBlocks(block);
-
 		Protection found = null;
+		try {
+			// Create a protection finder
+			ProtectionFinder finder = new ProtectionFinder(this);
 
-		// We're done, load the possibly loaded protection
-		if (result) {
-			found = finder.loadProtection();
+			// Search for a protection
+			boolean result = finder.matchBlocks(block);
+
+			// We're done, load the possibly loaded protection
+			if (result) {
+				found = finder.loadProtection();
+			}
+
+			if (found == null) {
+				protectionCache.addKnownNull(ProtectionCache.cacheKey(block.getLocation()));
+			}
+		} catch (Exception e) {
+			log(e.getMessage());
 		}
-
-		if (found == null) {
-			protectionCache.addKnownNull(protectionCache.cacheKey(block
-					.getLocation()));
-		}
-
 		return found;
 	}
 
@@ -1349,11 +1278,8 @@ public class LWC {
 
 	@SuppressWarnings("deprecation")
 	public boolean blockEquals(BlockState block, BlockState block2) {
-		return block.getType() == block2.getType()
-				&& block.getX() == block2.getX()
-				&& block.getY() == block2.getY()
-				&& block.getZ() == block2.getZ()
-				&& block.getRawData() == block2.getRawData();
+		return block.getType() == block2.getType() && block.getX() == block2.getX() && block.getY() == block2.getY()
+				&& block.getZ() == block2.getZ() && block.getRawData() == block2.getRawData();
 	}
 
 	public Protection findProtection(World world, int x, int y, int z) {
@@ -1366,8 +1292,8 @@ public class LWC {
 
 	/**
 	 * Matches all possible blocks that can be considered a 'protection' e.g
-	 * clicking a chest will match double chests, clicking a door or block below
-	 * a door matches the whole door
+	 * clicking a chest will match double chests, clicking a door or block below a
+	 * door matches the whole door
 	 *
 	 * @param world
 	 * @param x
@@ -1385,21 +1311,18 @@ public class LWC {
 			return false;
 		}
 
-		return Boolean.parseBoolean(resolveProtectionConfiguration(state,
-				"enabled"));
+		return Boolean.parseBoolean(resolveProtectionConfiguration(state, "enabled"));
 	}
 
 	public boolean isProtectable(EntityType state) {
 
-		return Boolean.parseBoolean(resolveProtectionConfiguration(state,
-				"enabled"));
+		return Boolean.parseBoolean(resolveProtectionConfiguration(state, "enabled"));
 	}
 
 	@SuppressWarnings("deprecation")
 	public String resolveProtectionConfiguration(BlockState state, String node) {
 		Material material = state.getType();
-		String cacheKey = state.getRawData() + "-" + material.toString() + "-"
-				+ node;
+		String cacheKey = state.getRawData() + "-" + material.toString() + "-" + node;
 		if (protectionConfigurationCache.containsKey(cacheKey)) {
 			return protectionConfigurationCache.get(cacheKey);
 		}
@@ -1408,11 +1331,8 @@ public class LWC {
 
 		String materialName = normalizeMaterialName(material);
 
-		
 		// add the name & the block id
 		names.add(materialName);
-		names.add(state.getTypeId() + "");
-		names.add(state.getTypeId() + ":" + state.getRawData());
 		names.add(materialName + ":" + state.getRawData());
 
 		if (!materialName.equals(material.toString().toLowerCase())) {
@@ -1421,17 +1341,15 @@ public class LWC {
 
 		// Add the wildcards last so it can be overriden
 		names.add("*");
-		names.add(state.getTypeId() + ":*");
 
-        if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
-        	names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
-        }
-		
+		if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
+			names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
+		}
+
 		String value = configuration.getString("protections." + node);
 
 		for (String name : names) {
-			String temp = configuration.getString("protections.blocks." + name
-					+ "." + node);
+			String temp = configuration.getString("protections.blocks." + name + "." + node);
 
 			if (temp != null && !temp.isEmpty()) {
 				value = temp;
@@ -1450,8 +1368,7 @@ public class LWC {
 
 		String value = configuration.getString("protections." + node);
 
-		String temp = configuration.getString("protections.blocks." + state.toString().toUpperCase()
-				+ "." + node);
+		String temp = configuration.getString("protections.blocks." + state.name().toUpperCase() + "." + node);
 
 		if (temp != null && !temp.isEmpty()) {
 			value = temp;
@@ -1483,16 +1400,14 @@ public class LWC {
 	}
 
 	/**
-	 * Check a player for a node, using a fallback as a default (e.g
-	 * lwc.protect)
+	 * Check a player for a node, using a fallback as a default (e.g lwc.protect)
 	 *
 	 * @param sender
 	 * @param node
 	 * @param fallback
 	 * @return
 	 */
-	public boolean hasPermission(CommandSender sender, String node,
-			String... fallback) {
+	public boolean hasPermission(CommandSender sender, String node, String... fallback) {
 		if (!(sender instanceof Player)) {
 			return true;
 		}
@@ -1551,16 +1466,14 @@ public class LWC {
 	public boolean isProtectable(Block block) {
 		Material material = block.getType();
 		if (block instanceof EntityBlock) {
-			return Boolean.parseBoolean(resolveProtectionConfiguration(
-					((EntityBlock) block).getEntity().getType(), "enabled"));
+			return Boolean.parseBoolean(resolveProtectionConfiguration(EntityBlock.getEntity().getType(), "enabled"));
 		}
 
 		if (material == null) {
 			return false;
 		}
 
-		return Boolean.parseBoolean(resolveProtectionConfiguration(block,
-				"enabled"));
+		return Boolean.parseBoolean(resolveProtectionConfiguration(block, "enabled"));
 	}
 
 	/**
@@ -1576,8 +1489,7 @@ public class LWC {
 		if (material == null) {
 			return null;
 		}
-		String cacheKey = block.getData() + "-" + material.toString() + "-"
-				+ node;
+		String cacheKey = block.getData() + "-" + material.toString() + "-" + node;
 		if (protectionConfigurationCache.containsKey(cacheKey)) {
 			return protectionConfigurationCache.get(cacheKey);
 		}
@@ -1588,8 +1500,6 @@ public class LWC {
 
 		// add the name & the block id
 		names.add(materialName);
-		names.add(material.getId() + "");
-		names.add(material.getId() + ":" + block.getData());
 		names.add(materialName + ":" + block.getData());
 
 		if (!materialName.equals(material.toString().toLowerCase())) {
@@ -1598,17 +1508,15 @@ public class LWC {
 
 		// Add the wildcards last so it can be overriden
 		names.add("*");
-		names.add(material.getId() + ":*");
 
-        if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
-        	names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
-        }
-		
+		if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
+			names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
+		}
+
 		String value = configuration.getString("protections." + node);
 
 		for (String name : names) {
-			String temp = configuration.getString("protections.blocks." + name
-					+ "." + node);
+			String temp = configuration.getString("protections.blocks." + name + "." + node);
 
 			if (temp != null && !temp.isEmpty()) {
 				value = temp;
@@ -1626,7 +1534,6 @@ public class LWC {
 	 * @param node
 	 * @return
 	 */
-	@SuppressWarnings("deprecation")
 	public String resolveProtectionConfiguration(Material material, String node) {
 		if (material == null) {
 			return null;
@@ -1642,7 +1549,6 @@ public class LWC {
 
 		// add the name & the block id
 		names.add(materialName);
-		names.add(material.getId() + "");
 
 		if (!materialName.equals(material.toString().toLowerCase())) {
 			names.add(material.toString().toLowerCase());
@@ -1650,13 +1556,11 @@ public class LWC {
 
 		// Add the wildcards last so it can be overriden
 		names.add("*");
-		names.add(material.getId() + ":*");
 
 		String value = configuration.getString("protections." + node);
 
 		for (String name : names) {
-			String temp = configuration.getString("protections.blocks." + name
-					+ "." + node);
+			String temp = configuration.getString("protections.blocks." + name + "." + node);
 
 			if (temp != null && !temp.isEmpty()) {
 				value = temp;
@@ -1668,8 +1572,7 @@ public class LWC {
 	}
 
 	/**
-	 * Load sqlite (done only when LWC is loaded so memory isn't used
-	 * unnecessarily)
+	 * Load sqlite (done only when LWC is loaded so memory isn't used unnecessarily)
 	 */
 	public void load() {
 		configuration = Configuration.load("core.yml");
@@ -1755,6 +1658,7 @@ public class LWC {
 		registerModule(new AdminFind());
 		registerModule(new AdminFlush());
 		registerModule(new AdminForceOwner());
+		registerModule(new AdminOwnerAll());
 		registerModule(new AdminLocale());
 		registerModule(new AdminPurge());
 		registerModule(new AdminReload());
@@ -1854,19 +1758,17 @@ public class LWC {
 	}
 
 	/**
-	 * Process rights inputted for a protection and add or remove them to the
-	 * given protection
+	 * Process rights inputted for a protection and add or remove them to the given
+	 * protection
 	 *
 	 * @param sender
 	 * @param protection
 	 * @param arguments
 	 */
-	public void processRightsModifications(CommandSender sender,
-			Protection protection, String... arguments) {
+	public void processRightsModifications(CommandSender sender, Protection protection, String... arguments) {
 		// Does it match a protection type?
 		try {
-			Protection.Type protectionType = Protection.Type
-					.matchType(arguments[0]);
+			Protection.Type protectionType = Protection.Type.matchType(arguments[0]);
 
 			if (protectionType != null) {
 				protection.setType(protectionType);
@@ -1878,12 +1780,8 @@ public class LWC {
 					protection.setPassword(encrypt(password));
 				}
 
-				sendLocale(
-						sender,
-						"protection.typechanged",
-						"type",
-						plugin.getMessageParser().parseMessage(
-								protectionType.toString().toLowerCase()));
+				sendLocale(sender, "protection.typechanged", "type",
+						plugin.getMessageParser().parseMessage(protectionType.toString().toLowerCase()));
 				return;
 			}
 		} catch (IllegalArgumentException e) {
@@ -1962,40 +1860,31 @@ public class LWC {
 
 			if (!remove) {
 				Permission permission = new Permission(value, type);
-				permission.setAccess(isAdmin ? Permission.Access.ADMIN
-						: Permission.Access.PLAYER);
+				permission.setAccess(isAdmin ? Permission.Access.ADMIN : Permission.Access.PLAYER);
 
 				// add it to the protection and queue it to be saved
 				protection.addPermission(permission);
 				protection.save();
 
 				if (type == Permission.Type.PLAYER) {
-					sendLocale(sender, "protection.interact.rights.register."
-							+ localeChild, "name",
+					sendLocale(sender, "protection.interact.rights.register." + localeChild, "name",
 							UUIDRegistry.formatPlayerName(value), "isadmin",
-							isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold
-									+ "]" : "");
+							isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold + "]" : "");
 				} else {
-					sendLocale(sender, "protection.interact.rights.register."
-							+ localeChild, "name", value, "isadmin",
-							isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold
-									+ "]" : "");
+					sendLocale(sender, "protection.interact.rights.register." + localeChild, "name", value, "isadmin",
+							isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold + "]" : "");
 				}
 			} else {
 				protection.removePermissions(value, type);
 				protection.save();
 
 				if (type == Permission.Type.PLAYER) {
-					sendLocale(sender, "protection.interact.rights.remove."
-							+ localeChild, "name",
+					sendLocale(sender, "protection.interact.rights.remove." + localeChild, "name",
 							UUIDRegistry.formatPlayerName(value), "isadmin",
-							isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold
-									+ "]" : "");
+							isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold + "]" : "");
 				} else {
-					sendLocale(sender, "protection.interact.rights.remove."
-							+ localeChild, "name", value, "isadmin",
-							isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold
-									+ "]" : "");
+					sendLocale(sender, "protection.interact.rights.remove." + localeChild, "name", value, "isadmin",
+							isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold + "]" : "");
 				}
 			}
 		}
@@ -2052,8 +1941,7 @@ public class LWC {
 	 * @return true if the player is NOT in persistent mode
 	 */
 	public boolean notInPersistentMode(String player) {
-		return !wrapPlayer(Bukkit.getServer().getPlayer(player)).hasMode(
-				"persist");
+		return !wrapPlayer(Bukkit.getServer().getPlayer(player)).hasMode("persist");
 	}
 
 	/**
@@ -2158,9 +2046,7 @@ public class LWC {
 		return !configuration.getBoolean("core.disableHistory", false);
 	}
 
-	@SuppressWarnings("deprecation")
-	public boolean enforceAccess(Player player, Protection protection,
-			Entity entity, boolean hasAccess) {
+	public boolean enforceAccess(Player player, Protection protection, Entity entity, boolean hasAccess) {
 		MessageParser parser = plugin.getMessageParser();
 		Block block = new EntityBlock(entity);
 		if (block == null || protection == null) {
@@ -2169,16 +2055,14 @@ public class LWC {
 
 		// support for old protection dbs that do not contain the block id
 		if (block != null
-				&& (protection.getBlockId() <= 0 && block.getTypeId() != protection
-						.getBlockId())) {
-			protection.setBlockId(block.getTypeId());
+				&& (protection.getBlockName() == null && block.getType().name() != protection.getBlockName())) {
+			protection.setBlockName(block.getType().name());
 			protection.save();
 		}
 
 		// multi-world, update old protections
 		if (block != null
-				&& (protection.getWorld() == null || !block.getWorld()
-						.getName().equals(protection.getWorld()))) {
+				&& (protection.getWorld() == null || !block.getWorld().getName().equals(protection.getWorld()))) {
 			protection.setWorld(block.getWorld().getName());
 			protection.save();
 		}
@@ -2190,21 +2074,17 @@ public class LWC {
 			// check that they aren't an admin and if they are, they need to be
 			// the owner of the protection or have access through /cmodify
 			if (protection.isOwner(player)
-					|| protection.getAccess(player.getName(),
-							Permission.Type.PLAYER) != Permission.Access.NONE) {
+					|| protection.getAccess(player.getName(), Permission.Type.PLAYER) != Permission.Access.NONE) {
 				protection.setLastAccessed(timestamp);
 				protection.save();
 			}
 		}
 
 		boolean permShowNotices = hasPermission(player, "lwc.shownotices");
-		if ((permShowNotices && configuration.getBoolean("core.showNotices",
-				true))
-				&& !Boolean.parseBoolean(resolveProtectionConfiguration(block.getType(),
-						"quiet"))) {
+		if ((permShowNotices && configuration.getBoolean("core.showNotices", true))
+				&& !Boolean.parseBoolean(resolveProtectionConfiguration(block.getType(), "quiet"))) {
 			boolean isOwner = protection.isOwner(player);
-			boolean showMyNotices = configuration.getBoolean(
-					"core.showMyNotices", true);
+			boolean showMyNotices = configuration.getBoolean("core.showMyNotices", true);
 
 			if (!isOwner || (isOwner && (showMyNotices || permShowNotices))) {
 				String owner;
@@ -2216,40 +2096,32 @@ public class LWC {
 					owner = protection.getFormattedOwnerPlayerName();
 				}
 
-				String blockName = entity.getType().getName();
-				String protectionTypeToString = parser.parseMessage(protection
-						.typeToString().toLowerCase());
+				String blockName = entity.getType().name();
+				String protectionTypeToString = parser.parseMessage(protection.typeToString().toLowerCase());
 
 				if (protectionTypeToString == null) {
 					protectionTypeToString = "Unknown";
 				}
 
-				if (parser.parseMessage("protection." + blockName.toLowerCase()
-						+ ".notice.protected") != null) {
-					sendLocale(player, "protection." + blockName.toLowerCase()
-							+ ".notice.protected", "type",
-							protectionTypeToString, "block", blockName,
-							"owner", owner);
+				if (parser.parseMessage("protection." + blockName.toLowerCase() + ".notice.protected") != null) {
+					sendLocale(player, "protection." + blockName.toLowerCase() + ".notice.protected", "type",
+							protectionTypeToString, "block", blockName, "owner", owner);
 				} else {
-					sendLocale(player, "protection.general.notice.protected",
-							"type", protectionTypeToString, "block", blockName,
-							"owner", owner);
+					sendLocale(player, "protection.general.notice.protected", "type", protectionTypeToString, "block",
+							blockName, "owner", owner);
 				}
 			}
 		}
 
 		if (!hasAccess) {
-			String blockName = entity.getType().getName();
+			String blockName = entity.getType().name();
 			Protection.Type type = protection.getType();
 
 			if (type == Protection.Type.PASSWORD) {
-				sendLocale(player, "protection.general.locked.password",
-						"block", blockName, "owner",
+				sendLocale(player, "protection.general.locked.password", "block", blockName, "owner",
 						protection.getOwner());
-			} else if (type == Protection.Type.PRIVATE
-					|| type == Protection.Type.DONATION) {
-				sendLocale(player, "protection.general.locked.private",
-						"block", blockName, "owner",
+			} else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION) {
+				sendLocale(player, "protection.general.locked.private", "block", blockName, "owner",
 						protection.getOwner());
 			}
 		}

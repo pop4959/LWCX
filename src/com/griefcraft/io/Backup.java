@@ -134,7 +134,7 @@ public class Backup {
             RestorableProtection rprotection = new RestorableProtection();
             rprotection.setId(inputStream.readInt());
             rprotection.setProtectionType(inputStream.readByte());
-            rprotection.setBlockId(inputStream.readShort());
+            rprotection.setBlockId(inputStream.readUTF());
             rprotection.setOwner(inputStream.readUTF());
             rprotection.setWorld(inputStream.readUTF());
             rprotection.setX(inputStream.readInt());
@@ -181,8 +181,7 @@ public class Backup {
      *
      * @param restorable
      */
-    @SuppressWarnings("deprecation")
-	protected void writeRestorable(Restorable restorable) throws IOException {
+    protected void writeRestorable(Restorable restorable) throws IOException {
         if (operationMode != OperationMode.WRITE) {
             throw new UnsupportedOperationException("WRITE is not allowed on this backup.");
         }
@@ -196,7 +195,7 @@ public class Backup {
 
             outputStream.writeInt(rprotection.getId());
             outputStream.writeByte(rprotection.getType());
-            outputStream.writeShort(rprotection.getBlockId());
+            outputStream.writeUTF(rprotection.getBlockNeme());
             outputStream.writeUTF(rprotection.getOwner());
             outputStream.writeUTF(rprotection.getWorld());
             outputStream.writeInt(rprotection.getX());
@@ -222,7 +221,7 @@ public class Backup {
                 ItemStack stack = entry.getValue();
 
                 outputStream.writeShort(slot);
-                outputStream.writeShort(stack.getTypeId());
+                outputStream.writeUTF(stack.getType().name());
                 outputStream.writeShort(stack.getAmount());
                 outputStream.writeShort(stack.getDurability());
             }
