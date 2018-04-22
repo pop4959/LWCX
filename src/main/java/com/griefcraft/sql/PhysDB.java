@@ -263,20 +263,6 @@ public class PhysDB extends Database {
 			return;
 		}
 
-		/**
-		 * Updates that alter or rename a table go here
-		 */
-		doUpdate301();
-		doUpdate302();
-		doUpdate330();
-		doUpdate400_1();
-		doUpdate400_4();
-		doUpdate400_4();
-		doUpdate400_5();
-		doUpdate400_6();
-		if (doUpdate1_13()) {
-			doUpdate1_13_2();
-		}
 		Column column;
 
 		Table protections = new Table(this, "protections");
@@ -399,6 +385,21 @@ public class PhysDB extends Database {
 		protections.execute();
 		history.execute();
 		internal.execute();
+
+		/**
+		 * Updates that alter or rename a table go here
+		 */
+		doUpdate301();
+		doUpdate302();
+		doUpdate330();
+		doUpdate400_1();
+		doUpdate400_4();
+		doUpdate400_4();
+		doUpdate400_5();
+		doUpdate400_6();
+		if (doUpdate1_13()) {
+			doUpdate1_13_2();
+		}
 
 		// Load the database version
 		loadDatabaseVersion();
