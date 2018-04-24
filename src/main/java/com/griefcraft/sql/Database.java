@@ -183,7 +183,7 @@ public abstract class Database {
 	public boolean setAutoCommit(boolean autoCommit) {
 		try {
 			// Commit the database if we are setting auto commit back to true
-			if (autoCommit) {
+			if (autoCommit && !connection.getAutoCommit()) {
 				connection.commit();
 			}
 
@@ -256,7 +256,7 @@ public abstract class Database {
 			connection = driver.connect("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
 					properties);
 			connected = true;
-			setAutoCommit(false);
+			setAutoCommit(true);
 			return true;
 		} catch (SQLException e) {
 			log("Failed to connect to " + currentType + ": " + e.getErrorCode() + " - " + e.getMessage());
@@ -270,10 +270,16 @@ public abstract class Database {
 
 	public void dispose() {
 		statementCache.invalidateAll();
-		;
 
-		try {
+        try {
 			if (connection != null) {
+                try {
+                    if(!connection.getAutoCommit()) {
+                        connection.commit();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 				connection.close();
 			}
 		} catch (SQLException e) {

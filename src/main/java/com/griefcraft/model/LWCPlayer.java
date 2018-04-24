@@ -418,9 +418,4 @@ public class LWCPlayer implements CommandSender {
         player.setOp(b);
     }
 
-	@Override
-	public Spigot spigot() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
