@@ -29,6 +29,7 @@
 package com.griefcraft.modules.free;
 
 import com.griefcraft.bukkit.EntityBlock;
+import com.griefcraft.bukkit.EntityBlockState;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Action;
 import com.griefcraft.model.ConfirmAction;
@@ -64,10 +65,15 @@ public class FreeModule extends JavaModule {
 		Player player = event.getPlayer();
 		event.setResult(Result.CANCEL);
 
+		/* Due to treating entities as blocks some issues are triggered
+		*  such as when clicking an armor stand the block is air.
+		*  I feel there is something better to be done here but this works */
 		if(protection.getBlock().getType() == Material.AIR) {
-			return;
+		    if(!protection.toString().contains("ARMOR_STAND")){
+                return;
+            }
 		}
-		
+
 		if (!lwc.isAdmin(player)
 				&& Boolean.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "readonly-remove"))) {
 			lwc.sendLocale(player, "protection.accessdenied");
@@ -80,7 +86,7 @@ public class FreeModule extends JavaModule {
 			lwc.getModuleLoader().dispatchEvent(evt);
 
 			if (!evt.isCancelled()) {
-				// bind the player of destroyed the protection
+			    // bind the player of destroyed the protection
 				// We don't need to save the history we modify because it will
 				// be saved anyway immediately after this
 				for (History history : protection.getRelatedHistory(History.Type.TRANSACTION)) {
@@ -98,7 +104,8 @@ public class FreeModule extends JavaModule {
 							EntityBlock.getEntity().getType().name());
 				} else {
 					lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
-							LWC.materialToString(protection.getBlock()));
+                            !protection.toString().contains("ARMOR_STAND") ?
+                                    LWC.materialToString(protection.getBlock()) : "ARMOR_STAND");
 				}
 			}
 

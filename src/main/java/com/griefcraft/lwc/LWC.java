@@ -1238,41 +1238,46 @@ public class LWC {
 		// is an air block even though the client and server sees it differently
 		// (ie a chest).
 		// This was of course very problematic!
-		if (block.getType() == Material.AIR || block.getBlock() instanceof EntityBlock) {
-			// We won't be able to match any other blocks anyway, so the least
-			// we can do is attempt to load a protection
-			return physicalDatabase.loadProtection(block.getWorld().getName(), block.getX(), block.getY(),
-					block.getZ());
-		}
-		Protection found = null;
-		try {
-			// Create a protection finder
-			ProtectionFinder finder = new ProtectionFinder(this);
+        if(block != null) {
+            if (block.getType() == Material.AIR || block instanceof EntityBlock) {
+                // We won't be able to match any other blocks anyway, so the least
+                // we can do is attempt to load a protection
+                return physicalDatabase.loadProtection(block.getWorld().getName(), block.getX(), block.getY(),
+                        block.getZ());
+            }
 
-			// Search for a protection
-			boolean result = finder.matchBlocks(block);
+            Protection found = null;
+            try {
+                // Create a protection finder
+                ProtectionFinder finder = new ProtectionFinder(this);
 
-			// We're done, load the possibly loaded protection
-			if (result) {
-				found = finder.loadProtection();
-			}
+                // Search for a protection
+                boolean result = finder.matchBlocks(block);
 
-			if (found == null) {
-				protectionCache.addKnownNull(ProtectionCache.cacheKey(block.getLocation()));
-			}
-		} catch (Exception e) {
-			log(e.getMessage());
-		}
-		return found;
+                // We're done, load the possibly loaded protection
+                if (result) {
+                    found = finder.loadProtection();
+                }
+
+                if (found == null) {
+                    protectionCache.addKnownNull(ProtectionCache.cacheKey(block.getLocation()));
+                }
+            } catch (Exception e) {
+                log(e.getMessage());
+            }
+            return found;
+        }
+        else {
+            log("Block is null");
+        }
+		return null;
 	}
 
 	/**
 	 * Find a protection linked to the block at [x, y, z]
 	 *
-	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param block
+	 * @param block2
 	 * @return
 	 */
 
@@ -1295,13 +1300,7 @@ public class LWC {
 	 * clicking a chest will match double chests, clicking a door or block below a
 	 * door matches the whole door
 	 *
-	 * @param world
-	 * @param x
-	 *            the x coordinate
-	 * @param y
-	 *            the y coordinate
-	 * @param z
-	 *            the z coordinate
+	 * @param state
 	 * @return the List of possible blocks
 	 */
 	public boolean isProtectable(BlockState state) {
