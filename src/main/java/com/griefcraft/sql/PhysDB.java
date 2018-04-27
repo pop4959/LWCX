@@ -273,7 +273,7 @@ public class PhysDB extends Database {
 			protections.add(column);
 
 			column = new Column("owner");
-			column.setType("VARCHAR(255)");
+			column.setType("VARCHAR(36)");
 			protections.add(column);
 
 			column = new Column("type");
@@ -305,19 +305,19 @@ public class PhysDB extends Database {
 			protections.add(column);
 
 			column = new Column("blockName");
-			column.setType("VARCHAR(255)");
+			column.setType("VARCHAR(32)");
 			protections.add(column);
 
 			column = new Column("world");
-			column.setType("VARCHAR(255)");
+			column.setType("VARCHAR(32)");
 			protections.add(column);
 
 			column = new Column("password");
-			column.setType("VARCHAR(255)");
+			column.setType("TEXT");
 			protections.add(column);
 
 			column = new Column("date");
-			column.setType("VARCHAR(255)");
+			column.setType("VARCHAR(32)");
 			protections.add(column);
 
 			column = new Column("last_accessed");
@@ -337,7 +337,7 @@ public class PhysDB extends Database {
 			history.add(column);
 
 			column = new Column("player");
-			column.setType("VARCHAR(255)");
+			column.setType("VARCHAR(36)");
 			history.add(column);
 
 			column = new Column("x");
