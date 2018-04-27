@@ -45,11 +45,8 @@ public class DestroyModule extends JavaModule {
             return;
         }
 
-        if (event.getMethod() != LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION) {
-            return;
-        }
-
-        if (event.getMethod() != LWCProtectionDestroyEvent.Method.ENTITY_DESTRUCTION) {
+        if (event.getMethod() != LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION &&
+                event.getMethod() != LWCProtectionDestroyEvent.Method.ENTITY_DESTRUCTION) {
             return;
         }
 

@@ -44,7 +44,7 @@ public class EntityBlockState implements BlockState{
 
     @Override
     public int getTypeId() {
-        return entityBlock.getType().ordinal();
+        return entityBlock.getTypeId();
     }
 
     @Override

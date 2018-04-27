@@ -44,6 +44,7 @@ import com.griefcraft.scripting.event.*;
 import com.griefcraft.util.Colors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -109,9 +110,8 @@ public class LWCEntityListener implements Listener {
             }
 
             if(event.getEntityType().equals(EntityType.ARMOR_STAND)) {
-                if(event.getDamage() < 1.0 ) { // Armor Stand Broke
-                    LWC.getInstance().log("Armor Stand Broke");
-
+                if(event.getDamage() < 1.0 ||
+                        ((Player) event.getDamager()).getGameMode().equals(GameMode.CREATIVE)) { // Armor Stand Broke
                     ProtectionCache cache = lwc.getProtectionCache();
                     String cacheKey = ProtectionCache.cacheKey(entityBlock.getLocation());
 
@@ -120,7 +120,7 @@ public class LWCEntityListener implements Listener {
                         cache.remove(cacheKey);
                     }
 
-                    Protection protection = lwc.findProtection(entityBlock.getLocation());
+                    Protection protection = lwc.findProtection(entityBlock);
 
                     if (protection == null) {
                         return;
