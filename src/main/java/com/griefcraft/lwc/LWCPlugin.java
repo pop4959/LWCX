@@ -183,8 +183,11 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 			lwc.sendLocale(sender, "lwc.commandnotsupported");
 			return true;
 		}
+		
+		// Prevent Bukkit from handling the error which gives a non-descript "/lwc"
+		lwc.sendLocale(sender, "lwc.invalidcommand");
+		return true;
 
-		return false;
 	}
 
 	@Override
