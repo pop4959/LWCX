@@ -3,6 +3,7 @@
 ### Authors and Maintainers
   * Hidendra, Original author
   * Me_Goes_RAWR, Lead maintainer
+  * Tsuser1, Collaborator
   
 ### Project Information
 LWC with support for the new 1.8 doors, fence gates, and iron trapdoors. Banners have optional support. If you currently use LWC, please see this wiki page: https://github.com/Hidendra/LWC/wiki/Bukkit-1.8
