@@ -39,11 +39,14 @@ public class DestroyModule extends JavaModule {
 
     @Override
     public void onDestroyProtection(LWCProtectionDestroyEvent event) {
+        LWC.getInstance().log("onDestroyProtection");
+
         if (event.isCancelled()) {
             return;
         }
 
-        if (event.getMethod() != LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION) {
+        if (event.getMethod() != LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION &&
+                event.getMethod() != LWCProtectionDestroyEvent.Method.ENTITY_DESTRUCTION) {
             return;
         }
 

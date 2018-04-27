@@ -15,6 +15,7 @@ import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.Plugin;
 
 public class EntityBlock implements Block{
@@ -24,7 +25,7 @@ public class EntityBlock implements Block{
 	public static final int POSITION_OFFSET = 50000;
 
 	public EntityBlock(Entity entity) {
-		EntityBlock.entity = entity;
+		this.entity = entity;
 		ENTITY_BLOCK_NAME = entity.getType().name();
 	}
 
@@ -54,7 +55,7 @@ public class EntityBlock implements Block{
 	}
 
 	public static Entity getEntity() {
-		return entity;
+		return EntityBlock.entity;
 	}
 	
 	public static Block getEntityBlock(Entity entity) {
@@ -62,38 +63,32 @@ public class EntityBlock implements Block{
 	}
 
 	@Override
-	public List<MetadataValue> getMetadata(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<MetadataValue> getMetadata(String s) {
+		return entity.getMetadata(s);
 	}
 
 	@Override
-	public boolean hasMetadata(String arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean hasMetadata(String s) {
+		return entity.hasMetadata(s);
 	}
 
 	@Override
-	public void removeMetadata(String arg0, Plugin arg1) {
-		// TODO Auto-generated method stub
-
+	public void removeMetadata(String s, Plugin p) {
+		entity.removeMetadata(s, p);
 	}
 
 	@Override
-	public void setMetadata(String arg0, MetadataValue arg1) {
-		// TODO Auto-generated method stub
-
+	public void setMetadata(String s, MetadataValue mv) {
+		entity.setMetadata(s, mv);
 	}
 
 	@Override
 	public boolean breakNaturally() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean breakNaturally(ItemStack arg0) {
-		// TODO Auto-generated method stub
+	public boolean breakNaturally(ItemStack itemStack) {
 		return false;
 	}
 
@@ -205,8 +200,7 @@ public class EntityBlock implements Block{
 
 	@Override
 	public BlockState getState() {
-		// TODO Auto-generated method stub
-		return null;
+		return new EntityBlockState(this);
 	}
 
 	@Override
@@ -283,7 +277,6 @@ public class EntityBlock implements Block{
 
 	public void setType(Material arg0, boolean arg1) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
