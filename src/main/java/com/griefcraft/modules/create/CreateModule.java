@@ -42,6 +42,7 @@ import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.sql.PhysDB;
 import com.griefcraft.util.StringUtil;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -84,11 +85,16 @@ public class CreateModule extends JavaModule {
 		}
 
 		LWC lwc = event.getLWC();
+		lwc.log("onBlockInteract " + event.toString());
 		Block block = event.getBlock();
 		LWCPlayer player = lwc.wrapPlayer(event.getPlayer());
 
 		if (!lwc.isProtectable(block)) {
 			return;
+		}
+
+		if(block.getType() == Material.AIR){
+			lwc.log("-- Block is air");
 		}
 
 		PhysDB physDb = lwc.getPhysicalDatabase();
@@ -196,6 +202,7 @@ public class CreateModule extends JavaModule {
 		}
 
 		LWC lwc = event.getLWC();
+		lwc.log("onCommand " + event.getCommand());
 		CommandSender sender = event.getSender();
 		String[] args = event.getArgs();
 
