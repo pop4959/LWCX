@@ -1,5 +1,5 @@
 ![alt Future LWC](https://i.imgur.com/m7XcQUt.png)
-# Future LWC
+# Modern LWC
 The unofficial continuation of LWC with support for modern versions of Minecraft.
 
 ### Authors and Maintainers
