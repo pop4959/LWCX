@@ -563,7 +563,6 @@ public class LWC {
 	 * @param ignore
 	 * @return
 	 */
-	@SuppressWarnings("unlikely-arg-type")
 	public List<Protection> findAdjacentProtectionsOnAllSides(Block block, Block... ignore) {
 		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
 				BlockFace.UP, BlockFace.DOWN };
@@ -1239,7 +1238,7 @@ public class LWC {
 		// (ie a chest).
 		// This was of course very problematic!
         if(block != null) {
-            if (block.getType() == Material.AIR || block instanceof EntityBlock || block.getTypeId() == EntityBlock.ENTITY_BLOCK_ID) {
+            if (block.getType() == Material.AIR || block instanceof EntityBlock) {
                 // We won't be able to match any other blocks anyway, so the least
                 // we can do is attempt to load a protection
                 return physicalDatabase.loadProtection(block.getWorld().getName(), block.getX(), block.getY(),

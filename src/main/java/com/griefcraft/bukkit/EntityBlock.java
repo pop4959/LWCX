@@ -15,7 +15,6 @@ import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.Plugin;
 
 public class EntityBlock implements Block{
@@ -25,7 +24,7 @@ public class EntityBlock implements Block{
 	public static final int POSITION_OFFSET = 50000;
 
 	public EntityBlock(Entity entity) {
-		this.entity = entity;
+		EntityBlock.entity = entity;
 		ENTITY_BLOCK_NAME = entity.getType().name();
 	}
 
