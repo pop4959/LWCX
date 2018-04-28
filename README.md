@@ -1,4 +1,5 @@
-# LWCEntityLocking
+# Future LWC
+The unofficial continuation of LWC with support for modern versions of Minecraft.
 
 ### Authors and Maintainers
   * Hidendra, Original author
