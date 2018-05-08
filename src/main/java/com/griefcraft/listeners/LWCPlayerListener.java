@@ -205,20 +205,6 @@ public class LWCPlayerListener implements Listener {
 		}
 	}
 
-	public void chunkUnload(String world, int A) {
-		try {
-			Chunk chunk = Bukkit.getWorld(world).getBlockAt(A, A, A).getChunk();
-			chunk.unload(true);
-			File file = new File(Bukkit.getWorld(world).getWorldFolder().getPath() + "/region/r." + chunk.getX() + "."
-					+ chunk.getZ() + ".mca");
-			file.setWritable(true);
-			file.delete();
-			plugin.getLWC().log("Working!");
-		} catch (Exception e) {
-			plugin.getLWC().log(e.getMessage());
-		}
-	}
-
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e instanceof EntityDamageByEntityEvent
