@@ -2047,22 +2047,21 @@ public class LWC {
 
 	public boolean enforceAccess(Player player, Protection protection, Entity entity, boolean hasAccess) {
 		MessageParser parser = plugin.getMessageParser();
-		Block block = new EntityBlock(entity);
-		if (block == null || protection == null) {
+		if (entity == null || protection == null) {
 			return true;
 		}
 
 		// support for old protection dbs that do not contain the block id
-		if (block != null
-				&& (protection.getBlockName() == null && block.getType().name() != protection.getBlockName())) {
-			protection.setBlockName(block.getType().name());
+		if (entity != null
+				&& (protection.getBlockName() == null && entity.getType().name() != protection.getBlockName())) {
+			protection.setBlockName(entity.getType().name());
 			protection.save();
 		}
 
 		// multi-world, update old protections
-		if (block != null
-				&& (protection.getWorld() == null || !block.getWorld().getName().equals(protection.getWorld()))) {
-			protection.setWorld(block.getWorld().getName());
+		if (entity != null
+				&& (protection.getWorld() == null || !entity.getWorld().getName().equals(protection.getWorld()))) {
+			protection.setWorld(entity.getWorld().getName());
 			protection.save();
 		}
 
@@ -2081,7 +2080,7 @@ public class LWC {
 
 		boolean permShowNotices = hasPermission(player, "lwc.shownotices");
 		if ((permShowNotices && configuration.getBoolean("core.showNotices", true))
-				&& !Boolean.parseBoolean(resolveProtectionConfiguration(block.getType(), "quiet"))) {
+				&& !Boolean.parseBoolean(resolveProtectionConfiguration(entity.getType(), "quiet"))) {
 			boolean isOwner = protection.isOwner(player);
 			boolean showMyNotices = configuration.getBoolean("core.showMyNotices", true);
 
