@@ -2,7 +2,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.griefcraft.lwc</groupId>
   <artifactId>Modern-LWC</artifactId>
-  <version>2.0.7</version>
   <name>Modern-LWC</name>
   <description>The unofficial continuation of LWC with support for modern versions of Minecraft.</description>
   <repositories>
