@@ -332,7 +332,6 @@ public class LWCPlayerListener implements Listener {
 			}
 			if (p.hasPermission("lwc.lockentity." + entity.getType()) || p.hasPermission("lwc.lockentity.all")) {
 				if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-					chunkUnload(entity.getWorld().getName(), A);
 					e.setCancelled(true);
 				}
 			}
