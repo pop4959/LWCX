@@ -165,7 +165,7 @@ public class DropTransferModule extends JavaModule {
         if (!canAccess) {
             lwc.sendLocale(player, "protection.interact.dropxfer.noaccess");
         } else {
-            if (protection.getBlockName() != Material.CHEST.name()) {
+            if (!protection.getBlockName().equalsIgnoreCase("chest")) {
                 lwc.sendLocale(player, "protection.interact.dropxfer.notchest");
                 player.removeAllActions();
                 event.setResult(Result.CANCEL);
