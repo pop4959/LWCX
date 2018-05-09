@@ -85,7 +85,7 @@ public class CreateModule extends JavaModule {
 		}
 
 		LWC lwc = event.getLWC();
-		lwc.log("onBlockInteract " + event.toString());
+		//lwc.log("onBlockInteract " + event.toString());
 		Block block = event.getBlock();
 		LWCPlayer player = lwc.wrapPlayer(event.getPlayer());
 
