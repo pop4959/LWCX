@@ -87,7 +87,7 @@ public abstract class Database {
 	public void closeQuietly(PreparedStatement closeable) {
 		try {
 			if (closeable != null) {
-				closeable.executeUpdate();
+				//closeable.executeUpdate();
 			}
 		} catch (Exception ignored) {}
 	}
