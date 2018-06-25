@@ -82,11 +82,9 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		String commandName = command.getName().toLowerCase();
 		String argString = StringUtil.join(args, 0);
-		boolean isPlayer = (sender instanceof Player); // check if they're a
-														// player
+		boolean isPlayer = (sender instanceof Player); // check if they're a player
 
-		// these can only apply to players, not the console (who has absolute
-		// player :P)
+		// these can only apply to players, not the console (who has absolute player)
 		if (isPlayer) {
 			// Aliases
 			String aliasCommand = null;
@@ -170,7 +168,7 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 			return true;
 		}
 
-		// /// Dispatch command to modules
+		// Dispatch command to modules
 		LWCCommandEvent evt = new LWCCommandEvent(sender, args[0].toLowerCase(),
 				args.length > 1 ? StringUtil.join(args, 1).split(" ") : new String[0]);
 		lwc.getModuleLoader().dispatchEvent(evt);
@@ -279,8 +277,7 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 		LWCResourceBundle locale;
 		String localization = getCurrentLocale();
 
-		// located in plugins/LWC/locale/, values in that overrides the ones in
-		// the default :-)
+		// located in plugins/LWC/locale/, values in that overrides the ones in the default
 		ResourceBundle optionalBundle = null;
 
 		try (JarFile file = new JarFile(getFile())) {
@@ -303,14 +300,11 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 				locale.addExtensionBundle(optionalBundle);
 			}
 
-			// and now check if a bundled locale the same as the server's locale
-			// exists
+			// and now check if a bundled locale the same as the server's locale exists
 			try {
 				optionalBundle = new PropertyResourceBundle(new InputStreamReader(
 						file.getInputStream(file.getJarEntry("lang/lwc_" + localization + ".properties")), "UTF-8"));
-			} catch (MissingResourceException e) {
-			} catch (NullPointerException e) {
-				// file wasn't found :p - that's ok
+			} catch (MissingResourceException || NullPointerException e) {
 			}
 
 			// ensure both bundles aren't the same
