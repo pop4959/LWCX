@@ -304,7 +304,8 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 			try {
 				optionalBundle = new PropertyResourceBundle(new InputStreamReader(
 						file.getInputStream(file.getJarEntry("lang/lwc_" + localization + ".properties")), "UTF-8"));
-			} catch (MissingResourceException || NullPointerException e) {
+			} catch (MissingResourceException e) {
+			} catch (NullPointerException e) {
 			}
 
 			// ensure both bundles aren't the same
