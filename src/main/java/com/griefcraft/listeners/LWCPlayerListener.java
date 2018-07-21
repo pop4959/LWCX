@@ -639,7 +639,20 @@ public class LWCPlayerListener implements Listener {
 		}
 		Block block = event.getClickedBlock();
 		BlockState state;
-
+		try {
+			if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib") && lwc.findProtection(block) != null) {
+				ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(lwc.getPlugin(),
+						ListenerPriority.MONITOR, PacketType.Play.Server.OPEN_WINDOW) {
+					@Override
+					public void onPacketSending(PacketEvent e) {
+						e.setReadOnly(false);
+						e.setCancelled(true);
+						return;
+					}
+				});
+			}
+		} catch (Exception e) {
+		}
 		try {
 			state = block.getState();
 		} catch (NullPointerException e) {
