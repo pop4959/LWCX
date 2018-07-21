@@ -355,7 +355,7 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 		pluginManager.registerEvents(new LWCBlockListener(this), this);
 		pluginManager.registerEvents(new LWCServerListener(this), this);
 		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-			pluginManager.registerEvents(new LWCProtocoLib(), this);
+			pluginManager.registerEvents(new LWCProtocoLib(this), this);
 		}
 	}
 
