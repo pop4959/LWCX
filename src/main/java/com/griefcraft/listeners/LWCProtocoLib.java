@@ -17,14 +17,16 @@ import com.griefcraft.lwc.LWCPlugin;
 public class LWCProtocoLib implements Listener {
 
 	private static LWCPlugin plugin;
-	
+	public LWCProtocoLib(LWCPlugin plugin) {
+		LWCProtocoLib.plugin = plugin;
+	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		LWC lwc = plugin.getLWC();
 		Player player = event.getPlayer();
 		Block block = event.getClickedBlock();
 		try {
-			if (lwc.findProtection(block) != null && !lwc.canAccessProtection(player, block)) {
+			if (lwc.findProtection(block) != null && (!lwc.canAccessProtection(player, block) || (!lwc.isAdmin(player) || !lwc.isMod(player)))) {
 				ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(lwc.getPlugin(),
 						ListenerPriority.MONITOR, PacketType.Play.Server.OPEN_WINDOW) {
 					@Override
