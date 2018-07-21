@@ -19,7 +19,10 @@
             <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
     </repository>
 -->	  
-	  
+    <repository>
+        <id>dmulloy2-repo</id>
+        <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
+    </repository>
     <repository>
         <id>scarsz</id>
         <url>https://dl.bintray.com/scarsz/maven</url>
