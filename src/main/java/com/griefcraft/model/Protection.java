@@ -620,20 +620,21 @@ public class Protection {
 	 *
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean isBlockInWorld() {
 		String storedBlockId = getBlockName();
 		Block block = getBlock();
 
 		switch (block.getType()) {
 		case FURNACE:
-		case BURNING_FURNACE:
+		case LEGACY_BURNING_FURNACE:
 			return storedBlockId == Material.FURNACE.name()
-					|| storedBlockId == Material.BURNING_FURNACE.name();
+					|| storedBlockId == Material.LEGACY_BURNING_FURNACE.name();
 
-		case STEP:
-		case DOUBLE_STEP:
-			return storedBlockId == Material.STEP.name()
-					|| storedBlockId == Material.DOUBLE_STEP.name();
+		case LEGACY_STEP:
+		case LEGACY_DOUBLE_STEP:
+			return storedBlockId == Material.LEGACY_STEP.name()
+					|| storedBlockId == Material.LEGACY_DOUBLE_STEP.name();
 
 		default:
 			return storedBlockId == block.getType().name();
@@ -960,6 +961,7 @@ public class Protection {
 	/**
 	 * @return the Bukkit Player object of the owner
 	 */
+	@SuppressWarnings("deprecation")
 	public Player getBukkitOwner() {
 		UUID uuid = UUIDRegistry.getUUID(owner);
 		

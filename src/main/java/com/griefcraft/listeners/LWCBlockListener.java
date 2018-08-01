@@ -130,25 +130,25 @@ public class LWCBlockListener implements Listener {
 			}
 		}
 	}
-	
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-        if (!LWC.ENABLED) {
-            return;
-        }
 
-        LWC lwc = LWC.getInstance();
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+		if (!LWC.ENABLED) {
+			return;
+		}
 
-        Block block = event.getBlock();
-        if (!lwc.isProtectable(block)) {
-            return;
-        }
+		LWC lwc = LWC.getInstance();
 
-        Protection protection = lwc.findProtection(block);
-        if (protection != null) {
-            event.setCancelled(true);
-        }
-    }
+		Block block = event.getBlock();
+		if (!lwc.isProtectable(block)) {
+			return;
+		}
+
+		Protection protection = lwc.findProtection(block);
+		if (protection != null) {
+			event.setCancelled(true);
+		}
+	}
 
 	@EventHandler
 	public void onSignChange(SignChangeEvent event) {
@@ -259,12 +259,13 @@ public class LWCBlockListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
 		LWC lwc = plugin.getLWC();
 		Block block = event.getBlock();
 
-		if (block.getType() == Material.BED_BLOCK) {
+		if (block.getType() == Material.LEGACY_BED_BLOCK) {
 			for (BlockState state : event.getReplacedBlockStates()) {
 				Protection protection = lwc.findProtection(state);
 
@@ -276,11 +277,12 @@ public class LWCBlockListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockFromTo(BlockFromToEvent event) {
 		Block block = event.getBlock();
 		LWC lwc = this.plugin.getLWC();
-		if (block.getType() == Material.WATER || block.getType() == Material.STATIONARY_WATER) {
+		if (block.getType() == Material.WATER || block.getType() == Material.LEGACY_STATIONARY_WATER || block.getType() == Material.LEGACY_WATER) {
 			if (lwc.findProtection(event.getToBlock().getLocation()) != null) {
 				event.setCancelled(true);
 				return;
@@ -370,7 +372,8 @@ public class LWCBlockListener implements Listener {
 		Block block = event.getBlockPlaced();
 
 		// Update the cache if a protection is matched here
-		Protection current = lwc.findProtection(block);
+		Protection current = lwc.getPhysicalDatabase().loadProtection(block.getWorld().getName(), block.getX(),
+				block.getY(), block.getZ());
 		if (current != null) {
 			if (!current.isBlockInWorld()) {
 				// Corrupted protection
@@ -430,7 +433,6 @@ public class LWCBlockListener implements Listener {
 				Block face = block.getRelative(blockFace);
 				// They're placing it beside a chest, check if it's already
 				// protected
-				lwc.getProtectionCache().addProtection(current);
 				if (face.getType() == block.getType()) {
 					if (lwc.findProtection(face.getLocation()) != null) {
 						return;
@@ -462,7 +464,6 @@ public class LWCBlockListener implements Listener {
 			if (protection != null) {
 				lwc.getModuleLoader().dispatchEvent(new LWCProtectionRegistrationPostEvent(protection));
 			}
-			protection.saveNow();
 		} catch (Exception e) {
 			lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
 			e.printStackTrace();

@@ -33,8 +33,6 @@ import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.ModuleLoader;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-
 import java.util.Set;
 
 public class LWCEntityDamageByEntityEvent extends LWCProtectionEvent implements IResult {

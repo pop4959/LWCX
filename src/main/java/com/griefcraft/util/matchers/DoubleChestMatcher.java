@@ -46,7 +46,8 @@ public class DoubleChestMatcher implements ProtectionFinder.Matcher {
     /**
      * Blocks that act like double chests
      */
-    public static final Set<Material> PROTECTABLES_CHESTS = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST);
+    @SuppressWarnings("deprecation")
+	public static final Set<Material> PROTECTABLES_CHESTS = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.LEGACY_CHEST, Material.LEGACY_TRAPPED_CHEST);
 
     /**
      * Possible faces around the base block that protections could be at

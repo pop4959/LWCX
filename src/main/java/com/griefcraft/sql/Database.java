@@ -81,15 +81,18 @@ public abstract class Database {
 	}
 
 	private Cache<String, PreparedStatement> statementCache = CacheBuilder.newBuilder()
-			.expireAfterWrite(2, TimeUnit.SECONDS)
+			.expireAfterWrite(5, TimeUnit.MINUTES)
 			.removalListener(notif -> closeQuietly((PreparedStatement) notif.getValue())).build();
 
 	public void closeQuietly(PreparedStatement closeable) {
 		try {
 			if (closeable != null) {
-				//closeable.executeUpdate();
+				//closeable.setPoolable(true);
+				//closeable.addBatch();
+				//closeable.executeBatch();
 			}
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 	}
 
 	/**
@@ -243,6 +246,8 @@ public abstract class Database {
 		// Create the properties to pass to the driver
 		Properties properties = new Properties();
 
+		properties.put("pooling","True");
+		properties.setProperty("MaxPooledStatements", "1000");
 		// if we're using mysql, append the database info
 		if (currentType == Type.MySQL) {
 			LWC lwc = LWC.getInstance();
@@ -271,15 +276,15 @@ public abstract class Database {
 	public void dispose() {
 		statementCache.invalidateAll();
 
-        try {
+		try {
 			if (connection != null) {
-                try {
-                    if(!connection.getAutoCommit()) {
-                        connection.commit();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+				try {
+					if (!connection.getAutoCommit()) {
+						connection.commit();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				connection.close();
 			}
 		} catch (SQLException e) {
@@ -357,7 +362,9 @@ public abstract class Database {
 		try {
 			if (useStatementCache) {
 				Statistics.addQuery();
-				return statementCache.get(sql, () -> prepareInternal(sql, returnGeneratedKeys));
+				final PreparedStatement p = statementCache.getIfPresent(sql);
+				if (p != null)
+					return p;
 			}
 
 			return prepareInternal(sql, returnGeneratedKeys);

@@ -282,16 +282,16 @@ public class LWC {
 	 *
 	 * @param block
 	 */
-	@SuppressWarnings("deprecation")
 	public void adjustChestDirection(Block block, BlockFace face) {
 		if (block.getType() != Material.CHEST) {
 			return;
 		}
 
 		// Is there a double chest?
-		Block doubleChest = findAdjacentDoubleChest(block);
+		//Block doubleChest = findAdjacentDoubleChest(block);
 
 		// Calculate the data byte to set
+		@SuppressWarnings("unused")
 		byte data = 0;
 
 		switch (face) {
@@ -315,11 +315,6 @@ public class LWC {
 		}
 
 		// set the data for both sides of the chest
-		block.setData(data);
-
-		if (doubleChest != null) {
-			doubleChest.setData(data);
-		}
 	}
 
 	/**
@@ -460,7 +455,7 @@ public class LWC {
 
 			if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
 				doubleChestBlock = findAdjacentDoubleChest(block);
-			} else if (block.getType() == Material.FURNACE || block.getType() == Material.BURNING_FURNACE) {
+			} else if (block.getType() == Material.FURNACE || block.getType() == Material.LEGACY_BURNING_FURNACE) {
 				Inventory inventory = holder.getInventory();
 
 				if (inventory.getItem(0) != null && inventory.getItem(1) != null) {
@@ -1239,7 +1234,7 @@ public class LWC {
 		// (ie a chest).
 		// This was of course very problematic!
         if(block != null) {
-            if (block.getType() == Material.AIR || block instanceof EntityBlock || block.getTypeId() == EntityBlock.ENTITY_BLOCK_ID) {
+            if (block.getType() == Material.AIR || block instanceof EntityBlock) {
                 // We won't be able to match any other blocks anyway, so the least
                 // we can do is attempt to load a protection
                 return physicalDatabase.loadProtection(block.getWorld().getName(), block.getX(), block.getY(),
@@ -1939,6 +1934,7 @@ public class LWC {
 	 *            the player to check
 	 * @return true if the player is NOT in persistent mode
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean notInPersistentMode(String player) {
 		return !wrapPlayer(Bukkit.getServer().getPlayer(player)).hasMode("persist");
 	}

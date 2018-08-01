@@ -29,7 +29,6 @@
 package com.griefcraft.modules.free;
 
 import com.griefcraft.bukkit.EntityBlock;
-import com.griefcraft.bukkit.EntityBlockState;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Action;
 import com.griefcraft.model.ConfirmAction;

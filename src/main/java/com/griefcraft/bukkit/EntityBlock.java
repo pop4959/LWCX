@@ -12,10 +12,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.Plugin;
 
 public class EntityBlock implements Block{
@@ -25,7 +25,7 @@ public class EntityBlock implements Block{
 	public static final int POSITION_OFFSET = 50000;
 
 	public EntityBlock(Entity entity) {
-		this.entity = entity;
+		EntityBlock.entity = entity;
 		ENTITY_BLOCK_NAME = entity.getType().name();
 	}
 
@@ -44,7 +44,6 @@ public class EntityBlock implements Block{
 		return 50000 + EntityBlock.entity.getUniqueId().hashCode();
 	}
 
-	@Override
 	public int getTypeId() {
 		return ENTITY_BLOCK_ID;
 	}
@@ -258,18 +257,6 @@ public class EntityBlock implements Block{
 	}
 
 	@Override
-	public void setData(byte arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setData(byte arg0, boolean arg1) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setType(Material arg0) {
 		// TODO Auto-generated method stub
 
@@ -279,21 +266,22 @@ public class EntityBlock implements Block{
 		// TODO Auto-generated method stub
 	}
 
+
 	@Override
-	public boolean setTypeId(int arg0) {
+	public BlockData getBlockData() {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override
-	public boolean setTypeId(int arg0, boolean arg1) {
+	public void setBlockData(BlockData arg0) {
 		// TODO Auto-generated method stub
-		return false;
+		
 	}
 
 	@Override
-	public boolean setTypeIdAndData(int arg0, byte arg1, boolean arg2) {
+	public void setBlockData(BlockData arg0, boolean arg1) {
 		// TODO Auto-generated method stub
-		return false;
+		
 	}
 }

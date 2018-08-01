@@ -39,7 +39,6 @@ import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -92,7 +91,8 @@ public class DropTransferModule extends JavaModule {
         return -1;
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onDropItem(LWCDropItemEvent event) {
         Player bPlayer = event.getPlayer();
         Item item = event.getEvent().getItemDrop();

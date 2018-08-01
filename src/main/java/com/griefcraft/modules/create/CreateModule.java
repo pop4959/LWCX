@@ -1,5 +1,4 @@
 /*
- * Copyright 2011 Tyler Blair. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -202,7 +201,7 @@ public class CreateModule extends JavaModule {
 		}
 
 		LWC lwc = event.getLWC();
-		lwc.log("onCommand " + event.getCommand());
+		//lwc.log("onCommand " + event.getCommand());
 		CommandSender sender = event.getSender();
 		String[] args = event.getArgs();
 

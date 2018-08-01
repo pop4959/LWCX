@@ -139,9 +139,9 @@ public class LimitsModule extends JavaModule {
         int protections; // 0 = *
 
         switch (type) {
-            case DEFAULT:
-                protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName());
-                break;
+        	case DEFAULT:
+        		protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName());
+            	break;
             case CUSTOM:
                 protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName(), block.getType().name());
                 break;
