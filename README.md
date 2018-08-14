@@ -1,6 +1,7 @@
 ![alt Future LWC](https://i.imgur.com/m7XcQUt.png)
 # Modern LWC
-This project is dead. Sorry.
+~~This project is dead. Sorry.~~
+**Project taken over by Tsuser1, join the Discord for more info**
 
 The unofficial continuation of LWC with support for modern versions of Minecraft. You can download the [latest stable version on Spigot](https://www.spigotmc.org/resources/2162/) or the developer versions [on our Jenkins server](http://jenkins.theemeraldage.com:8080/).
 
