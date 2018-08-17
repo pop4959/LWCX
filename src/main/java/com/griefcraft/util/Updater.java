@@ -47,11 +47,11 @@ public class Updater {
 				public void run() {
 					Object[] updates = Updater.getLastUpdate();
 					if (updates.length == 2) {
-						System.out.println("§6[§eModernLWC§6] New update avaible:");
-						System.out.println("§6New version: §e" + updates[0]);
+						System.out.println("[ModernLWC] New update avaible:");
+						System.out.println("New version: " + updates[0]);
 						System.out.println(
-								"§6Your version: §e" + LWC.getInstance().getPlugin().getDescription().getVersion());
-						System.out.println("§6What's new: §e" + updates[1]);
+								"Your version: " + LWC.getInstance().getPlugin().getDescription().getVersion());
+						System.out.println("What's new: " + updates[1]);
 					}
 				}
 
