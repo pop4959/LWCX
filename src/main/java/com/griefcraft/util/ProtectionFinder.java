@@ -72,12 +72,12 @@ public class ProtectionFinder {
     /**
      * All of the matched blocks
      */
-    private final List<BlockState> blocks = new LinkedList<BlockState>();
+    private final List<BlockState> blocks = new LinkedList<>();
 
     /**
      * All of the blocks that are protectables
      */
-    private final List<BlockState> protectables = new LinkedList<BlockState>();
+    private final List<BlockState> protectables = new LinkedList<>();
 
     public ProtectionFinder(LWC lwc) {
         this.lwc = lwc;
