@@ -73,24 +73,24 @@ public class LimitsV2 extends JavaModule {
 	/**
 	 * A map of the default limits
 	 */
-	private final List<Limit> defaultLimits = new LinkedList<Limit>();
+	private final List<Limit> defaultLimits = new LinkedList<>();
 
 	/**
 	 * A map of all of the player limits
 	 */
-	private final Map<String, List<Limit>> playerLimits = new HashMap<String, List<Limit>>();
+	private final Map<String, List<Limit>> playerLimits = new HashMap<>();
 
 	/**
 	 * A map of all of the group limits - downcasted to lowercase to simplify
 	 * comparisons
 	 */
-	private final Map<String, List<Limit>> groupLimits = new HashMap<String, List<Limit>>();
+	private final Map<String, List<Limit>> groupLimits = new HashMap<>();
 
 	/**
 	 * A map mapping string representations of materials to their Material
 	 * counterpart
 	 */
-	private final Map<String, Material> materialCache = new HashMap<String, Material>();
+	private final Map<String, Material> materialCache = new HashMap<>();
 
 	{
 		for (Material material : Material.values()) {
@@ -410,7 +410,7 @@ public class LimitsV2 extends JavaModule {
 	 * @return
 	 */
 	private List<Limit> findLimitsViaPermissions(Player player) {
-		List<Limit> limits = new LinkedList<Limit>();
+		List<Limit> limits = new LinkedList<>();
 
 		for (PermissionAttachmentInfo pai : player.getEffectivePermissions()) {
 			String permission = pai.getPermission();
@@ -465,7 +465,7 @@ public class LimitsV2 extends JavaModule {
 	 */
 	public List<Limit> getPlayerLimits(Player player) {
 		LWC lwc = LWC.getInstance();
-		List<Limit> limits = new LinkedList<Limit>();
+		List<Limit> limits = new LinkedList<>();
 
 		// get all of their own limits
 		String playerName = player.getName().toLowerCase();
@@ -661,7 +661,7 @@ public class LimitsV2 extends JavaModule {
 	 * @return
 	 */
 	private List<Limit> findLimits(String node) {
-		List<Limit> limits = new LinkedList<Limit>();
+		List<Limit> limits = new LinkedList<>();
 		List<String> keys = configuration.getKeys(node);
 
 		for (String key : keys) {
