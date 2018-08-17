@@ -60,7 +60,7 @@ public class CreditsModule extends JavaModule {
     /**
      * Players to send to and the credits index
      */
-    private final Map<CommandSender, Integer> scrolling = Collections.synchronizedMap(new HashMap<CommandSender, Integer>());
+    private final Map<CommandSender, Integer> scrolling = Collections.synchronizedMap(new HashMap<>());
 
     private class CreditsTask implements Runnable {
 
