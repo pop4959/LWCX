@@ -52,7 +52,7 @@ public class Configuration extends ConfigurationNode {
     /**
      * List of loaded config files
      */
-    private static Map<String, Configuration> loaded = new HashMap<String, Configuration>();
+    private static Map<String, Configuration> loaded = new HashMap<>();
 
     /**
      * The config updater for config files
