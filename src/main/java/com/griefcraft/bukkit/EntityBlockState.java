@@ -157,10 +157,4 @@ public class EntityBlockState implements BlockState{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public void setData(MaterialData arg0) {
-		// TODO Auto-generated method stub
-		
-	}
 }
