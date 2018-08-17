@@ -558,7 +558,6 @@ public class LWC {
 	 * @param ignore
 	 * @return
 	 */
-	@SuppressWarnings("unlikely-arg-type")
 	public List<Protection> findAdjacentProtectionsOnAllSides(Block block, Block... ignore) {
 		BlockFace[] faces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
 				BlockFace.UP, BlockFace.DOWN };

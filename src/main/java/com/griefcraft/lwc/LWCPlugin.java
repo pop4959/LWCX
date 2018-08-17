@@ -205,8 +205,8 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 
 	@Override
 	public void onEnable() {
-		preload();
 		lwc = new LWC(this);
+		preload();
 
 		Metrics m = new Metrics(this);
 
@@ -339,6 +339,7 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 	 */
 	private void preload() {
 		updater = new Updater();
+		updater.init(); // Check for updates
 	}
 
 	/**
