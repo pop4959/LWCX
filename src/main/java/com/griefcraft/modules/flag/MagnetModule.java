@@ -80,7 +80,7 @@ public class MagnetModule extends JavaModule {
 	/**
 	 * The current entity queue
 	 */
-	private final Queue<MagnetNode> items = new LinkedList<MagnetNode>();
+	private final Queue<MagnetNode> items = new LinkedList<>();
 
 	private class MagnetNode {
 		Item item;

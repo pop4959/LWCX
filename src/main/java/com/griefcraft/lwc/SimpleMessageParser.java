@@ -45,12 +45,12 @@ public class SimpleMessageParser implements MessageParser {
     /**
      * Cached messages
      */
-    private final Map<String, String> basicMessageCache = new HashMap<String, String>();
+    private final Map<String, String> basicMessageCache = new HashMap<>();
 
     /**
      * A heavy cache that includes binds.
      */
-    private final Map<String, String> bindMessageCache = new HashMap<String, String>();
+    private final Map<String, String> bindMessageCache = new HashMap<>();
 
     public SimpleMessageParser(ResourceBundle locale) {
         this.locale = locale;
@@ -130,7 +130,7 @@ public class SimpleMessageParser implements MessageParser {
      * @return
      */
     private Map<String, Object> parseBinds(Object... args) {
-        Map<String, Object> bind = new HashMap<String, Object>();
+        Map<String, Object> bind = new HashMap<>();
 
         if (args == null || args.length < 2) {
             return bind;

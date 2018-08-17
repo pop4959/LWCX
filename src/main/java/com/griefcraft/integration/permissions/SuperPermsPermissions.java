@@ -54,7 +54,7 @@ public class SuperPermsPermissions implements IPermissions {
     @Override
     public List<String> getGroups(Player player) {
         LWC.getInstance();
-        List<String> groups = new ArrayList<String>();
+        List<String> groups = new ArrayList<>();
 
         for (PermissionAttachmentInfo pai : player.getEffectivePermissions()) {
             if (pai.getPermission().startsWith(groupPrefix)) {

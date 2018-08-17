@@ -154,7 +154,7 @@ public class AdminCleanup extends JavaModule {
 		}
 
 		public void run() {
-			List<Integer> toRemove = new LinkedList<Integer>();
+			List<Integer> toRemove = new LinkedList<>();
 			int removed = 0;
 			int percentChecked = 0;
 
@@ -166,7 +166,7 @@ public class AdminCleanup extends JavaModule {
 
 				// the list of protections work off of. We batch updates to the world
 				// so we can more than 20 results/second.
-				final List<Protection> protections = new ArrayList<Protection>(BATCH_SIZE);
+				final List<Protection> protections = new ArrayList<>(BATCH_SIZE);
 
 				// amount of protections
 				int totalProtections = lwc.getPhysicalDatabase().getProtectionCount();

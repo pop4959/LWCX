@@ -149,7 +149,7 @@ public class ConfigPost300 implements MigrationUtility {
 
     // populate the mappings table with well the mappings
     private static void populate() {
-        mappings = new HashMap<String, String>();
+        mappings = new HashMap<>();
 
         mappings.put("allow-block-destruction", "protections.allowBlockDestruction");
         mappings.put("auto-update", "core.autoUpdate");

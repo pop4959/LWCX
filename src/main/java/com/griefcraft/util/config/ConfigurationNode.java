@@ -39,7 +39,7 @@ public class ConfigurationNode {
     /**
      * Added by Hidendra
      */
-    protected final Map<String, Object> cache = new HashMap<String, Object>();
+    protected final Map<String, Object> cache = new HashMap<>();
 
     ConfigurationNode(Map<String, Object> root) {
         this.root = root;
@@ -312,7 +312,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<Integer>();
         }
 
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         for (Object o : raw) {
             Integer i = castInt(o);
             if (i != null) {
@@ -340,7 +340,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<Double>();
         }
 
-        List<Double> list = new ArrayList<Double>();
+        List<Double> list = new ArrayList<>();
         for (Object o : raw) {
             Double i = castDouble(o);
             if (i != null) {
@@ -368,7 +368,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<Boolean>();
         }
 
-        List<Boolean> list = new ArrayList<Boolean>();
+        List<Boolean> list = new ArrayList<>();
         for (Object o : raw) {
             Boolean tetsu = castBoolean(o);
             if (tetsu != null) {
@@ -397,7 +397,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<ConfigurationNode>();
         }
 
-        List<ConfigurationNode> list = new ArrayList<ConfigurationNode>();
+        List<ConfigurationNode> list = new ArrayList<>();
         for (Object o : raw) {
             if (o instanceof Map) {
                 list.add(new ConfigurationNode((Map<String, Object>) o));
@@ -438,8 +438,7 @@ public class ConfigurationNode {
         if (o == null) {
             return null;
         } else if (o instanceof Map) {
-            Map<String, ConfigurationNode> nodes =
-                    new HashMap<String, ConfigurationNode>();
+            Map<String, ConfigurationNode> nodes = new HashMap<>();
 
             for (Map.Entry<String, Object> entry : ((Map<String, Object>) o).entrySet()) {
                 if (entry.getValue() instanceof Map) {

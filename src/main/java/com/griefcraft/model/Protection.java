@@ -126,17 +126,17 @@ public class Protection {
 	/**
 	 * All of the history items associated with this protection
 	 */
-	private final Set<History> historyCache = new HashSet<History>();
+	private final Set<History> historyCache = new HashSet<>();
 
 	/**
 	 * List of the permissions rights for the protection
 	 */
-	private final Set<Permission> permissions = new HashSet<Permission>();
+	private final Set<Permission> permissions = new HashSet<>();
 
 	/**
 	 * List of flags enabled on the protection
 	 */
-	private final Map<Flag.Type, Flag> flags = new HashMap<Flag.Type, Flag>();
+	private final Map<Flag.Type, Flag> flags = new HashMap<>();
 
 	/**
 	 * The block id
@@ -456,7 +456,7 @@ public class Protection {
 	 * @return
 	 */
 	public List<History> getRelatedHistory(History.Type type) {
-		List<History> matches = new ArrayList<History>();
+		List<History> matches = new ArrayList<>();
 		Set<History> relatedHistory = getRelatedHistory();
 
 		for (History history : relatedHistory) {
