@@ -47,7 +47,7 @@ public class DatabaseThread implements Runnable {
 	/**
 	 * The protections waiting to be updated in the database
 	 */
-	private final Queue<Protection> updateQueue = new ConcurrentLinkedQueue<Protection>();
+	private final Queue<Protection> updateQueue = new ConcurrentLinkedQueue<>();
 
 	/**
 	 * The thread we are running in
