@@ -6,12 +6,14 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class EntityBlockState implements BlockState{
     private static EntityBlock entityBlock;
 
@@ -33,18 +35,8 @@ public class EntityBlockState implements BlockState{
     }
 
     @Override
-    public MaterialData getData() {
-        return null;
-    }
-
-    @Override
     public Material getType() {
         return entityBlock.getType();
-    }
-
-    @Override
-    public int getTypeId() {
-        return entityBlock.getTypeId();
     }
 
     @Override
@@ -100,12 +92,6 @@ public class EntityBlockState implements BlockState{
     }
 
     @Override
-    public boolean setTypeId(int i) {
-        entityBlock.setTypeId(i);
-        return true;
-    }
-
-    @Override
     public boolean update() {
         return false;
     }
@@ -154,4 +140,28 @@ public class EntityBlockState implements BlockState{
     public void removeMetadata(String s, Plugin plugin) {
 
     }
+
+	@Override
+	public BlockData getBlockData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setBlockData(BlockData arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public MaterialData getData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setData(MaterialData arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }

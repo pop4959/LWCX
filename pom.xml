@@ -2,9 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.griefcraft.lwc</groupId>
   <artifactId>Modern-LWC</artifactId>
-  <version>2.0.7</version>
-  <name>LWC</name>
-  <description>LWC Unofficial</description>
+  <name>Modern-LWC</name>
+  <version>2.0.8-snapshot</version>
+  <description>The unofficial continuation of LWC with support for modern versions of Minecraft.</description>
+  <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <repositories>
     <repository>
         <id>spigot-repo</id>
@@ -15,7 +18,11 @@
             <id>vault-repo</id>
             <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
     </repository>
--->
+-->	  
+    <repository>
+        <id>dmulloy2-repo</id>
+        <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
+    </repository>
     <repository>
         <id>scarsz</id>
         <url>https://dl.bintray.com/scarsz/maven</url>
@@ -44,6 +51,11 @@
 			<scope>provided</scope>
 			<type>jar</type>
 		</dependency>
+	<dependency>
+		<groupId>com.comphenix.protocol</groupId>
+    		<artifactId>ProtocolLib-API</artifactId>
+    		<version>4.3.0</version>
+  	</dependency>
     <dependency>
             <groupId>com.palmergames</groupId>
             <artifactId>Towny</artifactId>
@@ -51,15 +63,9 @@
             <scope>provided</scope>
     </dependency>
     <dependency>
-           <groupId>org.spigotmc</groupId>
-           <artifactId>spigot-api</artifactId>
-           <version>1.9.4-R0.1-SNAPSHOT</version>
-           <scope>provided</scope>
-    </dependency>
-    <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.12-R0.1-SNAPSHOT</version>
+            <version>1.13-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
     </dependency>
     <dependency>
@@ -88,7 +94,7 @@
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
-            <encoding>Cp1252</encoding>
+            <encoding>UTF-8</encoding>
           </configuration>
         </plugin>
       </plugins>

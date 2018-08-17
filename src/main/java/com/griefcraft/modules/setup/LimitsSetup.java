@@ -43,8 +43,7 @@ import java.util.List;
 
 public class LimitsSetup extends JavaModule {
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onCommand(LWCCommandEvent event) {
         if (event.isCancelled()) {
             return;
@@ -86,7 +85,8 @@ public class LimitsSetup extends JavaModule {
                 // if they're a player it is simple
                 if (!isGroup) {
                     List<LimitsV2.Limit> found = limits.getPlayerLimits().get(name.toLowerCase());
-                    Player target = lwc.getPlugin().getServer().getPlayer(name);
+                    @SuppressWarnings("deprecation")
+					Player target = lwc.getPlugin().getServer().getPlayer(name);
 
                     if (found == null) {
                         sender.sendMessage(Colors.Red + "Player override not found.");
@@ -168,12 +168,6 @@ public class LimitsSetup extends JavaModule {
                             Material material = Material.getMaterial(key.toUpperCase());
 
                             // if it's null, try to parse it as a block value
-                            if (material == null) {
-                                try {
-                                    material = Material.getMaterial(Integer.parseInt(key));
-                                } catch (NumberFormatException e) { }
-                            }
-
                             if (material == null) {
                                 sender.sendMessage(Colors.Red + "Invalid material/block: \"" + value + "\"!");
                                 return;

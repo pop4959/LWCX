@@ -282,16 +282,16 @@ public class LWC {
 	 *
 	 * @param block
 	 */
-	@SuppressWarnings("deprecation")
 	public void adjustChestDirection(Block block, BlockFace face) {
 		if (block.getType() != Material.CHEST) {
 			return;
 		}
 
 		// Is there a double chest?
-		Block doubleChest = findAdjacentDoubleChest(block);
+		//Block doubleChest = findAdjacentDoubleChest(block);
 
 		// Calculate the data byte to set
+		@SuppressWarnings("unused")
 		byte data = 0;
 
 		switch (face) {
@@ -315,11 +315,6 @@ public class LWC {
 		}
 
 		// set the data for both sides of the chest
-		block.setData(data);
-
-		if (doubleChest != null) {
-			doubleChest.setData(data);
-		}
 	}
 
 	/**
@@ -460,7 +455,7 @@ public class LWC {
 
 			if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
 				doubleChestBlock = findAdjacentDoubleChest(block);
-			} else if (block.getType() == Material.FURNACE || block.getType() == Material.BURNING_FURNACE) {
+			} else if (block.getType() == Material.FURNACE || block.getType() == Material.LEGACY_BURNING_FURNACE) {
 				Inventory inventory = holder.getInventory();
 
 				if (inventory.getItem(0) != null && inventory.getItem(1) != null) {
@@ -1938,6 +1933,7 @@ public class LWC {
 	 *            the player to check
 	 * @return true if the player is NOT in persistent mode
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean notInPersistentMode(String player) {
 		return !wrapPlayer(Bukkit.getServer().getPlayer(player)).hasMode("persist");
 	}
@@ -2046,22 +2042,21 @@ public class LWC {
 
 	public boolean enforceAccess(Player player, Protection protection, Entity entity, boolean hasAccess) {
 		MessageParser parser = plugin.getMessageParser();
-		Block block = new EntityBlock(entity);
-		if (block == null || protection == null) {
+		if (entity == null || protection == null) {
 			return true;
 		}
 
 		// support for old protection dbs that do not contain the block id
-		if (block != null
-				&& (protection.getBlockName() == null && block.getType().name() != protection.getBlockName())) {
-			protection.setBlockName(block.getType().name());
+		if (entity != null
+				&& (protection.getBlockName() == null && entity.getType().name() != protection.getBlockName())) {
+			protection.setBlockName(entity.getType().name());
 			protection.save();
 		}
 
 		// multi-world, update old protections
-		if (block != null
-				&& (protection.getWorld() == null || !block.getWorld().getName().equals(protection.getWorld()))) {
-			protection.setWorld(block.getWorld().getName());
+		if (entity != null
+				&& (protection.getWorld() == null || !entity.getWorld().getName().equals(protection.getWorld()))) {
+			protection.setWorld(entity.getWorld().getName());
 			protection.save();
 		}
 
@@ -2080,7 +2075,7 @@ public class LWC {
 
 		boolean permShowNotices = hasPermission(player, "lwc.shownotices");
 		if ((permShowNotices && configuration.getBoolean("core.showNotices", true))
-				&& !Boolean.parseBoolean(resolveProtectionConfiguration(block.getType(), "quiet"))) {
+				&& !Boolean.parseBoolean(resolveProtectionConfiguration(entity.getType(), "quiet"))) {
 			boolean isOwner = protection.isOwner(player);
 			boolean showMyNotices = configuration.getBoolean("core.showMyNotices", true);
 

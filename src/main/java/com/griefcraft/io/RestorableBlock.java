@@ -31,10 +31,12 @@ package com.griefcraft.io;
 import com.griefcraft.lwc.LWC;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -47,7 +49,7 @@ public class RestorableBlock implements Restorable {
     /**
      * The block id
      */
-    private int id;
+    private Material id;
 
     /**
      * The world's name
@@ -72,7 +74,7 @@ public class RestorableBlock implements Restorable {
     /**
      * The block data
      */
-    private int data;
+    private BlockData data;
 
     /**
      * The items in this block's inventory if it has one
@@ -87,8 +89,7 @@ public class RestorableBlock implements Restorable {
         LWC lwc = LWC.getInstance();
 
         lwc.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(lwc.getPlugin(), new Runnable() {
-            @SuppressWarnings("deprecation")
-			public void run() {
+            public void run() {
                 Server server = Bukkit.getServer();
 
                 // Get the world
@@ -103,8 +104,8 @@ public class RestorableBlock implements Restorable {
                 Block block = bworld.getBlockAt(x, y, z);
 
                 // Begin screwing with shit :p
-                block.setTypeId(id);
-                block.setData((byte) data);
+                block.setType(id);
+                block.setBlockData(data);
 
                 if (items.size() > 0) {
                     if (!(block.getState() instanceof InventoryHolder)) {
@@ -137,19 +138,18 @@ public class RestorableBlock implements Restorable {
      * @param block
      * @return
      */
-    @SuppressWarnings("deprecation")
-	public static RestorableBlock wrapBlock(Block block) {
+    public static RestorableBlock wrapBlock(Block block) {
         if (block == null) {
             return null;
         }
 
         RestorableBlock rblock = new RestorableBlock();
-        rblock.id = block.getTypeId();
+        rblock.id = block.getType();
         rblock.world = block.getWorld().getName();
         rblock.x = block.getX();
         rblock.y = block.getY();
         rblock.z = block.getZ();
-        rblock.data = block.getData();
+        rblock.data = block.getBlockData();
 
         BlockState state = block.getState();
 
@@ -182,11 +182,11 @@ public class RestorableBlock implements Restorable {
         items.put(slot, stack);
     }
 
-    public int getId() {
+    public Material getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Material id) {
         this.id = id;
     }
 
@@ -222,11 +222,11 @@ public class RestorableBlock implements Restorable {
         this.z = z;
     }
 
-    public int getData() {
+    public BlockData getData() {
         return data;
     }
 
-    public void setData(int data) {
+    public void setData(BlockData data) {
         this.data = data;
     }
 
