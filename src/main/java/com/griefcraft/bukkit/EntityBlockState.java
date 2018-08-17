@@ -80,7 +80,6 @@ public class EntityBlockState implements BlockState{
     }
 
     @Override
-    @Deprecated
     public void setData(MaterialData materialData) {
         entityBlock.setData(materialData.getData());
         // TODO: What to do with it, deprecated?
