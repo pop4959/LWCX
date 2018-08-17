@@ -14,8 +14,8 @@ public class UUIDRegistry {
     /**
      * Temporal caches
      */
-    private static final Map<String, PlayerInfo> nameToUUIDCache = new HashMap<String, PlayerInfo>();
-    private static final Map<UUID, PlayerInfo> UUIDToNameCache = new HashMap<UUID, PlayerInfo>();
+    private static final Map<String, PlayerInfo> nameToUUIDCache = new HashMap<>();
+    private static final Map<UUID, PlayerInfo> UUIDToNameCache = new HashMap<>();
 
     static class PlayerInfo {
 

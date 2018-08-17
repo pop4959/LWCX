@@ -44,7 +44,7 @@ public class Colors {
     public static final String LightGreen = "\u00A7a";
     public static final String LightPurple = "\u00A7d";
     // contains colors for locales
-    public static final Map<String, String> localeColors = new HashMap<String, String>();
+    public static final Map<String, String> localeColors = new HashMap<>();
     public static final String Navy = "\u00A71";
     public static final String Purple = "\u00A75";
     public static final String Red = "\u00A74";

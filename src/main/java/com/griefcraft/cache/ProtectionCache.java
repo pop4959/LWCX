@@ -104,11 +104,11 @@ public class ProtectionCache {
 		this.lwc = lwc;
 		this.capacity = lwc.getConfiguration().getInt("core.cacheSize", 10000);
 
-		this.references = new LRUCache<Protection, Object>(capacity);
-		this.byCacheKey = new WeakLRUCache<String, Protection>(capacity);
-		this.byId = new WeakLRUCache<Integer, Protection>(capacity);
-		this.byKnownBlock = new WeakLRUCache<String, Protection>(capacity);
-		this.byKnownNulls = new LRUCache<String, Object>(Math.min(10000,
+		this.references = new LRUCache<>(capacity);
+		this.byCacheKey = new WeakLRUCache<>(capacity);
+		this.byId = new WeakLRUCache<>(capacity);
+		this.byKnownBlock = new WeakLRUCache<>(capacity);
+		this.byKnownNulls = new LRUCache<>(Math.min(10000,
 				capacity)); // enforce a min size so we have a known buffer
 	}
 

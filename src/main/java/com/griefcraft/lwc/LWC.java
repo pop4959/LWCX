@@ -198,7 +198,7 @@ public class LWC {
 	/**
 	 * Protection configuration cache
 	 */
-	private final Map<String, String> protectionConfigurationCache = new HashMap<String, String>();
+	private final Map<String, String> protectionConfigurationCache = new HashMap<>();
 
 	public LWC(LWCPlugin plugin) {
 		this.plugin = plugin;
@@ -989,7 +989,7 @@ public class LWC {
 	 */
 	public int fastRemoveProtections(CommandSender sender, String where, boolean shouldRemoveBlocks) {
 		List<String> exemptedBlocks = configuration.getStringList("optional.exemptBlocks", new ArrayList<String>());
-		List<Integer> toRemove = new LinkedList<Integer>();
+		List<Integer> toRemove = new LinkedList<>();
 		List<Block> removeBlocks = null;
 		int totalProtections = physicalDatabase.getProtectionCount();
 		int completed = 0;
@@ -1487,7 +1487,7 @@ public class LWC {
 			return protectionConfigurationCache.get(cacheKey);
 		}
 
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 
 		String materialName = normalizeMaterialName(material);
 
@@ -1536,7 +1536,7 @@ public class LWC {
 			return protectionConfigurationCache.get(cacheKey);
 		}
 
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 
 		String materialName = normalizeMaterialName(material);
 

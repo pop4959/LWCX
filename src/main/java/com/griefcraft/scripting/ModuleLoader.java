@@ -183,8 +183,7 @@ public class ModuleLoader {
 	/**
 	 * Map of loaded modules
 	 */
-	private final Map<Plugin, List<MetaData>> pluginModules = Collections
-			.synchronizedMap(new LinkedHashMap<Plugin, List<MetaData>>());
+	private final Map<Plugin, List<MetaData>> pluginModules = Collections.synchronizedMap(new LinkedHashMap<>());
 
 	/**
 	 * A cache used to get a list of modules for any given event. Reflection is
@@ -192,12 +191,12 @@ public class ModuleLoader {
 	 * backwards compatibility reasons (vs events to be individually
 	 * registered). This still achieves the same effect by using reflection.
 	 */
-	private final Map<Event, List<Module>> fastModuleCache = new HashMap<Event, List<Module>>();
+	private final Map<Event, List<Module>> fastModuleCache = new HashMap<>();
 
 	/**
 	 * Toasty caches for doesObjectOverrideMethod
 	 */
-	private final Map<String, Boolean> overrideCache = new HashMap<String, Boolean>();
+	private final Map<String, Boolean> overrideCache = new HashMap<>();
 
 	public ModuleLoader(LWC lwc) {
 		this.lwc = lwc;
@@ -412,7 +411,7 @@ public class ModuleLoader {
 	public void loadAll() {
 		// Ensure LWC is at the head of the list
 		synchronized (pluginModules) {
-			Map<Plugin, List<MetaData>> newMap = new LinkedHashMap<Plugin, List<MetaData>>();
+			Map<Plugin, List<MetaData>> newMap = new LinkedHashMap<>();
 
 			// Add LWC
 			newMap.put(lwc.getPlugin(), pluginModules.get(lwc.getPlugin()));

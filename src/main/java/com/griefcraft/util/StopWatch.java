@@ -85,7 +85,7 @@ public class StopWatch {
     /**
      * List of TaskInfo objects
      */
-    private final List<TaskInfo> taskList = new LinkedList<TaskInfo>();
+    private final List<TaskInfo> taskList = new LinkedList<>();
 
     /**
      * Start time of the current task

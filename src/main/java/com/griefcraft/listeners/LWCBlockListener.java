@@ -72,7 +72,7 @@ public class LWCBlockListener implements Listener {
 	/**
 	 * A set of blacklisted blocks
 	 */
-	private final Set<String> blacklistedBlocks = new HashSet<String>();
+	private final Set<String> blacklistedBlocks = new HashSet<>();
 
 	public LWCBlockListener(LWCPlugin plugin) {
 		this.plugin = plugin;

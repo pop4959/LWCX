@@ -79,7 +79,7 @@ public class RestorableBlock implements Restorable {
     /**
      * The items in this block's inventory if it has one
      */
-    private final Map<Integer, ItemStack> items = new HashMap<Integer, ItemStack>();
+    private final Map<Integer, ItemStack> items = new HashMap<>();
 
     public int getType() {
         return 1; // TODO ENUM, HOPEFULLY I'LL REMEMBER IF I PUT THIS TODO EVERYWHERE
