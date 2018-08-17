@@ -171,9 +171,11 @@ protections:
         sign:
             enabled: true
             autoRegister: private
+        iron_door:
+            enabled: true
         wooden_door:
             enabled: true
-        iron_door:
+        oak_door:
             enabled: true
         spruce_door:
             enabled: true
@@ -185,11 +187,25 @@ protections:
             enabled: true
         dark_oak_door:
             enabled: true
-        trap_door:
-            enabled: true
         iron_trapdoor:
             enabled: true
+        trap_door:
+            enabled: true
+        oak_trapdoor:
+            enabled: true
+        spruce_trapdoor:
+            enabled: true
+        birch_trapdoor:
+            enabled: true
+        jungle_trapdoor:
+            enabled: true
+        acacia_trapdoor:
+            enabled: true
+        dark_oak_trapdoor:
+            enabled: true
         fence_gate:
+            enabled: true
+        oak_fence_gate:
             enabled: true
         spruce_fence_gate:
             enabled: true

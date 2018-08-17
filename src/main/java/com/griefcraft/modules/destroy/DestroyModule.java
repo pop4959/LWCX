@@ -39,7 +39,7 @@ public class DestroyModule extends JavaModule {
 
     @Override
     public void onDestroyProtection(LWCProtectionDestroyEvent event) {
-        LWC.getInstance().log("onDestroyProtection");
+        //LWC.getInstance().log("onDestroyProtection");
 
         if (event.isCancelled()) {
             return;
@@ -75,7 +75,8 @@ public class DestroyModule extends JavaModule {
             }
 
             protection.remove();
-
+            protection.removeCache();
+            
             if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "quiet"))) {
                 lwc.sendLocale(player, "protection.unregistered", "block", protection.getBlockName());
             }

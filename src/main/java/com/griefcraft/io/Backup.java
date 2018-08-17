@@ -28,6 +28,7 @@
 
 package com.griefcraft.io;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.DataInputStream;
@@ -115,8 +116,7 @@ public class Backup {
      *
      * @return
      */
-    @SuppressWarnings("deprecation")
-	protected Restorable readRestorable() throws IOException {
+    protected Restorable readRestorable() throws IOException {
         if (operationMode != OperationMode.READ) {
             throw new UnsupportedOperationException("READ is not allowed on this backup.");
         }
@@ -147,23 +147,23 @@ public class Backup {
             return rprotection;
         } else if (type == 1) { // Block
             RestorableBlock rblock = new RestorableBlock();
-            rblock.setId(inputStream.readShort());
+            rblock.setId(Material.getMaterial(inputStream.readUTF()));
             rblock.setWorld(inputStream.readUTF());
             rblock.setX(inputStream.readInt());
             rblock.setY(inputStream.readShort());
             rblock.setZ(inputStream.readInt());
-            rblock.setData(inputStream.read() & 0xFF);
+            rblock.setData(Material.getMaterial(inputStream.readUTF()).createBlockData());
             int itemCount = inputStream.readShort();
 
             for (int i = 0; i < itemCount; i++) {
                 // Read in us some RestorableItems
                 int slot = inputStream.readShort();
-                int itemId = inputStream.readShort();
+                String itemId = inputStream.readUTF();
                 int amount = inputStream.readShort();
                 short damage = inputStream.readShort();
 
                 // Create the stack
-                ItemStack itemStack = new ItemStack(itemId, amount, damage);
+                ItemStack itemStack = new ItemStack(Material.getMaterial(itemId), amount, damage);
 
                 // add it to the block
                 rblock.setSlot(slot, itemStack);
@@ -207,12 +207,12 @@ public class Backup {
         } else if (restorable.getType() == 1) { // Block, TODO DID I SAY TO DO THE ENUM YET??
             RestorableBlock rblock = (RestorableBlock) restorable;
 
-            outputStream.writeShort(rblock.getId());
+            outputStream.writeUTF(rblock.getId().name());
             outputStream.writeUTF(rblock.getWorld());
             outputStream.writeInt(rblock.getX());
             outputStream.writeShort(rblock.getY());
             outputStream.writeInt(rblock.getZ());
-            outputStream.write((byte) rblock.getData());
+            outputStream.writeUTF(rblock.getData().toString());
             outputStream.writeShort(rblock.getItems().size());
 
             // Write the items if there are any

@@ -53,7 +53,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("deprecation")
 public class LimitsV2 extends JavaModule {
 
 	/**
@@ -98,8 +97,6 @@ public class LimitsV2 extends JavaModule {
 			String materialName = LWC.normalizeMaterialName(material);
 
 			// add the name & the block id
-			materialCache.put(materialName, material);
-			materialCache.put(material.getId() + "", material);
 			materialCache.put(materialName, material);
 
 			if (!materialName.equals(material.toString().toLowerCase())) {
@@ -211,7 +208,7 @@ public class LimitsV2 extends JavaModule {
 		@Override
 		public int getProtectionCount(Player player, Material material) {
 			LWC lwc = LWC.getInstance();
-			return lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.SIGN_POST.name())
+			return lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.SIGN.name())
 					+ lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.WALL_SIGN.name());
 		}
 
@@ -280,7 +277,8 @@ public class LimitsV2 extends JavaModule {
 				return;
 			}
 		}
-
+		
+		@SuppressWarnings("deprecation")
 		Player player = lwc.getPlugin().getServer().getPlayer(playerName);
 
 		if (player == null) {
@@ -332,7 +330,7 @@ public class LimitsV2 extends JavaModule {
 				if (limit instanceof BlockLimit) {
 					material = ((BlockLimit) limit).getMaterial();
 				} else if (limit instanceof SignLimit) {
-					material = Material.SIGN_POST;
+					material = Material.SIGN;
 				} else if (limit instanceof EntityLimit) {
 					material = Material.AIR;
 				}
@@ -363,8 +361,8 @@ public class LimitsV2 extends JavaModule {
 				String currentProtected = target != null
 						? (Integer.toString(limit.getProtectionCount(target, Material.AIR)) + "/")
 						: "";
-				sender.sendMessage(
-						((EntityLimit) limit).getClass().getSimpleName() + ": " + colour + currentProtected + stringLimit);
+				sender.sendMessage(((EntityLimit) limit).getClass().getSimpleName() + ": " + colour + currentProtected
+						+ stringLimit);
 			} else {
 				sender.sendMessage(limit.getClass().getSimpleName() + ": " + Colors.Yellow + stringLimit);
 			}
@@ -393,7 +391,13 @@ public class LimitsV2 extends JavaModule {
 		int neverPassThisNumber = limit.getLimit();
 
 		// get the amount of protections the player has
-		int protections = limit.getProtectionCount(player, material);
+		int protections = 0;
+
+		if (limit instanceof DefaultLimit) {
+			protections = ((DefaultLimit) limit).getProtectionCount(player, null);
+		} else {
+			protections = limit.getProtectionCount(player, material);
+		}
 
 		return protections >= neverPassThisNumber;
 	}
@@ -594,14 +598,14 @@ public class LimitsV2 extends JavaModule {
 
 		// Temporary storage to use if the default is found so we save time if no
 		// override was found
-		Limit defaultLimit = null;
+		DefaultLimit defaultLimit = null;
 
 		for (Limit limit : limits) {
 			// Record the default limit if found
 			if (limit instanceof DefaultLimit) {
-				defaultLimit = limit;
+				defaultLimit = (DefaultLimit) limit;
 			} else if (limit instanceof SignLimit) {
-				if (material == Material.WALL_SIGN || material == Material.SIGN_POST) {
+				if (material == Material.WALL_SIGN || material == Material.SIGN) {
 					return limit;
 				}
 			} else if (limit instanceof BlockLimit) {
@@ -678,21 +682,11 @@ public class LimitsV2 extends JavaModule {
 				limits.add(new SignLimit(limit));
 			} else if (!key.equalsIgnoreCase("default") && !key.equalsIgnoreCase("sign")) {
 				// attempt to resolve it as a block id
-				int blockId = -1;
-
-				try {
-					blockId = Integer.parseInt(key);
-				} catch (NumberFormatException e) {
-				}
 
 				// resolve the material
 				Material material;
 
-				if (blockId >= 0) {
-					material = Material.getMaterial(blockId);
-				} else {
-					material = Material.getMaterial(key.toUpperCase());
-				}
+				material = Material.getMaterial(key.toUpperCase());
 
 				if (material != null) {
 					limits.add(new BlockLimit(material, limit));

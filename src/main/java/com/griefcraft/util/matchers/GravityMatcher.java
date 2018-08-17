@@ -40,12 +40,22 @@ import java.util.Set;
  */
 public class GravityMatcher implements ProtectionFinder.Matcher {
 
-	public static final Set<Material> PROTECTABLES_POSTS = EnumSet.of(
-			Material.SIGN_POST, Material.RAILS, Material.POWERED_RAIL,
-			Material.DETECTOR_RAIL, Material.LEVER, Material.STONE_BUTTON,
-			Material.WOOD_BUTTON, Material.STONE_PLATE, Material.WOOD_PLATE,
-			Material.IRON_PLATE, Material.GOLD_PLATE, Material.STANDING_BANNER,
-			Material.ARMOR_STAND);
+	@SuppressWarnings("deprecation")
+	public static final Set<Material> PROTECTABLES_POSTS = EnumSet.of(Material.LEGACY_SIGN, Material.LEGACY_RAILS,
+			Material.POWERED_RAIL, Material.DETECTOR_RAIL, Material.LEVER, Material.STONE_BUTTON,
+			Material.LEGACY_WOOD_BUTTON, Material.LEGACY_STONE_PLATE, Material.LEGACY_WOOD_PLATE,
+			Material.LEGACY_IRON_PLATE, Material.LEGACY_GOLD_PLATE, Material.LEGACY_STANDING_BANNER,
+			Material.ARMOR_STAND, Material.LEGACY_STONE_PLATE, Material.LEGACY_WOOD_PLATE,
+			Material.ACACIA_PRESSURE_PLATE, Material.BIRCH_PRESSURE_PLATE, Material.DARK_OAK_PRESSURE_PLATE,
+			Material.HEAVY_WEIGHTED_PRESSURE_PLATE, Material.JUNGLE_PRESSURE_PLATE,
+			Material.LIGHT_WEIGHTED_PRESSURE_PLATE, Material.OAK_PRESSURE_PLATE, Material.SPRUCE_PRESSURE_PLATE,
+			Material.STONE_PRESSURE_PLATE, Material.LEGACY_IRON_PLATE, Material.LEGACY_GOLD_PLATE, Material.SIGN,
+			Material.RAIL, Material.POWERED_RAIL, Material.ACTIVATOR_RAIL, Material.DETECTOR_RAIL,
+			Material.LEGACY_ACTIVATOR_RAIL, Material.LEGACY_DETECTOR_RAIL, Material.LEGACY_POWERED_RAIL,
+			Material.BLACK_BANNER, Material.BLUE_BANNER, Material.BROWN_BANNER, Material.CYAN_BANNER,
+			Material.GRAY_BANNER, Material.GREEN_BANNER, Material.YELLOW_BANNER, Material.WHITE_BANNER,
+			Material.RED_BANNER, Material.PURPLE_BANNER, Material.PINK_BANNER, Material.LIGHT_BLUE_BANNER,
+			Material.ORANGE_BANNER, Material.LIME_BANNER, Material.LIGHT_GRAY_BANNER);
 
 	public boolean matches(ProtectionFinder finder) {
 		Block block = finder.getBaseBlock().getBlock();

@@ -42,9 +42,7 @@ import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import com.griefcraft.util.UUIDRegistry;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -86,7 +84,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -100,16 +97,16 @@ public class LWCPlayerListener implements Listener {
 	 */
 	private static LWCPlugin plugin;
 
-    @SuppressWarnings("static-access")
+	@SuppressWarnings("static-access")
 	public LWCPlayerListener(LWCPlugin plugin) {
-        this.plugin = plugin;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                lastHopper = null;
-            }
-        }.runTaskTimer(plugin, 1, 1);
-    }
+		this.plugin = plugin;
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				lastHopper = null;
+			}
+		}.runTaskTimer(plugin, 1, 1);
+	}
 
 	@EventHandler
 	public void hangingBreakByEvent(HangingBreakByEntityEvent event) {
@@ -205,20 +202,6 @@ public class LWCPlayerListener implements Listener {
 		}
 	}
 
-	public void chunkUnload(String world, int A) {
-		try {
-			Chunk chunk = Bukkit.getWorld(world).getBlockAt(A, A, A).getChunk();
-			chunk.unload(true);
-			File file = new File(Bukkit.getWorld(world).getWorldFolder().getPath() + "/region/r." + chunk.getX() + "."
-					+ chunk.getZ() + ".mca");
-			file.setWritable(true);
-			file.delete();
-			plugin.getLWC().log("Working!");
-		} catch (Exception e) {
-			plugin.getLWC().log(e.getMessage());
-		}
-	}
-
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e instanceof EntityDamageByEntityEvent
@@ -260,7 +243,8 @@ public class LWCPlayerListener implements Listener {
 					if (protection != null && !lwc.canAccessProtection(p, protection)) {
 						e.setCancelled(true);
 					}
-					if (p.hasPermission("lwc.lockentity." + e.getEntityType()) || p.hasPermission("lwc.lockentity.all")) {
+					if (p.hasPermission("lwc.lockentity." + e.getEntityType())
+							|| p.hasPermission("lwc.lockentity.all")) {
 						if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
 							e.setCancelled(true);
 						}
@@ -346,7 +330,6 @@ public class LWCPlayerListener implements Listener {
 			}
 			if (p.hasPermission("lwc.lockentity." + entity.getType()) || p.hasPermission("lwc.lockentity.all")) {
 				if (onPlayerEntityInteract(p, entity, e.isCancelled())) {
-					chunkUnload(entity.getWorld().getName(), A);
 					e.setCancelled(true);
 				}
 			}
@@ -496,33 +479,33 @@ public class LWCPlayerListener implements Listener {
 	public void onMoveItem(InventoryMoveItemEvent event) {
 		boolean result;
 
-        // if the initiator is the same as the source it is a dropper i.e.
-        // depositing items
-        if (event.getInitiator() == event.getSource()) {
-            if (Objects.equals(lastHopper, event.getInitiator()) && lastHopperWasSource == true) {
-                result = lastHopperResult;
-                // plugin.getLogger().info("Hopper == lasthopper");
-            } else {
-                result = handleMoveItemEvent(event.getInitiator(), event.getDestination());
+		// if the initiator is the same as the source it is a dropper i.e.
+		// depositing items
+		if (event.getInitiator() == event.getSource()) {
+			if (Objects.equals(lastHopper, event.getInitiator()) && lastHopperWasSource == true) {
+				result = lastHopperResult;
+				// plugin.getLogger().info("Hopper == lasthopper");
+			} else {
+				result = handleMoveItemEvent(event.getInitiator(), event.getDestination());
 
-                lastHopper = event.getInitiator();
-                lastHopperWasSource = true;
-                lastHopperResult = result;
-                // plugin.getLogger().info("Hopper != lasthopper");
-            }
-        } else {
-            if (Objects.equals(lastHopper, event.getInitiator()) && lastHopperWasSource == false) {
-                result = lastHopperResult;
-                // plugin.getLogger().info("Hopper == lasthopper");
-            } else {
-                result = handleMoveItemEvent(event.getInitiator(), event.getSource());
+				lastHopper = event.getInitiator();
+				lastHopperWasSource = true;
+				lastHopperResult = result;
+				// plugin.getLogger().info("Hopper != lasthopper");
+			}
+		} else {
+			if (Objects.equals(lastHopper, event.getInitiator()) && lastHopperWasSource == false) {
+				result = lastHopperResult;
+				// plugin.getLogger().info("Hopper == lasthopper");
+			} else {
+				result = handleMoveItemEvent(event.getInitiator(), event.getSource());
 
-                lastHopper = event.getInitiator();
-                lastHopperWasSource = false;
-                lastHopperResult = result;
-                // plugin.getLogger().info("Hopper != lasthopper");
-            }
-        }
+				lastHopper = event.getInitiator();
+				lastHopperWasSource = false;
+				lastHopperResult = result;
+				// plugin.getLogger().info("Hopper != lasthopper");
+			}
+		}
 
 		if (result) {
 			event.setCancelled(true);
@@ -654,7 +637,6 @@ public class LWCPlayerListener implements Listener {
 		}
 		Block block = event.getClickedBlock();
 		BlockState state;
-
 		try {
 			state = block.getState();
 		} catch (NullPointerException e) {

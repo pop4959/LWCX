@@ -260,7 +260,8 @@ public class ProtectionFinder {
      * @param noAutoCache if a match is found, don't cache it to be the protection we use
      * @return
      */
-    protected Result tryLoadProtection(BlockState block, boolean noAutoCache) {
+    @SuppressWarnings("deprecation")
+	protected Result tryLoadProtection(BlockState block, boolean noAutoCache) {
         if (matchedProtection != null) {
             return Result.E_FOUND;
         }
@@ -280,8 +281,8 @@ public class ProtectionFinder {
         }
 
         // Manual intervention is required
-        if (block.getType() == Material.REDSTONE_WIRE || block.getType() == Material.REDSTONE_TORCH_OFF ||
-                block.getType() == Material.REDSTONE_TORCH_ON) {
+        if (block.getType() == Material.REDSTONE_WIRE || block.getType() == Material.LEGACY_REDSTONE_TORCH_OFF ||
+                block.getType() == Material.LEGACY_REDSTONE_TORCH_ON) {
             return Result.E_ABORT;
         }
 

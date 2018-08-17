@@ -47,7 +47,7 @@ public class Updater {
 				public void run() {
 					Object[] updates = Updater.getLastUpdate();
 					if (updates.length == 2) {
-						System.out.println("§6[§eEntityLWC§6] New update avaible:");
+						System.out.println("§6[§eModernLWC§6] New update avaible:");
 						System.out.println("§6New version: §e" + updates[0]);
 						System.out.println(
 								"§6Your version: §e" + LWC.getInstance().getPlugin().getDescription().getVersion());

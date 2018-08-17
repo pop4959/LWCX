@@ -50,8 +50,7 @@ public class ConfigPost300 implements MigrationUtility {
     // e.g locale->core.locale
     private static Map<String, String> mappings = null;
 
-    @SuppressWarnings("deprecation")
-	public void run() {
+    public void run() {
         LWC lwc = LWC.getInstance();
         File configFile = new File("plugins/LWC/lwc.properties");
 
@@ -107,15 +106,15 @@ public class ConfigPost300 implements MigrationUtility {
             String[] split = protectionBlacklist.replaceAll(" ", "_").split(",");
 
             for (String protection : split) {
-                int blockId = 0;
+                String blockId = "";
 
                 try {
-                    blockId = Integer.parseInt(protection);
+                    blockId = protection;
                 } catch (NumberFormatException e) {
                 }
 
                 // if it's an int, convert it
-                if (blockId > 0) {
+                if (blockId != Material.AIR.name()) {
                     protection = Material.getMaterial(blockId).toString().toLowerCase().replaceAll("block", "");
 
                     if (protection.endsWith("_")) {
