@@ -42,7 +42,7 @@ public class LWCResourceBundle extends ResourceBundle {
     /**
      * Stores bundles that override the defaults
      */
-    private List<ResourceBundle> extensionBundles = new ArrayList<ResourceBundle>();
+    private List<ResourceBundle> extensionBundles = new ArrayList<>();
 
     public LWCResourceBundle(ResourceBundle parent) {
         this.parent = parent;
@@ -63,7 +63,7 @@ public class LWCResourceBundle extends ResourceBundle {
 
     @Override
     public Enumeration<String> getKeys() {
-        Set<String> keys = new HashSet<String>();
+        Set<String> keys = new HashSet<>();
         keys.addAll(parent.keySet());
 
         // add the extension bundles' keys as well
