@@ -3,19 +3,18 @@
 ~~This project is dead. Sorry.~~
 **Project taken over by Tsuser1, join the Discord for more info**
 
-The unofficial continuation of LWC with support for modern versions of Minecraft. You can download the [latest stable version on Spigot](https://www.spigotmc.org/resources/2162/) or the developer versions [on our Jenkins server](http://jenkins.theemeraldage.com:8080/).
+The unofficial continuation of LWC with support for modern versions of Minecraft. You can download the ~~[latest stable version on Spigot](https://ci.zeusmainframe.ml/)~~ **(Currently not available during restructuring)** or the developer versions [on our Jenkins server](https://ci.zeusmainframe.ml/).
 
 ### Authors and Maintainers
   * Hidendra, Original author
-  * Me_Goes_RAWR, Lead maintainer
-  * Tsuser1, Collaborator
+  * Tsuser1, Project Lead
   * theyapps, Collaborator
 
 ### Support
-For support please [make a ticket on Github](https://github.com/megoesrawr/Modern-LWC/issues) or [join our official Discord server](https://discordapp.com/invite/UTBMyRZ). Please make sure you are using the most recent version of the plugin first.
+For support please [make a ticket on Github](https://github.com/Tsuser1/Modern-LWC/issues) or [join our casual Discord server](https://discordapp.com/invite/UTBMyRZ) or for more urgent or serious support, [M.O.S.S.](https://discord.gg/SBfB2Dd). Please make sure you are using the most recent version of the plugin first.
   
 ### Project Information
-LWC with support for the new 1.8 doors, fence gates, and iron trapdoors. Banners have optional support. If you currently use LWC, [please see this wiki page](https://github.com/Hidendra/LWC/wiki/Bukkit-1.8) for important information.
+This project is intended to be the (unofficial) continuation of the once extremely popular LWC plugin. If you currently use LWC, [please see this wiki page](https://github.com/Hidendra/LWC/wiki/Bukkit-1.8) for important information regarding versions above 1.8.
 
 LWC is the longest-lived single block protection plugin that protects both the block itself and contents of chests, furnaces, and Dispensers. It can also protect any other blocks, and by default will also protect doors (wooden + iron), signs and trapdoors.
 
