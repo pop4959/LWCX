@@ -48,9 +48,9 @@ import java.util.concurrent.TimeUnit;
 public abstract class Database {
 
 	public enum Type {
-		MySQL("mysql.jar"), //
-		SQLite("sqlite.jar"), //
-		NONE("nil"); //
+		MySQL("mysql.jar"), // MySQL Database
+		SQLite("sqlite.jar"), // SQLite Database
+		NONE("nil"); // The NOTHING Database! Woohoo!
 
 		private String driver;
 
@@ -162,7 +162,7 @@ public abstract class Database {
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();
-			stmt.executeQuery("SELECT 1;");
+			stmt.executeQuery("PROMPT Ping!;"); // Efficient query, "SELECT 1;" requires the database to actually do something, this just echos some text.
 			stmt.close();
 		} catch (SQLException e) {
 			log("Keepalive packet (ping) failed!");
@@ -217,7 +217,7 @@ public abstract class Database {
 	/**
 	 * Connect to MySQL
 	 *
-	 * @return if the connection was succesful
+	 * @return if the connection was successful
 	 */
 	public boolean connect() throws Exception {
 		if (connection != null) {
@@ -246,9 +246,9 @@ public abstract class Database {
 		// Create the properties to pass to the driver
 		Properties properties = new Properties();
 
-		properties.put("pooling","True");
+		properties.put("pooling", "True");
 		properties.setProperty("MaxPooledStatements", "1000");
-		// if we're using mysql, append the database info
+		// if we're using MySQL, append the database info
 		if (currentType == Type.MySQL) {
 			LWC lwc = LWC.getInstance();
 			properties.put("autoReconnect", "true");
@@ -273,6 +273,9 @@ public abstract class Database {
 		}
 	}
 
+	/**
+	 * Drop the current LWC database connection and any cached/pending statements.
+	 */
 	public void dispose() {
 		statementCache.invalidateAll();
 
@@ -295,14 +298,18 @@ public abstract class Database {
 	}
 
 	/**
-	 * @return the connection to the database
+	 * Get the connection to the LWC database.
+	 * 
+	 * @return database as a {@code Connection}
 	 */
 	public Connection getConnection() {
 		return connection;
 	}
 
 	/**
-	 * @return the path where the database file should be saved
+	 * Get the path to the LWC database file or if we're using MySQL what the MySQL URI is.
+	 * 
+	 * @return path/address to database as a {@code String}
 	 */
 	public String getDatabasePath() {
 		Configuration lwcConfiguration = LWC.getInstance().getConfiguration();
@@ -316,14 +323,14 @@ public abstract class Database {
 	}
 
 	/**
-	 * @return the database engine type
+	 * @return {@code Type} of database (e.g. MySQL, SQLite, etc.)
 	 */
 	public Type getType() {
 		return currentType;
 	}
 
 	/**
-	 * Load the database
+	 * Load the LWC database.
 	 */
 	public abstract void load();
 
@@ -350,9 +357,9 @@ public abstract class Database {
 	/**
 	 * Prepare a statement unless it's already cached (and if so, just return it)
 	 *
-	 * @param sql
-	 * @param returnGeneratedKeys
-	 * @return
+	 * @param sql {@code String} SQL query to prepare
+	 * @param returnGeneratedKeys {@code Boolean} return keys generated from statement
+	 * @return {@code PreparedStatement} prepared SQL statement
 	 */
 	public PreparedStatement prepare(String sql, boolean returnGeneratedKeys) {
 		if (connection == null) {
@@ -391,50 +398,53 @@ public abstract class Database {
 	}
 
 	/**
-	 * Add a column to a table
+	 * Add a column to a table.
 	 *
-	 * @param table
-	 * @param column
+	 * @param table {@code String} Name of table to modify
+	 * @param column {@code String} Column name we wish to add
+	 * @param type {@code String} Type of column to add
 	 */
 	public boolean addColumn(String table, String column, String type) {
 		return executeUpdateNoException("ALTER TABLE " + table + " ADD " + column + " " + type);
 	}
 
 	/**
-	 * Add a column to a table
+	 * Drop a column from a table.
 	 *
-	 * @param table
-	 * @param column
+	 * @param table {@code String} Name of table to modify
+	 * @param column {@code String} Column we wish to drop
 	 */
 	public boolean dropColumn(String table, String column) {
 		return executeUpdateNoException("ALTER TABLE " + table + " DROP COLUMN " + column);
 	}
 
 	/**
-	 * Rename a table
+	 * Rename a table that already exists in the database.
 	 *
-	 * @param table
-	 * @param newName
+	 * @param table {@code String} Name of table we are renaming
+	 * @param newName {@code String} New name of existing table
 	 */
 	public boolean renameTable(String table, String newName) {
 		return executeUpdateNoException("ALTER TABLE " + table + " RENAME TO " + newName);
 	}
 
 	/**
-	 * Drop a table
+	 * Drop a table from the database.
 	 *
-	 * @param table
+	 * @param table {@code String} Table we wish to drop
 	 */
 	public boolean dropTable(String table) {
 		return executeUpdateNoException("DROP TABLE " + table);
 	}
 
 	/**
-	 * Execute an update, ignoring any exceptions
+	 * Execute an update, ignoring any exceptions.<br>
+	 * <b>This method is deprecated due to being hacky and should be handled with proper error handling instead.</b><br>
 	 *
 	 * @param query
 	 * @return true if an exception was thrown
 	 */
+	@Deprecated
 	public boolean executeUpdateNoException(String query) {
 		Statement statement = null;
 		boolean exception = false;
@@ -467,7 +477,7 @@ public abstract class Database {
 	 * Returns true if the high level statement cache should be used. If this is
 	 * false, already cached statements are ignored
 	 *
-	 * @return
+	 * @return {@code Boolean} status of cache usage
 	 */
 	public boolean useStatementCache() {
 		return useStatementCache;
@@ -476,8 +486,7 @@ public abstract class Database {
 	/**
 	 * Set if the high level statement cache should be used.
 	 *
-	 * @param useStatementCache
-	 * @return
+	 * @param useStatementCache {@code Boolean} if statement cache should be used
 	 */
 	public void setUseStatementCache(boolean useStatementCache) {
 		this.useStatementCache = useStatementCache;
