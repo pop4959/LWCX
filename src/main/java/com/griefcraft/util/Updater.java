@@ -64,7 +64,6 @@ public class Updater {
 	final static String DESCRIPTION_URL = "https://api.spiget.org/v2/resources/2162/updates?size=" + Integer.MAX_VALUE
 			+ "&spiget__ua=SpigetDocs";
 
-	@SuppressWarnings("deprecation")
 	public static Object[] getLastUpdate() {
 		try {
 			JSONArray versionsArray = (JSONArray) JSONValue
