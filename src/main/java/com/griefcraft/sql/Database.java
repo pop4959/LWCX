@@ -467,6 +467,8 @@ public abstract class Database {
 	}
 
 	/**
+	 * Check if database is connected.
+	 * 
 	 * @return true if connected to the database
 	 */
 	public boolean isConnected() {
