@@ -117,6 +117,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.type.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -329,7 +330,27 @@ public class LWC {
 					"findAdjacentDoubleChest() cannot be called on a: " + block.getType());
 		}
 
-		return findAdjacentBlock(block, block.getType());
+		BlockState baseBlockState = block.getState();
+		Chest baseBlockData = null;
+		try {
+			baseBlockData = (Chest) baseBlockState.getBlockData();
+		} catch (ClassCastException e) {
+			return null;
+		}
+
+		// get the block face for the neighboring chest if there is one
+		BlockFace neighboringBlockFace = DoubleChestMatcher.getNeighboringChestBlockFace(baseBlockData);
+		if (neighboringBlockFace == null) {
+			return null;
+		}
+
+		// if the neighboring block is a chest as well, we have a match
+		Block neighboringBlock = baseBlockState.getBlock().getRelative(neighboringBlockFace);
+		if (baseBlockState.getType() == neighboringBlock.getType()) {
+			return block;
+		}
+
+		return null;
 	}
 
 	/**

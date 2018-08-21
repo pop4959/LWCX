@@ -43,6 +43,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.type.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -426,19 +427,24 @@ public class LWCBlockListener implements Listener {
 			return;
 		}
 
-		// If it's a chest, make sure they aren't placing it beside an already
-		// registered chest
-		if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
-			for (BlockFace blockFace : DoubleChestMatcher.POSSIBLE_FACES) {
-				Block face = block.getRelative(blockFace);
-				// They're placing it beside a chest, check if it's already
-				// protected
-				if (face.getType() == block.getType()) {
-					if (lwc.findProtection(face.getLocation()) != null) {
-						return;
-					}
-				}
-			}
+		// If it's a chest, make sure they aren't placing it beside an already registered chest
+		BlockState blockState = block.getState();
+		Chest chestData = null;
+		try {
+			chestData = (Chest) blockState.getBlockData();
+		} catch (ClassCastException e) {
+		}
+		if (chestData != null) {
+            BlockFace neighboringChestBlockFace = DoubleChestMatcher.getNeighboringChestBlockFace(chestData);
+            if (neighboringChestBlockFace != null) {
+                // They're placing it beside a chest, check if it's already protected
+                Block neighboringBlock = block.getRelative(neighboringChestBlockFace);
+                if (neighboringBlock.getType() == blockState.getBlock().getType()) {
+                    if (lwc.findProtection(neighboringBlock.getLocation()) != null) {
+                        return;
+                    }
+                }
+            }
 		}
 
 		try {
