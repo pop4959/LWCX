@@ -41,26 +41,28 @@ import java.util.Set;
 /**
  * Matches doors (both Iron & Wooden)
  */
-@SuppressWarnings("deprecation")
 public class DoorMatcher implements ProtectionFinder.Matcher {
 
-	public static final Set<Material> PROTECTABLES_DOORS = EnumSet.of(Material.LEGACY_WOODEN_DOOR, Material.OAK_DOOR,
-			Material.LEGACY_IRON_DOOR_BLOCK, Material.IRON_DOOR, Material.ACACIA_DOOR, Material.BIRCH_DOOR,
-			Material.DARK_OAK_DOOR, Material.JUNGLE_DOOR, Material.SPRUCE_DOOR);
-	public static final Set<Material> WOODEN_DOORS = EnumSet.of(Material.LEGACY_WOODEN_DOOR, Material.ACACIA_DOOR,
-			Material.BIRCH_DOOR, Material.DARK_OAK_DOOR, Material.JUNGLE_DOOR, Material.SPRUCE_DOOR); // doors that open
-																										// when clicked
-	public static final Set<Material> PRESSURE_PLATES = EnumSet.of(Material.LEGACY_STONE_PLATE,
-			Material.LEGACY_WOOD_PLATE, Material.ACACIA_PRESSURE_PLATE, Material.BIRCH_PRESSURE_PLATE,
-			Material.DARK_OAK_PRESSURE_PLATE, Material.HEAVY_WEIGHTED_PRESSURE_PLATE, Material.JUNGLE_PRESSURE_PLATE,
-			Material.LIGHT_WEIGHTED_PRESSURE_PLATE, Material.OAK_PRESSURE_PLATE, Material.SPRUCE_PRESSURE_PLATE,
-			Material.STONE_PRESSURE_PLATE, Material.LEGACY_IRON_PLATE, Material.LEGACY_GOLD_PLATE);
-	public static final Set<Material> FENCE_GATES = EnumSet.of(Material.LEGACY_FENCE_GATE, Material.OAK_FENCE_GATE,
-			Material.BIRCH_FENCE_GATE, Material.ACACIA_FENCE_GATE, Material.DARK_OAK_FENCE_GATE,
-			Material.JUNGLE_FENCE_GATE, Material.SPRUCE_FENCE_GATE);
-	public static final Set<Material> TRAP_DOORS = EnumSet.of(Material.LEGACY_TRAP_DOOR, Material.IRON_TRAPDOOR,
-			Material.ACACIA_TRAPDOOR, Material.BIRCH_TRAPDOOR, Material.DARK_OAK_TRAPDOOR, Material.IRON_TRAPDOOR,
-			Material.JUNGLE_TRAPDOOR, Material.OAK_TRAPDOOR, Material.SPRUCE_TRAPDOOR);
+	public static final Set<Material> PROTECTABLES_DOORS = EnumSet.of(Material.OAK_DOOR, Material.SPRUCE_DOOR,
+            Material.BIRCH_DOOR, Material.ACACIA_DOOR, Material.JUNGLE_DOOR, Material.DARK_OAK_DOOR,
+            Material.IRON_DOOR);
+
+	// doors that open when clicked
+	public static final Set<Material> WOODEN_DOORS = EnumSet.of(Material.OAK_DOOR, Material.SPRUCE_DOOR,
+            Material.BIRCH_DOOR, Material.ACACIA_DOOR, Material.JUNGLE_DOOR, Material.DARK_OAK_DOOR);
+
+	public static final Set<Material> PRESSURE_PLATES = EnumSet.of(Material.OAK_PRESSURE_PLATE,
+            Material.SPRUCE_PRESSURE_PLATE, Material.BIRCH_PRESSURE_PLATE, Material.JUNGLE_PRESSURE_PLATE,
+            Material.ACACIA_PRESSURE_PLATE, Material.DARK_OAK_PRESSURE_PLATE, Material.STONE_PRESSURE_PLATE,
+            Material.LIGHT_WEIGHTED_PRESSURE_PLATE, Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+
+	public static final Set<Material> FENCE_GATES = EnumSet.of(Material.OAK_FENCE_GATE, Material.SPRUCE_FENCE_GATE,
+            Material.BIRCH_FENCE_GATE, Material.JUNGLE_FENCE_GATE, Material.ACACIA_FENCE_GATE,
+            Material.DARK_OAK_FENCE_GATE);
+
+	public static final Set<Material> TRAP_DOORS = EnumSet.of(Material.OAK_TRAPDOOR, Material.SPRUCE_TRAPDOOR,
+            Material.BIRCH_TRAPDOOR, Material.JUNGLE_TRAPDOOR, Material.ACACIA_TRAPDOOR, Material.DARK_OAK_TRAPDOOR,
+            Material.IRON_TRAPDOOR);
 
 	private static final BlockFace[] faces = new BlockFace[] { BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH,
 			BlockFace.SOUTH };

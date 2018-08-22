@@ -88,7 +88,6 @@ public class DoorsModule extends JavaModule {
 		loadAction();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onProtectionInteract(LWCProtectionInteractEvent event) {
 		if (event.getResult() == Result.CANCEL || !isEnabled()) {
@@ -139,7 +138,8 @@ public class DoorsModule extends JavaModule {
 
 		// toggle the other side of the door open
 		boolean opensWhenClicked = (DoorMatcher.WOODEN_DOORS.contains(block.getType())
-				|| DoorMatcher.FENCE_GATES.contains(block.getType()) || block.getType() == Material.LEGACY_TRAP_DOOR);
+				|| DoorMatcher.FENCE_GATES.contains(block.getType())
+				|| DoorMatcher.TRAP_DOORS.contains(block.getType()));
 		changeDoorStates(true, (opensWhenClicked ? null : block), doubleDoorBlock);
 
 		if (action == Action.OPEN_AND_CLOSE || protection.hasFlag(Flag.Type.AUTOCLOSE)) {

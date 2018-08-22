@@ -260,13 +260,12 @@ public class LWCBlockListener implements Listener {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
 		LWC lwc = plugin.getLWC();
 		Block block = event.getBlock();
 
-		if (block.getType() == Material.LEGACY_BED_BLOCK) {
+		if (block.getType().name().contains("_BED")) {
 			for (BlockState state : event.getReplacedBlockStates()) {
 				Protection protection = lwc.findProtection(state);
 
@@ -278,12 +277,11 @@ public class LWCBlockListener implements Listener {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockFromTo(BlockFromToEvent event) {
 		Block block = event.getBlock();
 		LWC lwc = this.plugin.getLWC();
-		if (block.getType() == Material.WATER || block.getType() == Material.LEGACY_STATIONARY_WATER || block.getType() == Material.LEGACY_WATER) {
+		if (block.getType() == Material.WATER) {
 			if (lwc.findProtection(event.getToBlock().getLocation()) != null) {
 				event.setCancelled(true);
 				return;

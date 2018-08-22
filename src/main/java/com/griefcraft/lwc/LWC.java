@@ -476,7 +476,7 @@ public class LWC {
 
 			if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
 				doubleChestBlock = findAdjacentDoubleChest(block);
-			} else if (block.getType() == Material.FURNACE || block.getType() == Material.LEGACY_BURNING_FURNACE) {
+			} else if (block.getType() == Material.FURNACE) {
 				Inventory inventory = holder.getInventory();
 
 				if (inventory.getItem(0) != null && inventory.getItem(1) != null) {

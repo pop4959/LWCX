@@ -157,9 +157,9 @@ public class Protection {
 	 * Unique id (in sql)
 	 */
     private int id;
-	
-	
-	
+
+
+
 	private String blockName;
 
 	/**
@@ -620,24 +620,15 @@ public class Protection {
 	 *
 	 * @return
 	 */
-	@SuppressWarnings("deprecation")
 	public boolean isBlockInWorld() {
 		String storedBlockId = getBlockName();
 		Block block = getBlock();
 
 		switch (block.getType()) {
-		case FURNACE:
-		case LEGACY_BURNING_FURNACE:
-			return storedBlockId == Material.FURNACE.name()
-					|| storedBlockId == Material.LEGACY_BURNING_FURNACE.name();
-
-		case LEGACY_STEP:
-		case LEGACY_DOUBLE_STEP:
-			return storedBlockId == Material.LEGACY_STEP.name()
-					|| storedBlockId == Material.LEGACY_DOUBLE_STEP.name();
-
-		default:
-			return storedBlockId == block.getType().name();
+		    case FURNACE:
+			    return storedBlockId.equalsIgnoreCase(Material.FURNACE.name());
+			default:
+			    return storedBlockId.equalsIgnoreCase(block.getType().name());
 		}
 	}
 
@@ -648,7 +639,7 @@ public class Protection {
 	public String getBlockName() {
 		return blockName;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -697,7 +688,7 @@ public class Protection {
 		this.blockName = blockName;
 		this.modified = true;
 	}
-	
+
 	public void setPassword(String password) {
 		if (removed) {
 			return;
@@ -894,12 +885,12 @@ public class Protection {
 
         saveNow(); // LWC.getInstance().getDatabaseThread().addProtection(this);
     }
-    
+
     public void saveLastAccessed() {
         if (removed) {
             return;
         }
-        
+
         LWC.getInstance().getPhysicalDatabase().saveProtectionLastAccessed(this);
     }
 
@@ -964,7 +955,7 @@ public class Protection {
 	@SuppressWarnings("deprecation")
 	public Player getBukkitOwner() {
 		UUID uuid = UUIDRegistry.getUUID(owner);
-		
+
 		if(uuid == null){
 			try{
 			uuid = UUID.fromString(owner);
@@ -972,11 +963,11 @@ public class Protection {
 			uuid = null;
 			}
 		}
-		
+
 		if (uuid == null) {
 			return Bukkit.getServer().getPlayer(owner);
 		}
-		
+
 		return Bukkit.getServer().getPlayer(uuid);
 	}
 
@@ -997,7 +988,7 @@ public class Protection {
 		cachedBlock = world.getBlockAt(x, y, z);
 		return cachedBlock;
 	}
-	
+
 	/**
 	 * @return
 	 */
