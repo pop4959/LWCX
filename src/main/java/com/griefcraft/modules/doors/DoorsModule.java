@@ -41,6 +41,8 @@ import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Openable;
+import org.bukkit.block.data.type.Chest;
 import org.bukkit.entity.Player;
 
 public class DoorsModule extends JavaModule {
@@ -100,22 +102,12 @@ public class DoorsModule extends JavaModule {
 		}
 
 		Protection protection = event.getProtection();
-		Block block = event.getEvent().getClickedBlock(); // The block they
-															// actually clicked
-															// :)
+		Block block = event.getEvent().getClickedBlock(); // The block they actually clicked :)
 		Player player = event.getPlayer();
 
 		// Check if the block is even something that should be opened
 		if (!isValid(block.getType())) {
 			return;
-		}
-
-		// Are we looking at the top half?
-		// If we are, we need to get the bottom half instead
-		if (!WallMatcher.PROTECTABLES_TRAP_DOORS.contains(block.getType())
-				&& !DoorMatcher.FENCE_GATES.contains(block.getType())) {
-			// Inspect the bottom half instead, fool!
-			block = block.getRelative(BlockFace.DOWN);
 		}
 
 		// Should we look for double doors?
@@ -183,7 +175,6 @@ public class DoorsModule extends JavaModule {
 	 * @param doors
 	 *            Blocks given must be the bottom block of the door
 	 */
-	@SuppressWarnings("deprecation")
 	private void changeDoorStates(boolean allowDoorToOpen, Block... doors) {
 		for (Block door : doors) {
 			if (door == null) {
@@ -193,22 +184,22 @@ public class DoorsModule extends JavaModule {
 			// If we aren't allowing the door to open, check if it's already closed
 			if (!allowDoorToOpen) {
 				// The door is already closed and we don't want to open it
-				// the bit 0x4 is set when the door is open
 				continue;
 			}
 
-			// Get the top half of the door
-			Block topHalf = door.getRelative(BlockFace.UP);
-
-			// Now xor both data values with 0x4, the flag that states if the door is open
-			door.getState().setRawData((byte) (door.getState().getData().getData() ^ 0x4));
-			// Play the door open/close sound
-			door.getWorld().playEffect(door.getLocation(), Effect.DOOR_TOGGLE, 0);
-
-			// Only change the block above it if it is something we can open or close
-			if (isValid(topHalf.getType())) {
-				topHalf.getState().setRawData((byte) (topHalf.getState().getData().getData() ^ 0x4));
+			// ensure this is an openable door
+			Openable doorBlockData = null;
+			try {
+				doorBlockData = (Openable) door.getBlockData();
+			} catch (ClassCastException e) {
+				continue;
 			}
+
+			// toggle the door!
+			doorBlockData.setOpen(!doorBlockData.isOpen());
+			door.setBlockData(doorBlockData);
+
+			door.getWorld().playEffect(door.getLocation(), Effect.DOOR_TOGGLE, 0);
 		}
 	}
 
