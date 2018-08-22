@@ -48,9 +48,9 @@ import java.util.concurrent.TimeUnit;
 public abstract class Database {
 
 	public enum Type {
-		MySQL("mysql.jar"), // MySQL Database
-		SQLite("sqlite.jar"), // SQLite Database
-		NONE("nil"); // The NOTHING Database! Woohoo!
+		MySQL("mysql.jar"),
+		SQLite("sqlite.jar"),
+		NONE("nil");
 
 		private String driver;
 
@@ -80,21 +80,6 @@ public abstract class Database {
 
 	}
 
-	private Cache<String, PreparedStatement> statementCache = CacheBuilder.newBuilder()
-			.expireAfterWrite(5, TimeUnit.MINUTES)
-			.removalListener(notif -> closeQuietly((PreparedStatement) notif.getValue())).build();
-
-	public void closeQuietly(PreparedStatement closeable) {
-		try {
-			if (closeable != null) {
-				//closeable.setPoolable(true);
-				//closeable.addBatch();
-				//closeable.executeBatch();
-			}
-		} catch (Exception ignored) {
-		}
-	}
-
 	/**
 	 * The database engine being used for this connection
 	 */
@@ -105,8 +90,8 @@ public abstract class Database {
 	 * <p/>
 	 * Since SQLite JDBC doesn't cache them.. we do it ourselves :S
 	 */
-	// private Map<String, PreparedStatement> statementCache = new HashMap<String,
-	// PreparedStatement>();
+	private Cache<String, PreparedStatement> statementCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(5, TimeUnit.MINUTES).build();
 
 	/**
 	 * The connection to the database
@@ -162,7 +147,7 @@ public abstract class Database {
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();
-			stmt.executeQuery("PROMPT Ping!;"); // Efficient query, "SELECT 1;" requires the database to actually do something, this just echos some text.
+			stmt.executeQuery("SELECT 1;");
 			stmt.close();
 		} catch (SQLException e) {
 			log("Keepalive packet (ping) failed!");
@@ -245,9 +230,9 @@ public abstract class Database {
 
 		// Create the properties to pass to the driver
 		Properties properties = new Properties();
-
 		properties.put("pooling", "True");
 		properties.setProperty("MaxPooledStatements", "1000");
+
 		// if we're using MySQL, append the database info
 		if (currentType == Type.MySQL) {
 			LWC lwc = LWC.getInstance();
@@ -299,7 +284,7 @@ public abstract class Database {
 
 	/**
 	 * Get the connection to the LWC database.
-	 * 
+	 *
 	 * @return database as a {@code Connection}
 	 */
 	public Connection getConnection() {
@@ -308,7 +293,7 @@ public abstract class Database {
 
 	/**
 	 * Get the path to the LWC database file or if we're using MySQL what the MySQL URI is.
-	 * 
+	 *
 	 * @return path/address to database as a {@code String}
 	 */
 	public String getDatabasePath() {
@@ -468,7 +453,7 @@ public abstract class Database {
 
 	/**
 	 * Check if database is connected.
-	 * 
+	 *
 	 * @return true if connected to the database
 	 */
 	public boolean isConnected() {
