@@ -3,11 +3,11 @@ magnet:
     enabled: true
 
     # The radius around containers that they will suck up
-    radius: 3
+    radius: 2
 
     # How many items to check per sweep (per world)
     # It is HIGHLY UNRECOMMENDED to use a very high value
-    perSweep: 40
+    perSweep: 10
 
     # A blacklist of items that will NOT be picked up
     # Item names usually work, but be careful

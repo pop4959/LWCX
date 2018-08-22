@@ -66,7 +66,7 @@ optional:
     # Players that are blocked from destroying any blocks protected by LWC. Mainly useful for MCPC
     # where mods can remove blocks and try to break the block by sending an event first (e.g turtle)
     blacklistedPlayers:
-    - plr
+    - player
 
     # If protections limits will be enabled (defaults to unlimited protections)
     useProtectionLimits: true
@@ -162,18 +162,72 @@ protections:
         chest:
             enabled: true
             autoRegister: private
+        trapped_chest:
+            enabled: true
+            autoRegister: private
         furnace:
             enabled: true
             autoRegister: private
         dispenser:
             enabled: true
             autoRegister: private
-        sign:
+        dropper:
             enabled: true
             autoRegister: private
-        iron_door:
+        shulker_box:
             enabled: true
-        wooden_door:
+            autoRegister: private
+        white_shulker_box:
+            enabled: true
+            autoRegister: private
+        orange_shulker_box:
+            enabled: true
+            autoRegister: private
+        magenta_shulker_box:
+            enabled: true
+            autoRegister: private
+        light_blue_shulker_box:
+            enabled: true
+            autoRegister: private
+        yellow_shulker_box:
+            enabled: true
+            autoRegister: private
+        lime_shulker_box:
+            enabled: true
+            autoRegister: private
+        pink_shulker_box:
+            enabled: true
+            autoRegister: private
+        gray_shulker_box:
+            enabled: true
+            autoRegister: private
+        light_gray_shulker_box:
+            enabled: true
+            autoRegister: private
+        cyan_shulker_box:
+            enabled: true
+            autoRegister: private
+        purple_shulker_box:
+            enabled: true
+            autoRegister: private
+        blue_shulker_box:
+            enabled: true
+            autoRegister: private
+        brown_shulker_box:
+            enabled: true
+            autoRegister: private
+        green_shulker_box:
+            enabled: true
+            autoRegister: private
+        red_shulker_box:
+            enabled: true
+            autoRegister: private
+        black_shulker_box:
+            enabled: true
+            autoRegister: private
+        sign:
+            enabled: true
+        iron_door:
             enabled: true
         oak_door:
             enabled: true
@@ -189,8 +243,6 @@ protections:
             enabled: true
         iron_trapdoor:
             enabled: true
-        trap_door:
-            enabled: true
         oak_trapdoor:
             enabled: true
         spruce_trapdoor:
@@ -202,8 +254,6 @@ protections:
         acacia_trapdoor:
             enabled: true
         dark_oak_trapdoor:
-            enabled: true
-        fence_gate:
             enabled: true
         oak_fence_gate:
             enabled: true
@@ -217,7 +267,69 @@ protections:
             enabled: true
         dark_oak_fence_gate:
             enabled: true
-        ARMOR_STAND:
+        white_banner:
+            enabled: true
+        orange_banner:
+            enabled: true
+        magenta_banner:
+            enabled: true
+        light_blue_banner:
+            enabled: true
+        yellow_banner:
+            enabled: true
+        lime_banner:
+            enabled: true
+        pink_banner:
+            enabled: true
+        gray_banner:
+            enabled: true
+        light_gray_banner:
+            enabled: true
+        cyan_banner:
+            enabled: true
+        purple_banner:
+            enabled: true
+        blue_banner:
+            enabled: true
+        brown_banner:
+            enabled: true
+        green_banner:
+            enabled: true
+        red_banner:
+            enabled: true
+        black_banner:
+            enabled: true
+        white_wall_banner:
+            enabled: true
+        orange_wall_banner:
+            enabled: true
+        magenta_wall_banner:
+            enabled: true
+        light_blue_wall_banner:
+            enabled: true
+        yellow_wall_banner:
+            enabled: true
+        lime_wall_banner:
+            enabled: true
+        pink_wall_banner:
+            enabled: true
+        gray_wall_banner:
+            enabled: true
+        light_gray_wall_banner:
+            enabled: true
+        cyan_wall_banner:
+            enabled: true
+        purple_wall_banner:
+            enabled: true
+        blue_wall_banner:
+            enabled: true
+        brown_wall_banner:
+            enabled: true
+        green_wall_banner:
+            enabled: true
+        red_wall_banner:
+            enabled: true
+        black_wall_banner:
             enabled: true
 
 modes:
