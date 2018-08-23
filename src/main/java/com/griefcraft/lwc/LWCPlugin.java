@@ -31,7 +31,6 @@ package com.griefcraft.lwc;
 import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
-import com.griefcraft.listeners.LWCProtocoLib;
 import com.griefcraft.listeners.LWCServerListener;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.sql.Database;
@@ -360,9 +359,6 @@ public class LWCPlugin extends JavaPlugin implements CommandExecutor {
 		pluginManager.registerEvents(new LWCEntityListener(this), this);
 		pluginManager.registerEvents(new LWCBlockListener(this), this);
 		pluginManager.registerEvents(new LWCServerListener(this), this);
-		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-			pluginManager.registerEvents(new LWCProtocoLib(this), this);
-		}
 	}
 
 	/**

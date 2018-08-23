@@ -13,16 +13,6 @@
         <id>spigot-repo</id>
         <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
-<!--
-    <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-    </repository>
--->	  
-    <repository>
-        <id>dmulloy2-repo</id>
-        <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
-    </repository>
     <repository>
         <id>scarsz</id>
         <url>https://dl.bintray.com/scarsz/maven</url>
@@ -51,11 +41,6 @@
 			<scope>provided</scope>
 			<type>jar</type>
 		</dependency>
-	<dependency>
-		<groupId>com.comphenix.protocol</groupId>
-    		<artifactId>ProtocolLib-API</artifactId>
-    		<version>4.3.0</version>
-  	</dependency>
     <dependency>
             <groupId>com.palmergames</groupId>
             <artifactId>Towny</artifactId>
