@@ -350,7 +350,6 @@ public class ModuleLoader {
 		if (event == null) {
 			return;
 		}
-		//LWC.getInstance().log("dispatchEvent : " + event.getEventType().getExpectedArguments());
 		try {
 			List<Module> modules = fastModuleCache.get(event.getEventType());
 			Event type = event.getEventType();

@@ -43,7 +43,6 @@ import com.griefcraft.util.locale.UTF8Control;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -61,7 +60,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.jar.JarFile;
 
-public class LWCPlugin extends JavaPlugin implements CommandExecutor {
+public class LWCPlugin extends JavaPlugin {
 
 	/**
 	 * The LWC instance
