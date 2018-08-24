@@ -310,7 +310,7 @@ public class PhysDB extends Database {
 			protections.add(column);
 
 			column = new Column("password");
-			column.setType("TEXT");
+			column.setType("VARCHAR(40)");
 			protections.add(column);
 
 			column = new Column("date");
