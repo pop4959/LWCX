@@ -1278,7 +1278,7 @@ public class LWC {
                     protectionCache.addKnownNull(ProtectionCache.cacheKey(block.getLocation()));
                 }
             } catch (Exception e) {
-                log(e.getMessage());
+                log("Error occurred while finding protection");
             }
             return found;
         }

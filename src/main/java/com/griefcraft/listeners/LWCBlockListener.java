@@ -375,8 +375,7 @@ public class LWCBlockListener implements Listener {
 				block.getY(), block.getZ());
 		if (current != null) {
 			if (!current.isBlockInWorld()) {
-				// Corrupted protection
-				lwc.log("Removing corrupted protection: " + current);
+				// Removing corrupted protection
 				current.remove();
 			} else {
 				if (current.getProtectionFinder() != null) {

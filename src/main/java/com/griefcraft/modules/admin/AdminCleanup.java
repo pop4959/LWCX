@@ -243,7 +243,7 @@ public class AdminCleanup extends JavaModule {
                                     }
                                 }
                             } catch (InterruptedException e) { 
-                                System.out.println("Exception caught during cleanup: " + e.getMessage());
+                                lwc.log("Exception caught during cleanup: " + e.getMessage());
                                 
                             }
                         } else {
@@ -286,7 +286,7 @@ public class AdminCleanup extends JavaModule {
 				sender.sendMessage("Cleanup completed. Removed " + removed + " protections out of " + checked
 						+ " checked protections.");
 			} catch (Exception e) { // database.connect() throws Exception
-				System.out.println("Exception caught during cleanup: " + e.getMessage());
+				lwc.log("Exception caught during cleanup: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}

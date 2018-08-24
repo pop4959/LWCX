@@ -943,17 +943,13 @@ public class PhysDB extends Database {
 		// check if the protection is already cached
 		Protection cached = cache.getProtection(cacheKey);
 		if (cached != null) {
-			// System.out.println("loadProtection() => CACHE HIT");
 			return cached;
 		}
 
 		// Is it possible that there are protections in the cache?
 		if (!ignoreProtectionCount && hasAllProtectionsCached()) {
-			// System.out.println("loadProtection() => HAS_ALL_PROTECTIONS_CACHED");
-			return null; // nothing was in the cache, nothing assumed to be in
-							// the database
+			return null; // nothing was in the cache, nothing assumed to be in the database
 		}
-		// System.out.println("loadProtection() => QUERYING");
 		try {
 			PreparedStatement statement = prepare(
 					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "

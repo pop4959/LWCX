@@ -640,9 +640,6 @@ public class LWCPlayerListener implements Listener {
 		try {
 			state = block.getState();
 		} catch (NullPointerException e) {
-			//
-			lwc.log("Invalid Tile Entity detected at " + block.getLocation());
-			lwc.log("This is either an issue with your world or a bug in Bukkit");
 			return;
 		}
 
@@ -803,10 +800,6 @@ public class LWCPlayerListener implements Listener {
 		try {
 			holder = event.getInventory().getHolder();
 		} catch (AbstractMethodError e) {
-			lwc.log("Caught issue with Bukkit's Inventory.getHolder() method! This is occuring NEAR the player: "
-					+ player.getName());
-			lwc.log("This player is located at: " + player.getLocation().toString());
-			lwc.log("This should be reported to the Bukkit developers.");
 			e.printStackTrace();
 			return;
 		}
@@ -822,10 +815,6 @@ public class LWCPlayerListener implements Listener {
 		} catch (Exception e) {
 			Location ploc = player.getLocation();
 			String holderName = holder != null ? holder.getClass().getSimpleName() : "Unknown Block";
-			lwc.log("Exception with getting the location of a " + holderName + " has occurred NEAR the player: "
-					+ player.getName() + " [" + ploc.getBlockX() + " " + ploc.getBlockY() + " " + ploc.getBlockZ()
-					+ "]");
-			lwc.log("The exact location of the block is not possible to obtain. This is caused by a Minecraft or Bukkit exception normally.");
 			e.printStackTrace();
 			return;
 		}

@@ -109,7 +109,7 @@ public class RestorableBlock implements Restorable {
 
                 if (items.size() > 0) {
                     if (!(block.getState() instanceof InventoryHolder)) {
-                        System.out.println(String.format("The block at [%d, %d, %d] has backed up items but no longer supports them. Why? %s", x, y, z, block.toString()));
+                        lwc.log(String.format("The block at [%d, %d, %d] has backed up items but no longer supports them. Why? %s", x, y, z, block.toString()));
                     }
 
                     // Get the block's inventory

@@ -292,7 +292,6 @@ public class ProtectionFinder {
 
         // Null-check
         if (block.getWorld() == null) {
-            lwc.log("World is null for the block " + block);
             return Result.E_NOT_FOUND;
         }
 
@@ -315,8 +314,7 @@ public class ProtectionFinder {
                     this.matchedProtection = protection;
                     searched = true;
                 } else {
-                    // Corrupted protection
-                    lwc.log("Removing corrupted protection: " + protection);
+                    // Removing orrupted protection
                     protection.remove();
                 }
             }

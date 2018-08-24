@@ -182,7 +182,6 @@ public class MagnetModule extends JavaModule {
 				try {
 					remaining = lwc.depositItems(block, itemStack);
 				} catch (Exception e) {
-					lwc.log("Exception occurred while depositing into the block: " + block.toString());
 					e.printStackTrace();
 					return;
 				}

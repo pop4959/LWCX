@@ -121,7 +121,7 @@ public class LWCEntityListener implements Listener {
                     boolean canAdmin = lwc.canAdminProtection(player, protection);
 
                     try {
-                        lwc.log("Removing protection");
+                        // Removing protection
                         LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
                                 LWCProtectionDestroyEvent.Method.ENTITY_DESTRUCTION, canAccess, canAdmin);
                         lwc.getModuleLoader().dispatchEvent(evt);
@@ -203,8 +203,6 @@ public class LWCEntityListener implements Listener {
 
 		LWC lwc = plugin.getLWC();
 
-		lwc.log("Player created entity [" + entity.getType().name() + "]");
-
 		int A = 50000 + entity.getUniqueId().hashCode();
 
 		// Update the cache if a protection is matched here
@@ -212,8 +210,7 @@ public class LWCEntityListener implements Listener {
             Protection current = lwc.findProtection(EntityBlock.getEntityBlock(entity));
             if (current != null) {
                 if (!current.isBlockInWorld()) {
-                    // Corrupted protection
-                    lwc.log("Removing corrupted protection: " + current);
+                    // Removing corrupted protection
                     current.remove();
                 } else {
                     if (current.getProtectionFinder() != null) {
