@@ -363,7 +363,7 @@ public class LWCPlayerListener implements Listener {
 		}
 	}
 
-	public static boolean onPlayerEntityInteract(Player player, Entity entity, boolean cancelled) {
+	private boolean onPlayerEntityInteract(Player player, Entity entity, boolean cancelled) {
 		int A = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
 
 		// attempt to load the protection for this cart
@@ -774,7 +774,7 @@ public class LWCPlayerListener implements Listener {
 		LWCPlayer.removePlayer(event.getPlayer());
 	}
 
-	@SuppressWarnings({ "deprecation" })
+	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		LWC lwc = LWC.getInstance();
