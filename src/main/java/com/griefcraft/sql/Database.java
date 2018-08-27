@@ -254,6 +254,7 @@ public abstract class Database {
 			properties.put("autoReconnect", "true");
 			properties.put("user", lwc.getConfiguration().getString("database.username"));
 			properties.put("password", lwc.getConfiguration().getString("database.password"));
+			properties.put("useSSL", "false");
 		}
 
 		// Connect to the database
