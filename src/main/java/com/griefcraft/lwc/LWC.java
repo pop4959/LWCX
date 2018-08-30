@@ -619,6 +619,9 @@ public class LWC {
 		}
 
 		physicalDatabase = null;
+
+		// Clean ourselves up
+		instance = null;
 	}
 
 	/**

@@ -75,6 +75,13 @@ public class BlockCache {
     }
 
     /**
+     * Clean up the singleton instance when disabling.
+     */
+    public static void destruct() {
+        blockCache = null;
+    }
+
+    /**
      * Add a mapping to both maps. Only to be used internally.
      *
      * @param integer
