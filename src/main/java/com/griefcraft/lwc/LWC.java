@@ -245,6 +245,7 @@ public class LWC {
 				locale = materialName;
 			}
 
+			locale = locale.replace('_', ' ');
 			return StringUtil.capitalizeFirstLetter(locale);
 		}
 
