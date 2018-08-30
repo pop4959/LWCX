@@ -619,6 +619,9 @@ public class LWC {
 		}
 
 		physicalDatabase = null;
+
+		// Clean ourselves up
+		instance = null;
 	}
 
 	/**
@@ -906,7 +909,7 @@ public class LWC {
 			int plrZ = location.getBlockZ();
 
 			// simple check of the ranges
-			if (plrX >= minX && plrX <= maxX && plrY >= plrY && plrY <= maxY && plrZ >= minZ && plrZ <= maxZ) {
+			if (plrX >= minX && plrX <= maxX && plrY >= minY && plrY <= maxY && plrZ >= minZ && plrZ <= maxZ) {
 				return player;
 			}
 		}

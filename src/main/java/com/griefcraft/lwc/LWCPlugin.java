@@ -28,6 +28,7 @@
 
 package com.griefcraft.lwc;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
@@ -192,6 +193,9 @@ public class LWCPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		LWC.ENABLED = false;
+
+		// Clean up static instances
+		BlockCache.destruct();
 
 		if (lwc != null) {
 			lwc.destruct();
