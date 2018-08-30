@@ -2173,6 +2173,10 @@ public class PhysDB extends Database {
 		try {
 			statement = connection.createStatement();
 			ResultSet test = statement.executeQuery("SELECT id FROM " + prefix + "blocks WHERE id = 0");
+			try {
+				test.first(); // needed for MySQL
+			} catch (SQLException e) {
+			}
 			test.getInt("id"); // this should throw an exception if there are no entries in blocks table
 			test.close();
 		} catch (SQLException e) {
@@ -2230,6 +2234,10 @@ public class PhysDB extends Database {
 				return; // no protections table, no update
 			}
 			ResultSet rs = statement.executeQuery("SELECT id FROM " + prefix + "blocks WHERE id = 0");
+			try {
+				rs.first(); // needed for MySQL
+			} catch (SQLException e) {
+			}
 			rs.getInt("id"); // this should throw an exception if there are no entries in blocks table
 			rs.close();
 		} catch (SQLException e) {

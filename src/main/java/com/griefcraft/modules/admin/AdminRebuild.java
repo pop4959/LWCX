@@ -148,7 +148,11 @@ public class AdminRebuild extends JavaModule {
 
             // Create the protection!
             BlockCache blockCache = BlockCache.getInstance();
-            Protection protection = lwc.getPhysicalDatabase().registerProtection(blockCache.getBlockId(block),
+            int blockId = blockCache.getBlockId(block);
+            if (blockId < 0) {
+                continue;
+            }
+            Protection protection = lwc.getPhysicalDatabase().registerProtection(blockId,
                     Protection.Type.PRIVATE, block.getWorld().getName(), creator, "", x, y, z);
 
             if (protection == null) {

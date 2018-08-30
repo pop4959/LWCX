@@ -141,8 +141,10 @@ public class BlockCache {
             statement.setInt(1, nextId);
             statement.setString(2, blockMaterial.name());
             statement.executeUpdate();
-            addMapping(++nextId, blockMaterial);
-            return nextId - 1;
+            int newId = nextId;
+            addMapping(newId, blockMaterial);
+            ++nextId;
+            return newId;
         } catch (SQLException e) {
             lwc.log("Unable to add new block to " + prefix + "blocks!");
             e.printStackTrace();

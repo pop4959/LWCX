@@ -140,12 +140,16 @@ public class CreateModule extends JavaModule {
 		Protection protection = null;
 
 		BlockCache blockCache = BlockCache.getInstance();
+		int blockId = blockCache.getBlockId(block);
+		if (blockId < 0) {
+			return;
+		}
 		if (protectionType.equals("public")) {
 			if (block instanceof EntityBlock) {
 				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_ID, Protection.Type.PUBLIC, worldName,
 						player.getUniqueId().toString(), "", blockX, blockY, blockZ);
 			} else {
-				protection = physDb.registerProtection(blockCache.getBlockId(block), Protection.Type.PUBLIC, worldName,
+				protection = physDb.registerProtection(blockId, Protection.Type.PUBLIC, worldName,
 						player.getUniqueId().toString(), "", blockX, blockY, blockZ);
 			}
 			lwc.sendLocale(player, "protection.interact.create.finalize");
@@ -156,7 +160,7 @@ public class CreateModule extends JavaModule {
 				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_ID, Protection.Type.PASSWORD,
 						worldName, player.getUniqueId().toString(), password, blockX, blockY, blockZ);
 			} else {
-				protection = physDb.registerProtection(blockCache.getBlockId(block), Protection.Type.PASSWORD, worldName,
+				protection = physDb.registerProtection(blockId, Protection.Type.PASSWORD, worldName,
 						player.getUniqueId().toString(), password, blockX, blockY, blockZ);
 			}
 			player.addAccessibleProtection(protection);
@@ -170,7 +174,7 @@ public class CreateModule extends JavaModule {
 						Protection.Type.matchType(protectionType), worldName, player.getUniqueId().toString(), "",
 						blockX, blockY, blockZ);
 			} else {
-				protection = physDb.registerProtection(blockCache.getBlockId(block),
+				protection = physDb.registerProtection(blockId,
 						Protection.Type.matchType(protectionType), worldName, player.getUniqueId().toString(), "",
 						blockX, blockY, blockZ);
 			}

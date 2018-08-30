@@ -529,7 +529,11 @@ public class LWCBlockListener implements Listener {
 
 			// All good!
             BlockCache blockCache = BlockCache.getInstance();
-			Protection protection = lwc.getPhysicalDatabase().registerProtection(blockCache.getBlockId(block), type,
+			int blockId = blockCache.getBlockId(block);
+			if (blockId < 0) {
+				return;
+			}
+			Protection protection = lwc.getPhysicalDatabase().registerProtection(blockId, type,
 					block.getWorld().getName(), player.getUniqueId().toString(), "", block.getX(), block.getY(),
 					block.getZ());
 

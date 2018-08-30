@@ -207,8 +207,12 @@ public class WorldGuard extends JavaModule {
 
 						// Protect it!
 						BlockCache blockCache = BlockCache.getInstance();
+						int blockId = blockCache.getBlockId(block);
+						if (blockId < 0) {
+							continue;
+						}
 						lwc.getPhysicalDatabase().registerProtection(
-								blockCache.getBlockId(block), Protection.Type.PRIVATE,
+								blockId, Protection.Type.PRIVATE,
 								world.getName(), ownerName, "", x, y, z);
 						registered++;
 					}
