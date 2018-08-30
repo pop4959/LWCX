@@ -189,7 +189,7 @@ public class LWCEntityListener implements Listener {
 			placedArmorStandPlayer = null;
 			if (player != null) {
 				if (player.getWorld().equals(block.getWorld())
-						&& player.getLocation().distanceSquared(block.getLocation()) <= 5) {
+						&& player.getLocation().distance(block.getLocation()) <= 5) {
 					entityCreatedByPlayer(block, player);
 				}
 			}
