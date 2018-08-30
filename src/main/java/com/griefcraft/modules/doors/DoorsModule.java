@@ -181,17 +181,17 @@ public class DoorsModule extends JavaModule {
 				continue;
 			}
 
-			// If we aren't allowing the door to open, check if it's already closed
-			if (!allowDoorToOpen) {
-				// The door is already closed and we don't want to open it
-				continue;
-			}
-
 			// ensure this is an openable door
 			Openable doorBlockData = null;
 			try {
 				doorBlockData = (Openable) door.getBlockData();
 			} catch (ClassCastException e) {
+				continue;
+			}
+
+			// If we aren't allowing the door to open, check if it's already closed
+			if (!allowDoorToOpen && !doorBlockData.isOpen()) {
+				// The door is already closed and we don't want to open it
 				continue;
 			}
 
