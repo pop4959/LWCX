@@ -28,6 +28,7 @@
 
 package com.griefcraft.modules.limits;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
@@ -98,6 +99,7 @@ public class LimitsV2 extends JavaModule {
 
 			// add the name & the block id
 			materialCache.put(materialName, material);
+//			materialCache.put(material.getId() + "", material);
 
 			if (!materialName.equals(material.toString().toLowerCase())) {
 				materialCache.put(material.toString().toLowerCase(), material);
@@ -160,7 +162,7 @@ public class LimitsV2 extends JavaModule {
 
 		@Override
 		public int getProtectionCount(Player player, Material material) {
-			return LWC.getInstance().getPhysicalDatabase().getProtectionCount(player.getName(), material.name());
+			return LWC.getInstance().getPhysicalDatabase().getProtectionCount(player.getName(), material.getId());
 		}
 
 		/**
@@ -208,8 +210,8 @@ public class LimitsV2 extends JavaModule {
 		@Override
 		public int getProtectionCount(Player player, Material material) {
 			LWC lwc = LWC.getInstance();
-			return lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.SIGN.name())
-					+ lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.WALL_SIGN.name());
+			return lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.SIGN.getId())
+					+ lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.WALL_SIGN.getId());
 		}
 
 	}
@@ -277,7 +279,7 @@ public class LimitsV2 extends JavaModule {
 				return;
 			}
 		}
-		
+
 		@SuppressWarnings("deprecation")
 		Player player = lwc.getPlugin().getServer().getPlayer(playerName);
 
@@ -391,13 +393,7 @@ public class LimitsV2 extends JavaModule {
 		int neverPassThisNumber = limit.getLimit();
 
 		// get the amount of protections the player has
-		int protections = 0;
-
-		if (limit instanceof DefaultLimit) {
-			protections = ((DefaultLimit) limit).getProtectionCount(player, null);
-		} else {
-			protections = limit.getProtectionCount(player, material);
-		}
+		int protections = limit.getProtectionCount(player, material);
 
 		return protections >= neverPassThisNumber;
 	}
@@ -598,12 +594,12 @@ public class LimitsV2 extends JavaModule {
 
 		// Temporary storage to use if the default is found so we save time if no
 		// override was found
-		DefaultLimit defaultLimit = null;
+		Limit defaultLimit = null;
 
 		for (Limit limit : limits) {
 			// Record the default limit if found
 			if (limit instanceof DefaultLimit) {
-				defaultLimit = (DefaultLimit) limit;
+				defaultLimit = limit;
 			} else if (limit instanceof SignLimit) {
 				if (material == Material.WALL_SIGN || material == Material.SIGN) {
 					return limit;
@@ -682,11 +678,21 @@ public class LimitsV2 extends JavaModule {
 				limits.add(new SignLimit(limit));
 			} else if (!key.equalsIgnoreCase("default") && !key.equalsIgnoreCase("sign")) {
 				// attempt to resolve it as a block id
+				int blockId = -1;
+				try {
+					blockId = Integer.parseInt(key);
+				} catch (NumberFormatException e) {
+				}
 
 				// resolve the material
 				Material material;
 
-				material = Material.getMaterial(key.toUpperCase());
+				BlockCache blockCache = BlockCache.getInstance();
+				if (blockId >= 0) {
+					material = blockCache.getBlockType(blockId);
+				} else {
+					material = Material.getMaterial(key.toUpperCase());
+				}
 
 				if (material != null) {
 					limits.add(new BlockLimit(material, limit));

@@ -28,6 +28,7 @@
 
 package com.griefcraft.migration;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.modules.pluginsupport.WorldGuard;
 
@@ -106,16 +107,17 @@ public class ConfigPost300 implements MigrationUtility {
             String[] split = protectionBlacklist.replaceAll(" ", "_").split(",");
 
             for (String protection : split) {
-                String blockId = "";
+                int blockId = 0;
 
                 try {
-                    blockId = protection;
+                    blockId = Integer.parseInt(protection);
                 } catch (NumberFormatException e) {
                 }
 
                 // if it's an int, convert it
-                if (blockId != Material.AIR.name()) {
-                    protection = Material.getMaterial(blockId).toString().toLowerCase().replaceAll("block", "");
+                if (blockId > 0) {
+                    BlockCache blockCache = BlockCache.getInstance();
+                    protection = blockCache.getBlockType(blockId).toString().toLowerCase().replaceAll("block", "");
 
                     if (protection.endsWith("_")) {
                         protection = protection.substring(0, protection.length() - 1);

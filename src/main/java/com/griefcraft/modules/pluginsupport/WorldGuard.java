@@ -29,6 +29,7 @@ package com.griefcraft.modules.pluginsupport;
 
 
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
@@ -205,8 +206,9 @@ public class WorldGuard extends JavaModule {
 						}
 
 						// Protect it!
+						BlockCache blockCache = BlockCache.getInstance();
 						lwc.getPhysicalDatabase().registerProtection(
-								block.getType().name(), Protection.Type.PRIVATE,
+								blockCache.getBlockId(block), Protection.Type.PRIVATE,
 								world.getName(), ownerName, "", x, y, z);
 						registered++;
 					}

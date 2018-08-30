@@ -28,6 +28,8 @@
 
 package com.griefcraft.sql;
 
+import com.griefcraft.bukkit.EntityBlock;
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.LRUCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
@@ -37,10 +39,12 @@ import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
 import com.griefcraft.modules.limits.LimitsModule;
 import com.griefcraft.scripting.Module;
+import com.griefcraft.util.MaterialUtil;
 import com.griefcraft.util.UUIDRegistry;
 import com.griefcraft.util.config.Configuration;
 
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -53,6 +57,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -98,6 +103,9 @@ public class PhysDB extends Database {
 
 		return cache.size() >= protectionCount;
 	}
+
+	PreparedStatement statement;
+
 	/**
 	 * Fetch an object from the sql database
 	 *
@@ -131,7 +139,7 @@ public class PhysDB extends Database {
 
 	/**
 	 * Get the total amount of protections
-	 * 
+	 *
 	 * @return the number of protections
 	 */
 	public int getProtectionCount() {
@@ -140,7 +148,7 @@ public class PhysDB extends Database {
 
 	/**
 	 * Get the amount of protections for the given protection type
-	 * 
+	 *
 	 * @param type
 	 * @return the number of protected chests
 	 */
@@ -217,15 +225,15 @@ public class PhysDB extends Database {
 	 * @param player
 	 * @return the amount of protections they have of blockId
 	 */
-	public int getProtectionCount(String player, String blockId) {
+	public int getProtectionCount(String player, int blockId) {
 		int count = 0;
 
 		try {
 			PreparedStatement statement = prepare(
-					"SELECT COUNT(*) AS count FROM " + prefix + "protections WHERE owner = ? AND blockName = ?");
+					"SELECT COUNT(*) AS count FROM " + prefix + "protections WHERE owner = ? AND blockId = ?");
 			UUID uuid = UUIDRegistry.getUUID(player);
 			statement.setString(1, uuid != null ? uuid.toString() : player);
-			statement.setString(2, blockId);
+			statement.setInt(2, blockId);
 
 			ResultSet set = statement.executeQuery();
 
@@ -299,10 +307,6 @@ public class PhysDB extends Database {
 
 			column = new Column("blockId");
 			column.setType("INTEGER");
-			protections.add(column);
-
-			column = new Column("blockName");
-			column.setType("VARCHAR(32)");
 			protections.add(column);
 
 			column = new Column("world");
@@ -379,9 +383,23 @@ public class PhysDB extends Database {
 			internal.add(column);
 		}
 
+        Table blocks = new Table(this, "blocks");
+        {
+            column = new Column("id");
+            column.setType("INTEGER");
+            column.setPrimary(true);
+            column.setAutoIncrement(false);
+            blocks.add(column);
+
+            column = new Column("name");
+            column.setType("VARCHAR(40)");
+            blocks.add(column);
+        }
+
 		protections.execute();
 		history.execute();
 		internal.execute();
+		blocks.execute();
 
 		/**
 		 * Updates that alter or rename a table go here
@@ -394,10 +412,12 @@ public class PhysDB extends Database {
 		doUpdate400_4();
 		doUpdate400_5();
 		doUpdate400_6();
-		if (doUpdate1_13()) {
-			doUpdate1_13_2();
-		}
-		
+		doUpdateModernLWC();
+		doUpdateAquatic();
+
+		// Initialize the block cache
+		BlockCache.getInstance().loadBlocks();
+
 		// Load the database version
 		loadDatabaseVersion();
 
@@ -462,16 +482,16 @@ public class PhysDB extends Database {
 			List<String> blacklistedBlocks = lwc.getConfiguration().getStringList("optional.blacklistedBlocks",
 					new ArrayList<String>());
 
-			if (!blacklistedBlocks.contains("HOPPER")) {
-				blacklistedBlocks.add(Material.HOPPER.name());
+			if (!blacklistedBlocks.contains("hopper")) {
+				blacklistedBlocks.add(Material.HOPPER.name().toLowerCase());
 				lwc.getConfiguration().setProperty("optional.blacklistedBlocks", blacklistedBlocks);
 				lwc.getConfiguration().save();
 				Configuration.reload();
 
 				lwc.log("Added Hoppers to Blacklisted Blocks in core.yml (optional.blacklistedBlocks)");
 				lwc.log("This means that Hoppers CANNOT be placed around protections a player does not have access to");
-				lwc.log("If you DO NOT want this feature, simply remove " + Material.HOPPER.name()
-						+ " (Hoppers) from blacklistedBlocks :-)");
+				lwc.log("If you DO NOT want this feature, simply remove '" + Material.HOPPER.name().toLowerCase()
+						+ "' from blacklistedBlocks :-)");
 			}
 
 			incrementDatabaseVersion();
@@ -500,14 +520,6 @@ public class PhysDB extends Database {
 
 			incrementDatabaseVersion();
 		}
-		if (databaseVersion == 6) {
-			lwc.log("Updating to 1.13 material name system.");
-			if (doUpdate1_13()) {
-				doUpdate1_13_2();
-				incrementDatabaseVersion();
-			}
-		}
-
 	}
 
 	/**
@@ -650,7 +662,7 @@ public class PhysDB extends Database {
 
 		try {
 			PreparedStatement statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix + "protections WHERE id = ?");
 			statement.setInt(1, id);
 
@@ -677,7 +689,7 @@ public class PhysDB extends Database {
 		PreparedStatement statement;
 		try {
 			statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix + "protections WHERE type = ?");
 			statement.setInt(1, type.ordinal());
 
@@ -704,19 +716,19 @@ public class PhysDB extends Database {
 			int x = set.getInt("x");
 			int y = set.getInt("y");
 			int z = set.getInt("z");
+			int blockId = set.getInt("blockId");
 			int type = set.getInt("type");
 			String world = set.getString("world");
 			String owner = set.getString("owner");
 			String password = set.getString("password");
 			String date = set.getString("date");
 			long lastAccessed = set.getLong("last_accessed");
-			String blockName = set.getString("blockName");
 
 			protection.setId(protectionId);
 			protection.setX(x);
 			protection.setY(y);
 			protection.setZ(z);
-			protection.setBlockName(blockName);
+			protection.setBlockId(blockId);
 			protection.setType(Protection.Type.values()[type]);
 			protection.setWorld(world);
 			protection.setOwner(owner);
@@ -884,11 +896,11 @@ public class PhysDB extends Database {
 			precacheSize = lwc.getConfiguration().getInt("core.cacheSize", 10000);
 		}
 		try {
-			PreparedStatement statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+			statement = prepare(
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix + "protections ORDER BY id DESC LIMIT ?");
 			statement.setInt(1, precacheSize);
-			statement.setFetchSize(100);
+			statement.setFetchSize(10);
 
 			// scrape the protections from the result set now
 			List<Protection> protections = resolveProtections(statement);
@@ -916,15 +928,6 @@ public class PhysDB extends Database {
 	}
 
 	/**
-	 * Temp fix for protections that are doubled
-	 *
-	 * @param Protection
-	 * @return void
-	 */
-
-	
-	
-	/**
 	 * Load a protection at the given coordinates
 	 *
 	 * @param x
@@ -951,11 +954,9 @@ public class PhysDB extends Database {
 			return null; // nothing was in the cache, nothing assumed to be in the database
 		}
 		try {
-			PreparedStatement statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+			statement = prepare(
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix + "protections WHERE x = ? AND y = ? AND z = ? AND world = ?");
-			//statement.setFetchSize(500);
-			statement.setPoolable(true);
 			statement.setInt(1, x);
 			statement.setInt(2, y);
 			statement.setInt(3, z);
@@ -983,10 +984,8 @@ public class PhysDB extends Database {
 	public List<Protection> loadProtections() {
 		try {
 			PreparedStatement statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix + "protections");
-			statement.setFetchSize(500);
-			statement.setPoolable(true);
 			return resolveProtections(statement);
 		} catch (Exception e) {
 			printException(e);
@@ -1038,12 +1037,10 @@ public class PhysDB extends Database {
 			return protections;
 		}
 		try {
-			PreparedStatement statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+			statement = prepare(
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix
 							+ "protections WHERE world = ? AND x >= ? AND x <= ? AND y >= ? AND y <= ? AND z >= ? AND z <= ?");
-			statement.setFetchSize(500);
-			statement.setPoolable(true);
 			statement.setString(1, world);
 			statement.setInt(2, baseX - radius);
 			statement.setInt(3, baseX + radius);
@@ -1092,11 +1089,9 @@ public class PhysDB extends Database {
 	public List<Protection> loadProtections(String world, int x1, int x2, int y1, int y2, int z1, int z2) {
 		try {
 			PreparedStatement statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix
 							+ "protections WHERE world = ? AND x >= ? AND x <= ? AND y >= ? AND y <= ? AND z >= ? AND z <= ?");
-			statement.setFetchSize(500);
-			statement.setPoolable(true);
 			statement.setString(1, world);
 			statement.setInt(2, x1);
 			statement.setInt(3, x2);
@@ -1124,10 +1119,8 @@ public class PhysDB extends Database {
 
 		try {
 			PreparedStatement statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix + "protections WHERE owner = ?");
-			statement.setFetchSize(500);
-			statement.setPoolable(true);
 			UUID uuid = UUIDRegistry.getUUID(player);
 			statement.setString(1, uuid != null ? uuid.toString() : player);
 
@@ -1154,10 +1147,8 @@ public class PhysDB extends Database {
 
 		try {
 			PreparedStatement statement = prepare(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix + "protections WHERE owner = ? ORDER BY id DESC limit ?,?");
-			statement.setFetchSize(500);
-			statement.setPoolable(true);
 			statement.setString(1, uuid != null ? uuid.toString() : player);
 			statement.setInt(2, start);
 			statement.setInt(3, count);
@@ -1169,11 +1160,7 @@ public class PhysDB extends Database {
 
 		return protections;
 	}
-	
-	public Protection registerProtection(int blockId, Protection.Type type, String world, String player, String data, int x, int y,
-			int z) {
-		return registerProtection(Material.matchMaterial(Integer.toString(blockId)).name(), type, world, player, data, x, y, z);
-	}
+
 	/**
 	 * Register a protection
 	 *
@@ -1187,11 +1174,11 @@ public class PhysDB extends Database {
 	 * @param z
 	 * @return
 	 */
-	
 	public Protection registerProtection(int blockId, int type, String world, String player, String data, int x, int y,
 			int z) {
-		return registerProtection(Material.matchMaterial(Integer.toString(blockId)).name(), Protection.Type.values()[type], world, player, data, x, y, z);
+		return registerProtection(blockId, Protection.Type.values()[type], world, player, data, x, y, z);
 	}
+
 	/**
 	 * Register a protection
 	 *
@@ -1205,15 +1192,13 @@ public class PhysDB extends Database {
 	 * @param z
 	 * @return
 	 */
-	public Protection registerProtection(String blockName, Protection.Type type, String world, String player,
+	public Protection registerProtection(int blockId, Protection.Type type, String world, String player,
 			String data, int x, int y, int z) {
 		ProtectionCache cache = LWC.getInstance().getProtectionCache();
 		try {
-			PreparedStatement statement = prepare("INSERT INTO " + prefix
-					+ "protections (blockName, type, world, owner, password, x, y, z, date, last_accessed) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			//statement.setFetchSize(500);
-			statement.setPoolable(true);
-			statement.setString(1, blockName);
+			statement = prepare("INSERT INTO " + prefix
+					+ "protections (blockId, type, world, owner, password, x, y, z, date, last_accessed) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			statement.setInt(1, blockId);
 			statement.setInt(2, type.ordinal());
 			statement.setString(3, world);
 			statement.setString(4, player);
@@ -1225,7 +1210,8 @@ public class PhysDB extends Database {
 			statement.setLong(10, System.currentTimeMillis() / 1000L);
 
 			statement.executeUpdate();
-			
+			statement = null;
+
 			// We need to create the initial transaction for this protection
 			// this transaction is viewable and modifiable during
 			// POST_REGISTRATION
@@ -1244,7 +1230,7 @@ public class PhysDB extends Database {
 				transaction.addMetaData("creator=" + player);
 
 				// now sync the history object to the database
-				transaction.save();
+				transaction.saveNow();
 			}
 
 			// Cache it
@@ -1262,27 +1248,12 @@ public class PhysDB extends Database {
 	}
 
 	/**
-	 * Register a protection
-	 *
-	 * @param blockId
-	 * @param type
-	 * @param world
-	 * @param player
-	 * @param data
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-
-	/**
 	 * Sync a History object to the database or save a newly created one
 	 *
 	 * @param history
 	 */
 	public void saveHistory(History history) {
 		try {
-			PreparedStatement statement;
 			if (history.doesExist()) {
 				statement = prepare("UPDATE " + prefix
 						+ "history SET protectionId = ?, player = ?, x = ?, y = ?, z = ?, type = ?, status = ?, metadata = ?, timestamp = ? WHERE id = ?");
@@ -1292,8 +1263,6 @@ public class PhysDB extends Database {
 						true);
 				history.setTimestamp(System.currentTimeMillis() / 1000L);
 			}
-			statement.setFetchSize(500);
-			statement.setPoolable(true);
 			statement.setInt(1, history.getProtectionId());
 			statement.setString(2, history.getPlayer());
 			statement.setInt(3, history.getX());
@@ -1399,7 +1368,7 @@ public class PhysDB extends Database {
 		}
 
 		try {
-			PreparedStatement statement = prepare("SELECT * FROM " + prefix + "history WHERE protectionId = ? ORDER BY id DESC");
+			statement = prepare("SELECT * FROM " + prefix + "history WHERE protectionId = ? ORDER BY id DESC");
 			statement.setInt(1, protection.getId());
 
 			ResultSet set = statement.executeQuery();
@@ -1450,7 +1419,7 @@ public class PhysDB extends Database {
 			player = uuid.toString();
 		}
 		try {
-			PreparedStatement statement = prepare("SELECT * FROM " + prefix + "history WHERE LOWER(player) = LOWER(?) ORDER BY id DESC");
+			statement = prepare("SELECT * FROM " + prefix + "history WHERE LOWER(player) = LOWER(?) ORDER BY id DESC");
 			statement.setString(1, player);
 
 			ResultSet set = statement.executeQuery();
@@ -1484,7 +1453,7 @@ public class PhysDB extends Database {
 		}
 
 		try {
-			PreparedStatement statement = prepare("SELECT * FROM " + prefix + "history WHERE id = ?");
+			statement = prepare("SELECT * FROM " + prefix + "history WHERE id = ?");
 			statement.setInt(1, historyId);
 
 			ResultSet set = statement.executeQuery();
@@ -1762,11 +1731,11 @@ public class PhysDB extends Database {
 	public void saveProtection(Protection protection) {
 		try {
 			PreparedStatement statement = prepare("REPLACE INTO " + prefix
-					+ "protections (id, type, blockName, world, data, owner, password, x, y, z, date, last_accessed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					+ "protections (id, type, blockId, world, data, owner, password, x, y, z, date, last_accessed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 			statement.setInt(1, protection.getId());
 			statement.setInt(2, protection.getType().ordinal());
-			statement.setString(3, protection.getBlockName());
+			statement.setInt(3, protection.getBlockId());
 			statement.setString(4, protection.getWorld());
 			statement.setString(5, protection.getData().toJSONString());
 			statement.setString(6, protection.getOwner());
@@ -1776,26 +1745,13 @@ public class PhysDB extends Database {
 			statement.setInt(10, protection.getZ());
 			statement.setString(11, protection.getCreation());
 			statement.setLong(12, protection.getLastAccessed());
-			
+
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			printException(e);
 		}
 	}
 
-    public void saveProtectionLastAccessed(Protection protection) {
-        try {
-            PreparedStatement statement = prepare("UPDATE " + prefix + "protections SET last_accessed = ? WHERE id = ?");
-
-            statement.setLong(1, protection.getLastAccessed());
-            statement.setInt(2, protection.getId());
-
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            printException(e);
-        }
-    }
-	
 	/**
 	 * Free a chest from protection
 	 *
@@ -1932,7 +1888,7 @@ public class PhysDB extends Database {
 
 		// start going through the database
 		PreparedStatement statement = prepare("SELECT * FROM limits");
-		try {
+			try {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
@@ -2208,14 +2164,48 @@ public class PhysDB extends Database {
 		}
 	}
 
-	private boolean doUpdate1_13() {
+	/**
+	 * Update the database for the "Update Aquatic", otherwise known as MineCraft 1.13! (from ModernLWC 2.0.0 - 2.0.9)
+	 */
+	private void doUpdateModernLWC() {
 		Statement statement = null;
+		BlockCache blockCache = BlockCache.getInstance();
 		try {
 			statement = connection.createStatement();
-			statement.execute("SELECT blockName FROM " + prefix + "protections LIMIT 1");
+			ResultSet test = statement.executeQuery("SELECT id FROM " + prefix + "blocks WHERE id = 0");
+			test.getInt("id"); // this should throw an exception if there are no entries in blocks table
+			test.close();
 		} catch (SQLException e) {
-			addColumn(prefix + "protections", "blockName", "VARCHAR(32)");
-			return true;
+			try {
+				ResultSet rs = statement.executeQuery("SELECT DISTINCT blockName FROM " + prefix + "protections");
+				LWC.getInstance().log("Performing database optimization for 1.13...");
+				PreparedStatement updateSmt = prepare("UPDATE " + prefix + "protections SET blockId = ? WHERE blockName = ?");
+				HashSet<String> entityNames = new HashSet<>();
+				entityNames.add("Entity");
+				for (EntityType entity : EntityType.values()) {
+					entityNames.add(entity.name());
+				}
+				while (rs.next()) {
+					String blockName = rs.getString(1);
+					int blockId = blockCache.addBlock(blockName);
+					if (blockId > 0) {
+						updateSmt.setInt(1, entityNames.contains(blockName)
+								? EntityBlock.ENTITY_BLOCK_ID : blockId);
+						updateSmt.setString(2, blockName);
+						updateSmt.executeUpdate();
+					}
+				}
+				rs.close();
+				updateSmt = prepare("UPDATE " + prefix + "protections SET blockName = NULL");
+				updateSmt.executeUpdate();
+				updateSmt = prepare("INSERT INTO " + prefix + "blocks (`id`,`name`) VALUES (?, ?)");
+				updateSmt.setInt(1, 0);
+				updateSmt.setString(2, Material.AIR.name());
+				updateSmt.executeUpdate();
+				updateSmt.close();
+			} catch (SQLException e2) {
+				return; // exit, probably no blockName column
+			}
 		} finally {
 			if (statement != null) {
 				try {
@@ -2224,19 +2214,56 @@ public class PhysDB extends Database {
 				}
 			}
 		}
-		return false;
 	}
 
-	private void doUpdate1_13_2() {
-		PreparedStatement pStatement = prepare("SELECT * FROM " + prefix + "protections WHERE blockName IS NULL");
-		for (Protection protection : resolveProtections(pStatement)) {
+	/**
+	 * Update the database for the "Update Aquatic", otherwise known as MineCraft 1.13! (from ModernLWC 1.9.4 & prior)
+	 */
+	private void doUpdateAquatic() {
+		Statement statement = null;
+		try {
+			statement = connection.createStatement();
 			try {
-				protection.setBlockName(Material.matchMaterial(Integer.toString(pStatement.getResultSet().getInt("blockId"))).name());
-			} catch (Exception e) {
-				protection.setBlockName("Entity");
+				ResultSet rs = statement.executeQuery("SELECT blockId FROM " + prefix + "protections LIMIT 1");
+				rs.close();
+			} catch (SQLException e) {
+				return; // no protections table, no update
 			}
-			protection.save();
-			saveProtection(protection);
+			ResultSet rs = statement.executeQuery("SELECT id FROM " + prefix + "blocks WHERE id = 0");
+			rs.getInt("id"); // this should throw an exception if there are no entries in blocks table
+			rs.close();
+		} catch (SQLException e) {
+			try {
+				LWC.getInstance().log("Performing database migration to 1.13 format...");
+				statement.executeUpdate("UPDATE " + prefix + "protections SET blockId = -1 WHERE blockId IS NULL");
+				ResultSet rs = statement.executeQuery("SELECT DISTINCT blockId FROM " + prefix + "protections");
+				PreparedStatement insertSmt = prepare("INSERT INTO " + prefix + "blocks (`id`,`name`) VALUES (?, ?)");
+				while (rs.next()) {
+					int id = rs.getInt("blockId");
+					if (id > 0 && id != EntityBlock.ENTITY_BLOCK_ID) {
+						Material material = MaterialUtil.getMaterialById(id);
+						if (material != null) {
+							insertSmt.setInt(1, id);
+							insertSmt.setString(2, material.name());
+							insertSmt.executeUpdate();
+						}
+					}
+				}
+				insertSmt.setInt(1, 0);
+				insertSmt.setString(2, Material.AIR.name());
+				insertSmt.executeUpdate();
+				insertSmt.close();
+			} catch (SQLException e2) {
+				printException(e2);
+			}
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+				}
+			}
 		}
 	}
+
 }

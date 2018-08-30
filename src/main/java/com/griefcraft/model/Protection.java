@@ -28,6 +28,7 @@
 
 package com.griefcraft.model;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.event.LWCProtectionRemovePostEvent;
@@ -141,7 +142,7 @@ public class Protection {
 	/**
 	 * The block id
 	 */
-	//private int blockId;
+	private int blockId;
 
 	/**
 	 * The password for the chest
@@ -157,10 +158,6 @@ public class Protection {
 	 * Unique id (in sql)
 	 */
     private int id;
-
-
-
-	private String blockName;
 
 	/**
 	 * The owner of the chest
@@ -238,7 +235,7 @@ public class Protection {
 
 		Protection other = (Protection) object;
 
-		return blockName == other.blockName && x == other.x && y == other.y && z == other.z
+		return id == other.id && x == other.x && y == other.y && z == other.z
 				&& (owner != null && owner.equals(other.owner))
 				&& (world != null && world.equals(other.world));
 	}
@@ -621,14 +618,15 @@ public class Protection {
 	 * @return
 	 */
 	public boolean isBlockInWorld() {
-		String storedBlockId = getBlockName();
+		int storedBlockId = getBlockId();
 		Block block = getBlock();
 
+		BlockCache blockCache = BlockCache.getInstance();
 		switch (block.getType()) {
 		    case FURNACE:
-			    return storedBlockId.equalsIgnoreCase(Material.FURNACE.name());
+			    return storedBlockId == blockCache.getBlockId(Material.FURNACE);
 			default:
-			    return storedBlockId.equalsIgnoreCase(block.getType().name());
+			    return storedBlockId == blockCache.getBlockId(block);
 		}
 	}
 
@@ -636,8 +634,8 @@ public class Protection {
 		return data;
 	}
 
-	public String getBlockName() {
-		return blockName;
+	public int getBlockId() {
+		return blockId;
 	}
 
 	public String getPassword() {
@@ -680,12 +678,12 @@ public class Protection {
 		return lastAccessed;
 	}
 
-	public void setBlockName(String blockName) {
+	public void setBlockId(int blockId) {
 		if (removed) {
 			return;
 		}
 
-		this.blockName = blockName;
+		this.blockId = blockId;
 		this.modified = true;
 	}
 
@@ -883,15 +881,7 @@ public class Protection {
             return;
         }
 
-        saveNow(); // LWC.getInstance().getDatabaseThread().addProtection(this);
-    }
-
-    public void saveLastAccessed() {
-        if (removed) {
-            return;
-        }
-
-        LWC.getInstance().getPhysicalDatabase().saveProtectionLastAccessed(this);
+        LWC.getInstance().getDatabaseThread().addProtection(this);
     }
 
     /**
@@ -1014,6 +1004,8 @@ public class Protection {
 			lastAccessed += " ago";
 		}
 
+		BlockCache blockCache = BlockCache.getInstance();
+		Material blockType = blockCache.getBlockType(blockId);
 		return String
 				.format("%s %s"
 						+ Colors.White
@@ -1021,7 +1013,7 @@ public class Protection {
 						+ Colors.Green
 						+ "Id=%d Owner=%s Location=[%s %d,%d,%d] Created=%s Flags=%s LastAccessed=%s",
 						typeToString(),
-						(blockName != null ? (blockName)
+						(blockType != null ? LWC.materialToString(blockType)
 								: "Not yet cached"), id, owner, world, x, y, z,
 						creation, flagStr, lastAccessed);
 	}

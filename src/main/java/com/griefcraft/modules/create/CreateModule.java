@@ -28,6 +28,7 @@
 package com.griefcraft.modules.create;
 
 import com.griefcraft.bukkit.EntityBlock;
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Action;
 import com.griefcraft.model.LWCPlayer;
@@ -63,10 +64,13 @@ public class CreateModule extends JavaModule {
 		Protection protection = event.getProtection();
 		Player player = event.getPlayer();
 
+		BlockCache blockCache = BlockCache.getInstance();
 		if (protection.isOwner(player)) {
-			lwc.sendLocale(player, "protection.interact.error.alreadyregistered", "block", protection.getBlockName());
+			lwc.sendLocale(player, "protection.interact.error.alreadyregistered", "block",
+					LWC.materialToString(blockCache.getBlockType(protection.getBlockId())));
 		} else {
-			lwc.sendLocale(player, "protection.interact.error.notowner", "block", protection.getBlockName());
+			lwc.sendLocale(player, "protection.interact.error.notowner", "block",
+					LWC.materialToString(blockCache.getBlockType(protection.getBlockId())));
 		}
 
 		lwc.removeModes(player);
@@ -135,12 +139,13 @@ public class CreateModule extends JavaModule {
 		// The created protection
 		Protection protection = null;
 
+		BlockCache blockCache = BlockCache.getInstance();
 		if (protectionType.equals("public")) {
 			if (block instanceof EntityBlock) {
-				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_NAME, Protection.Type.PUBLIC, worldName,
+				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_ID, Protection.Type.PUBLIC, worldName,
 						player.getUniqueId().toString(), "", blockX, blockY, blockZ);
 			} else {
-				protection = physDb.registerProtection(block.getType().name(), Protection.Type.PUBLIC, worldName,
+				protection = physDb.registerProtection(blockCache.getBlockId(block), Protection.Type.PUBLIC, worldName,
 						player.getUniqueId().toString(), "", blockX, blockY, blockZ);
 			}
 			lwc.sendLocale(player, "protection.interact.create.finalize");
@@ -148,10 +153,10 @@ public class CreateModule extends JavaModule {
 			String password = lwc.encrypt(protectionData);
 
 			if (block instanceof EntityBlock) {
-				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_NAME, Protection.Type.PASSWORD,
+				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_ID, Protection.Type.PASSWORD,
 						worldName, player.getUniqueId().toString(), password, blockX, blockY, blockZ);
 			} else {
-				protection = physDb.registerProtection(block.getType().name(), Protection.Type.PASSWORD, worldName,
+				protection = physDb.registerProtection(blockCache.getBlockId(block), Protection.Type.PASSWORD, worldName,
 						player.getUniqueId().toString(), password, blockX, blockY, blockZ);
 			}
 			player.addAccessibleProtection(protection);
@@ -161,11 +166,11 @@ public class CreateModule extends JavaModule {
 		} else if (protectionType.equals("private") || protectionType.equals("donation")) {
 			String[] rights = protectionData.split(" ");
 			if (block instanceof EntityBlock) {
-				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_NAME,
+				protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_ID,
 						Protection.Type.matchType(protectionType), worldName, player.getUniqueId().toString(), "",
 						blockX, blockY, blockZ);
 			} else {
-				protection = physDb.registerProtection(block.getType().name(),
+				protection = physDb.registerProtection(blockCache.getBlockId(block),
 						Protection.Type.matchType(protectionType), worldName, player.getUniqueId().toString(), "",
 						blockX, blockY, blockZ);
 			}

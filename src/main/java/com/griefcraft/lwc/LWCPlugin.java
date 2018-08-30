@@ -169,7 +169,7 @@ public class LWCPlugin extends JavaPlugin {
 			return true;
 		}
 
-		// /// Dispatch command to modules
+		// Dispatch command to modules
 		LWCCommandEvent evt = new LWCCommandEvent(sender, args[0].toLowerCase(),
 				args.length > 1 ? StringUtil.join(args, 1).split(" ") : new String[0]);
 		lwc.getModuleLoader().dispatchEvent(evt);

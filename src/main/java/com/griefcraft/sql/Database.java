@@ -230,8 +230,6 @@ public abstract class Database {
 
 		// Create the properties to pass to the driver
 		Properties properties = new Properties();
-		properties.put("pooling", "True");
-		properties.setProperty("MaxPooledStatements", "1000");
 
 		// if we're using MySQL, append the database info
 		if (currentType == Type.MySQL) {
@@ -246,7 +244,7 @@ public abstract class Database {
 			connection = driver.connect("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
 					properties);
 			connected = true;
-			setAutoCommit(true);
+//			setAutoCommit(true);
 			return true;
 		} catch (SQLException e) {
 			log("Failed to connect to " + currentType + ": " + e.getErrorCode() + " - " + e.getMessage());
@@ -354,9 +352,7 @@ public abstract class Database {
 		try {
 			if (useStatementCache) {
 				Statistics.addQuery();
-				final PreparedStatement p = statementCache.getIfPresent(sql);
-				if (p != null)
-					return p;
+				return statementCache.get(sql, () -> prepareInternal(sql, returnGeneratedKeys));
 			}
 
 			return prepareInternal(sql, returnGeneratedKeys);

@@ -186,7 +186,7 @@ public class AdminCleanup extends JavaModule {
 
 				String prefix = lwc.getPhysicalDatabase().getPrefix();
 				ResultSet result = resultStatement.executeQuery(
-						"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+						"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 								+ prefix + "protections");
 				int checked = 0;
 
@@ -217,7 +217,7 @@ public class AdminCleanup extends JavaModule {
 					getBlocks.get();
 
 					for (final Protection protection : protections) {
-                        if (protection.getBlockName() == EntityBlock.ENTITY_BLOCK_NAME || protection.getBlockName() == "Entity") {
+                        if (protection.getBlockId() == EntityBlock.ENTITY_BLOCK_ID) {
 							final int fakeId = EntityBlock.ENTITY_BLOCK_ID;
                             // checks if the entity exists
                             Future<Boolean> entityExists = scheduler.callSyncMethod(lwc.getPlugin(), new Callable<Boolean>() {
@@ -225,9 +225,10 @@ public class AdminCleanup extends JavaModule {
                                 	if(protection.getBukkitWorld() == null) return false;
                                     for (Entity entity : protection.getBukkitWorld().getEntities()) {
                                         if (entity.getUniqueId().hashCode() == fakeId) {
+                                        	return true;
                                         }
                                     }
-                                    return true;
+                                    return false;
                                 }
                             });
 

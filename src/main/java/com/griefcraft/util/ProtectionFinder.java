@@ -305,7 +305,7 @@ public class ProtectionFinder {
             }
 
             // ensure it's the right block
-            if (protection.getBlockName() != null) {
+            if (protection.getBlockId() > 0) {
                 if (protection.isBlockInWorld()) {
                     if (noAutoCache) {
                         return Result.E_FOUND;

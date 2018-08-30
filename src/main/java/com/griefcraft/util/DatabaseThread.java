@@ -32,6 +32,7 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.sql.Database;
 
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -140,6 +141,7 @@ public class DatabaseThread implements Runnable {
 			Database database = lwc.getPhysicalDatabase();
 			database.setAutoCommit(false);
 			database.setUseStatementCache(false);
+
 			// Begin iterating through the queue
 			Iterator<Protection> iter = updateQueue.iterator();
 			while (iter.hasNext()) {
@@ -147,7 +149,8 @@ public class DatabaseThread implements Runnable {
 				iter.remove();
 				protection.saveNow();
 			}
-			
+
+			// Commit the changes to the database
 			database.setUseStatementCache(true);
 			database.setAutoCommit(true);
 		}
@@ -163,7 +166,6 @@ public class DatabaseThread implements Runnable {
 
 	public void run() {
 		while (running) {
-            try {
                 // how many seconds between each flush
                 int interval = lwc.getConfiguration().getInt("core.flushInterval", 5);
 
@@ -182,10 +184,8 @@ public class DatabaseThread implements Runnable {
                 try {
                     Thread.sleep(1000L);
                 } catch (InterruptedException e) {
-                }
-            } catch (Throwable t) {
-                lwc.getPlugin().getLogger().log(Level.SEVERE, "Exception in Database Thread", t);
-            }
+                	running = false;
+				}
 		}
 	}
 

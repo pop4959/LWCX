@@ -213,7 +213,6 @@ public class ProtectionCache {
 
 		counter.increment("addProtection");
 
-		byKnownNulls.remove(protection.getCacheKey());
 		// Add the hard reference
 		references.put(protection, null);
 
@@ -351,7 +350,7 @@ public class ProtectionCache {
 	 * @param location
 	 * @return
 	 */
-	public static String cacheKey(Location location) {
+	public String cacheKey(Location location) {
 		return cacheKey(location.getWorld().getName(), location.getBlockX(),
 				location.getBlockY(), location.getBlockZ());
 	}
@@ -365,7 +364,7 @@ public class ProtectionCache {
 	 * @param z
 	 * @return
 	 */
-	public static String cacheKey(String world, int x, int y, int z) {
+	public String cacheKey(String world, int x, int y, int z) {
 		return world + ":" + x + ":" + y + ":" + z;
 	}
 

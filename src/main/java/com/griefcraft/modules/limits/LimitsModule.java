@@ -28,6 +28,7 @@
 
 package com.griefcraft.modules.limits;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
@@ -128,7 +129,8 @@ public class LimitsModule extends JavaModule {
         }
 
         LWC lwc = LWC.getInstance();
-        int limit = mapProtectionLimit(player, block.getType().name());
+        BlockCache blockCache = BlockCache.getInstance();
+        int limit = mapProtectionLimit(player, blockCache.getBlockId(block));
 
         // if they're limit is unlimited, how could they get above it? :)
         if (limit == UNLIMITED) {
@@ -139,11 +141,11 @@ public class LimitsModule extends JavaModule {
         int protections; // 0 = *
 
         switch (type) {
-        	case DEFAULT:
-        		protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName());
-            	break;
+            case DEFAULT:
+                protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName());
+                break;
             case CUSTOM:
-                protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName(), block.getType().name());
+                protections = lwc.getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(block));
                 break;
             default:
                 throw new UnsupportedOperationException("Limit type " + type.toString() + " is undefined in LimitsModule::hasReachedLimit");
@@ -200,7 +202,7 @@ public class LimitsModule extends JavaModule {
      * @param blockId
      * @return
      */
-    public int mapProtectionLimit(Player player, String blockId) {
+    public int mapProtectionLimit(Player player, int blockId) {
         if (configuration == null) {
             return 0;
         }
@@ -234,8 +236,9 @@ public class LimitsModule extends JavaModule {
                 limit = resolveInteger(player, blockId + "");
 
                 // and now try the name
-                if (limit == -1 && blockId != null) {
-                    String name = StringUtils.replace(Material.getMaterial(blockId).toString().toLowerCase(), "block", "");
+                if (limit == -1 && blockId > 0) {
+                    BlockCache blockCache = BlockCache.getInstance();
+                    String name = StringUtils.replace(blockCache.getBlockType(blockId).toString().toLowerCase(), "block", "");
 
                     if (name.endsWith("_")) {
                         name = name.substring(0, name.length() - 1);
@@ -249,8 +252,8 @@ public class LimitsModule extends JavaModule {
                     limit = resolveInteger(player, "limit");
                 }
                 break;
-		default:
-			break;
+            default:
+                break;
 
         }
 
@@ -392,7 +395,7 @@ public class LimitsModule extends JavaModule {
         LWC lwc = event.getLWC();
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        
+
         if (hasReachedLimit(player, block)) {
             lwc.sendLocale(player, "protection.exceeded");
             event.setCancelled(true);

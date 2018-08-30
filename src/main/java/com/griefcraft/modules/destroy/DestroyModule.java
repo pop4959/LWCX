@@ -28,6 +28,7 @@
 
 package com.griefcraft.modules.destroy;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.History;
 import com.griefcraft.model.Protection;
@@ -74,10 +75,11 @@ public class DestroyModule extends JavaModule {
             }
 
             protection.remove();
-            protection.removeCache();
-            
+
             if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "quiet"))) {
-                lwc.sendLocale(player, "protection.unregistered", "block", protection.getBlockName());
+                BlockCache blockCache = BlockCache.getInstance();
+                lwc.sendLocale(player, "protection.unregistered", "block",
+                        LWC.materialToString(blockCache.getBlockType(protection.getBlockId())));
             }
             return;
         }

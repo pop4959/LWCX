@@ -29,6 +29,7 @@
 package com.griefcraft.lwc;
 
 import com.griefcraft.bukkit.EntityBlock;
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.integration.ICurrency;
 import com.griefcraft.integration.IPermissions;
@@ -283,13 +284,13 @@ public class LWC {
 	 *
 	 * @param block
 	 */
-	public void adjustChestDirection(Block block, BlockFace face) {
+	public void adjustChestDirection(Block block, BlockFace face) { // TODO: this probably doesn't work currently
 		if (block.getType() != Material.CHEST) {
 			return;
 		}
 
 		// Is there a double chest?
-		//Block doubleChest = findAdjacentDoubleChest(block);
+		Block doubleChest = findAdjacentDoubleChest(block);
 
 		// Calculate the data byte to set
 		@SuppressWarnings("unused")
@@ -654,9 +655,10 @@ public class LWC {
 		}
 
 		// support for old protection dbs that do not contain the block id
+		BlockCache blockCache = BlockCache.getInstance();
 		if (block != null
-				&& (protection.getBlockName() == null && block.getType().name() != protection.getBlockName())) {
-			protection.setBlockName(block.getType().name());
+				&& (protection.getBlockId() <= 0 && blockCache.getBlockId(block) != protection.getBlockId())) {
+			protection.setBlockId(blockCache.getBlockId(block));
 			protection.save();
 		}
 
@@ -675,10 +677,8 @@ public class LWC {
 			// the owner of the protection or have access through /cmodify
 			if (protection.isOwner(player)
 					|| protection.getAccess(player.getName(), Permission.Type.PLAYER) != Permission.Access.NONE) {
-				if (Math.abs(protection.getLastAccessed() - timestamp) > 5) {
-					                    protection.setLastAccessed(timestamp);
-					                    protection.saveLastAccessed();
-					                }
+				protection.setLastAccessed(timestamp);
+				protection.save();
 			}
 		}
 
@@ -796,10 +796,11 @@ public class LWC {
 				}
 
 				// Get the item they need to have
-				String item = permission.getName();
+				int item = Integer.parseInt(permission.getName());
 
 				// Are they wielding it?
-				if (player.getItemInHand().getType().name() == item) {
+				BlockCache blockCache = BlockCache.getInstance();
+				if (blockCache.getBlockId(player.getItemInHand().getType()) == item) {
 					return true;
 				}
 			}
@@ -1009,7 +1010,7 @@ public class LWC {
 	 * @return
 	 */
 	public int fastRemoveProtections(CommandSender sender, String where, boolean shouldRemoveBlocks) {
-		List<String> exemptedBlocks = configuration.getStringList("optional.exemptBlocks", new ArrayList<String>());
+		List<Integer> exemptedBlocks = configuration.getIntList("optional.exemptBlocks", new ArrayList<Integer>());
 		List<Integer> toRemove = new LinkedList<>();
 		List<Block> removeBlocks = null;
 		int totalProtections = physicalDatabase.getProtectionCount();
@@ -1039,7 +1040,7 @@ public class LWC {
 
 			String prefix = physicalDatabase.getPrefix();
 			ResultSet result = resultStatement.executeQuery(
-					"SELECT id, owner, type, x, y, z, data, blockName, world, password, date, last_accessed FROM "
+					"SELECT id, owner, type, x, y, z, data, blockId, world, password, date, last_accessed FROM "
 							+ prefix + "protections" + where);
 
 			while (result.next()) {
@@ -1047,7 +1048,7 @@ public class LWC {
 				World world = protection.getBukkitWorld();
 
 				// check if the protection is exempt from being removed
-				if (protection.hasFlag(Flag.Type.EXEMPTION) || exemptedBlocks.contains(protection.getBlockName())) {
+				if (protection.hasFlag(Flag.Type.EXEMPTION) || exemptedBlocks.contains(protection.getBlockId())) {
 					continue;
 				}
 
@@ -1222,7 +1223,7 @@ public class LWC {
 	 * @return
 	 */
 	public Protection findProtection(Location location) {
-		String cacheKey = ProtectionCache.cacheKey(location);
+		String cacheKey = protectionCache.cacheKey(location);
 
 		if (protectionCache.isKnownNull(cacheKey)) {
 			return null;
@@ -1275,10 +1276,9 @@ public class LWC {
                 }
 
                 if (found == null) {
-                    protectionCache.addKnownNull(ProtectionCache.cacheKey(block.getLocation()));
+                    protectionCache.addKnownNull(protectionCache.cacheKey(block.getLocation()));
                 }
             } catch (Exception e) {
-                log("Error occurred while finding protection");
             }
             return found;
         }
@@ -2068,9 +2068,11 @@ public class LWC {
 		}
 
 		// support for old protection dbs that do not contain the block id
+		BlockCache blockCache = BlockCache.getInstance();
 		if (entity != null
-				&& (protection.getBlockName() == null && entity.getType().name() != protection.getBlockName())) {
-			protection.setBlockName(entity.getType().name());
+				&& (protection.getBlockId() <= 0
+				&& blockCache.getBlockId(EntityBlock.ENTITY_BLOCK_NAME) != protection.getBlockId())) {
+			protection.setBlockId(blockCache.getBlockId(EntityBlock.ENTITY_BLOCK_NAME));
 			protection.save();
 		}
 

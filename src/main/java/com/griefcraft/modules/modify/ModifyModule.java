@@ -28,6 +28,7 @@
 
 package com.griefcraft.modules.modify;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Action;
 import com.griefcraft.model.LWCPlayer;
@@ -36,6 +37,7 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCBlockInteractEvent;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -86,7 +88,8 @@ public class ModifyModule extends JavaModule {
             lwc.removeModes(player);
             lwc.processRightsModifications(player, protection, rights);
         } else {
-            lwc.sendLocale(player, "protection.interact.error.notowner", "block", protection.getBlockName());
+            lwc.sendLocale(player, "protection.interact.error.notowner", "block",
+                    LWC.materialToString(BlockCache.getInstance().getBlockType(protection.getBlockId())));
             lwc.removeModes(player);
         }
 

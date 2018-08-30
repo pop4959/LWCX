@@ -104,7 +104,7 @@ public class LWCEntityListener implements Listener {
                 if(event.getDamage() < 1.0 ||
                         ((Player) event.getDamager()).getGameMode().equals(GameMode.CREATIVE)) { // Armor Stand Broke
                     ProtectionCache cache = lwc.getProtectionCache();
-                    String cacheKey = ProtectionCache.cacheKey(entityBlock.getLocation());
+                    String cacheKey = cache.cacheKey(entityBlock.getLocation());
 
                     // In the event they place a block, remove any known nulls there
                     if (cache.isKnownNull(cacheKey)) {
@@ -268,7 +268,7 @@ public class LWCEntityListener implements Listener {
 			}
 
 			// All good!
-			Protection protection = lwc.getPhysicalDatabase().registerProtection(EntityBlock.ENTITY_BLOCK_NAME, type,
+			Protection protection = lwc.getPhysicalDatabase().registerProtection(EntityBlock.ENTITY_BLOCK_ID, type,
                     entity.getWorld().getName(), player.getUniqueId().toString(), "", A, A, A);
 
 			if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(EntityBlock.getEntityBlock(entity), "quiet"))) {

@@ -33,6 +33,7 @@ import com.griefcraft.modules.limits.LimitsV2;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.util.Colors;
+import com.griefcraft.util.MaterialUtil;
 import com.griefcraft.util.config.Configuration;
 
 import org.bukkit.Material;
@@ -168,6 +169,12 @@ public class LimitsSetup extends JavaModule {
                             Material material = Material.getMaterial(key.toUpperCase());
 
                             // if it's null, try to parse it as a block value
+                            if (material == null) {
+                                try {
+                                    material = MaterialUtil.getMaterialById(Integer.parseInt(key));
+                                } catch (NumberFormatException e) { }
+                            }
+
                             if (material == null) {
                                 sender.sendMessage(Colors.Red + "Invalid material/block: \"" + value + "\"!");
                                 return;

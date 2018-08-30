@@ -28,6 +28,7 @@
 
 package com.griefcraft.listeners;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
@@ -37,6 +38,8 @@ import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.scripting.event.LWCRedstoneEvent;
 import com.griefcraft.util.Colors;
+import com.griefcraft.util.MaterialUtil;
+import com.griefcraft.util.matchers.DoorMatcher;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 
 import org.bukkit.Material;
@@ -58,6 +61,9 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.world.StructureGrowEvent;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.PistonBaseMaterial;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -73,7 +79,7 @@ public class LWCBlockListener implements Listener {
 	/**
 	 * A set of blacklisted blocks
 	 */
-	private final Set<String> blacklistedBlocks = new HashSet<>();
+	private final Set<Material> blacklistedBlocks = new HashSet<>();
 
 	public LWCBlockListener(LWCPlugin plugin) {
 		this.plugin = plugin;
@@ -120,12 +126,15 @@ public class LWCBlockListener implements Listener {
 		// the blocks that were changed / replaced
 		List<BlockState> blocks = event.getBlocks();
 
-		for (BlockState newblock : blocks) {
-			Block block = newblock.getBlock();
-			if (!lwc.isProtectable(block)) {
+		for (BlockState block : blocks) {
+			if (!lwc.isProtectable(block.getBlock())) {
 				continue;
 			}
-			Protection protection = lwc.findProtection(block);
+			// we don't have the block id of the block before it
+			// so we have to do some raw lookups (these are usually cache hits
+			// however, at least!)
+			Protection protection = lwc.getPhysicalDatabase().loadProtection(block.getWorld().getName(), block.getX(),
+					block.getY(), block.getZ());
 			if (protection != null) {
 				event.setCancelled(true);
 			}
@@ -196,7 +205,7 @@ public class LWCBlockListener implements Listener {
 		}
 
 		ProtectionCache cache = lwc.getProtectionCache();
-		String cacheKey = ProtectionCache.cacheKey(block.getLocation());
+		String cacheKey = cache.cacheKey(block.getLocation());
 
 		// In the event they place a block, remove any known nulls there
 		if (cache.isKnownNull(cacheKey)) {
@@ -225,7 +234,8 @@ public class LWCBlockListener implements Listener {
 				// if they destroyed the protected block we want to move it aye?
 				if (lwc.blockEquals(protection.getBlock(), block)) {
 					// correct the block
-					protection.setBlockName(doubleChest.getType().name());
+					BlockCache blockCache = BlockCache.getInstance();
+					protection.setBlockId(blockCache.getBlockId(doubleChest));
 					protection.setX(doubleChest.getX());
 					protection.setY(doubleChest.getY());
 					protection.setZ(doubleChest.getZ());
@@ -289,33 +299,100 @@ public class LWCBlockListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler
 	public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-		if (!LWC.ENABLED) {
+		if ((!LWC.ENABLED) || (event.isCancelled())) {
 			return;
 		}
 		LWC lwc = this.plugin.getLWC();
-
-		for (Block moved : event.getBlocks()) {
-			if ((lwc.findProtection(moved) != null)) {
+		Block piston = event.getBlock();
+			BlockState state = piston.getState();
+				MaterialData data = state.getData();
+				BlockFace direction = null;
+				if ((data instanceof PistonBaseMaterial)) {
+					direction = ((PistonBaseMaterial) data).getFacing();
+				}
+				if (direction == null) {
+					return;
+				}
+				Block moved = piston.getRelative(direction);
+				for (BlockFace bf : POSSIBLE_FACES) {
+					Block slime = moved.getRelative(direction);
+					Block sign = slime.getRelative(bf, 1);
+					if ((lwc.findProtection(sign) != null)) {
+						event.setCancelled(true);
+						break;
+					}
+				}
+				if (DoorMatcher.PROTECTABLES_DOORS.contains(moved.getType())) {
+					Block below = moved.getRelative(BlockFace.DOWN).getRelative(direction.getOppositeFace());
+					if (lwc.findProtection(below.getLocation()) != null) {
+						event.setCancelled(true);
+						return;
+					}
+			}
+		if (lwc.findProtection(moved.getLocation()) != null) {
+			event.setCancelled(true);
+		}
+		for (Block meh : event.getBlocks()) {
+			Protection protection = (lwc.findProtection(meh.getLocation()));
+			if (protection != null) {
 				event.setCancelled(true);
-				return;
+				break;
 			}
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler
 	public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-		if (!LWC.ENABLED) {
+		if (!LWC.ENABLED || event.isCancelled()) {
 			return;
 		}
 		LWC lwc = plugin.getLWC();
-		for (Block moved : event.getBlocks()) {
-			if ((lwc.findProtection(moved) != null)) {
-				event.setCancelled(true);
-				return;
+			Block piston = event.getBlock();
+				BlockState state = piston.getState();
+				MaterialData data = state.getData();
+				BlockFace direction = null;
+				// Check the block it pushed directly
+				if (data instanceof PistonBaseMaterial) {
+					direction = ((PistonBaseMaterial) data).getFacing();
+					Block block = event.getBlock().getRelative(direction);
+					Protection protection = lwc.findProtection(block.getLocation());
+					if (protection != null) {
+						event.setCancelled(true);
+						return;
+					}
 			}
+		// if no direction was found, no point in going on
+		if (direction == null) {
+			return;
 		}
+		Block moved = piston.getRelative(direction);
+		for (BlockFace bf : POSSIBLE_FACES) {
+			if (moved.getType() == Material.SLIME_BLOCK) {
+				Block slime = moved.getRelative(direction);
+				Block sign = slime.getRelative(bf, 1);
+				if ((lwc.findProtection(sign) != null)) {
+					event.setCancelled(true);
+					break;
+				}
+			}
+			}
+			if (DoorMatcher.PROTECTABLES_DOORS.contains(moved.getType())) {
+				Block below = moved.getRelative(BlockFace.DOWN).getRelative(direction.getOppositeFace());
+				if (lwc.findProtection(below.getLocation()) != null) {
+					event.setCancelled(true);
+					return;
+				}
+		}
+			// Check the affected blocks
+			for (Block meh : event.getBlocks()) {
+				Protection protection = (lwc.findProtection(meh.getLocation()));
+				if (protection != null) {
+					event.setCancelled(true);
+					break;
+				}
+			}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -330,18 +407,15 @@ public class LWCBlockListener implements Listener {
 		Block block = event.getBlockPlaced();
 
 		ProtectionCache cache = lwc.getProtectionCache();
-		String cacheKey = ProtectionCache.cacheKey(block.getLocation());
+		String cacheKey = cache.cacheKey(block.getLocation());
 
 		// In the event they place a block, remove any known nulls there
 		if (cache.isKnownNull(cacheKey)) {
 			cache.remove(cacheKey);
 		}
 
-		// check if the block is blacklisted
-		boolean blockIsBlacklisted = blacklistedBlocks.contains(block.getType().name())
-				|| blacklistedBlocks.contains(block.getType().name() + block.getData());
-
-		if (blockIsBlacklisted) {
+        // check if the block is blacklisted
+		if (blacklistedBlocks.contains(block.getType())) {
 			// it's blacklisted, check for a protected chest
 			for (Protection protection : lwc.findAdjacentProtectionsOnAllSides(block)) {
 				if (protection != null) {
@@ -360,7 +434,7 @@ public class LWCBlockListener implements Listener {
 	/**
 	 * Used for auto registering placed protections
 	 */
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onBlockPlaceMonitor(BlockPlaceEvent event) {
 		if (!LWC.ENABLED) {
 			return;
@@ -371,8 +445,7 @@ public class LWCBlockListener implements Listener {
 		Block block = event.getBlockPlaced();
 
 		// Update the cache if a protection is matched here
-		Protection current = lwc.getPhysicalDatabase().loadProtection(block.getWorld().getName(), block.getX(),
-				block.getY(), block.getZ());
+		Protection current = lwc.findProtection(block.getLocation());
 		if (current != null) {
 			if (!current.isBlockInWorld()) {
 				// Removing corrupted protection
@@ -436,6 +509,7 @@ public class LWCBlockListener implements Listener {
             if (neighboringChestBlockFace != null) {
                 // They're placing it beside a chest, check if it's already protected
                 Block neighboringBlock = block.getRelative(neighboringChestBlockFace);
+				lwc.getProtectionCache().addProtection(current);
                 if (neighboringBlock.getType() == blockState.getBlock().getType()) {
                     if (lwc.findProtection(neighboringBlock.getLocation()) != null) {
                         return;
@@ -454,7 +528,8 @@ public class LWCBlockListener implements Listener {
 			}
 
 			// All good!
-			Protection protection = lwc.getPhysicalDatabase().registerProtection(block.getType().name(), type,
+            BlockCache blockCache = BlockCache.getInstance();
+			Protection protection = lwc.getPhysicalDatabase().registerProtection(blockCache.getBlockId(block), type,
 					block.getWorld().getName(), player.getUniqueId().toString(), "", block.getX(), block.getY(),
 					block.getZ());
 
@@ -467,6 +542,7 @@ public class LWCBlockListener implements Listener {
 			if (protection != null) {
 				lwc.getModuleLoader().dispatchEvent(new LWCProtectionRegistrationPostEvent(protection));
 			}
+			protection.saveNow();
 		} catch (Exception e) {
 			lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
 			e.printStackTrace();
@@ -477,24 +553,24 @@ public class LWCBlockListener implements Listener {
 	 * Load and process the configuration
 	 */
 	public void loadAndProcessConfig() {
-		List<String> ids = LWC.getInstance().getConfiguration().getStringList("optional.blacklistedBlocks",
+		List<String> blocks = LWC.getInstance().getConfiguration().getStringList("optional.blacklistedBlocks",
 				new ArrayList<String>());
-
-		for (String sId : ids) {
-			String[] idParts = sId.trim().split(":");
-
-			String id = idParts[0].trim();
-			int data = 0;
-
-			if (idParts.length > 1) {
-				data = Integer.parseInt(idParts[1].trim());
+		for (String block : blocks) {
+			int legacyId;
+			try {
+				legacyId = Integer.parseInt(block.trim().split(":")[0]);
+			} catch (Exception e) {
+				legacyId = -1;
 			}
-
-			if (data == 0) {
-				blacklistedBlocks.add(id);
-			} else {
-				blacklistedBlocks.add(id + data);
-			}
+			Material material = MaterialUtil.getMaterialById(legacyId);
+            if (material != null) {
+                blacklistedBlocks.add(material);
+            } else {
+                material = Material.matchMaterial(block.trim().toUpperCase());
+                if (material != null) {
+                    blacklistedBlocks.add(material);
+                }
+            }
 		}
 	}
 
@@ -505,5 +581,10 @@ public class LWCBlockListener implements Listener {
 	 * @param int2
 	 * @return
 	 */
+	private int hashCode(int int1, int int2) {
+		int hash = int1 * 17;
+		hash *= 37 + int2;
+		return hash;
+	}
 
 }

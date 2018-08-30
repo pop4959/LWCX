@@ -28,6 +28,7 @@
 
 package com.griefcraft.modules.admin;
 
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.History;
 import com.griefcraft.model.Protection;
@@ -146,8 +147,9 @@ public class AdminRebuild extends JavaModule {
             }
 
             // Create the protection!
-            Protection protection = lwc.getPhysicalDatabase().registerProtection(block.getType().name(), Protection.Type.PRIVATE,
-                    block.getWorld().getName(), creator, "", x, y, z);
+            BlockCache blockCache = BlockCache.getInstance();
+            Protection protection = lwc.getPhysicalDatabase().registerProtection(blockCache.getBlockId(block),
+                    Protection.Type.PRIVATE, block.getWorld().getName(), creator, "", x, y, z);
 
             if (protection == null) {
                 sender.sendMessage(String.format("Failed to create protection at Id:%d", history.getId()));

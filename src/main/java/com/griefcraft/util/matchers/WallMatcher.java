@@ -140,6 +140,24 @@ public class WallMatcher implements ProtectionFinder.Matcher {
 			}
 		}
 
+
+		// Blocks such as trap doors
+		else if (PROTECTABLES_TRAP_DOORS.contains(block.getType())) {
+			byte EAST = 0x2;
+			byte WEST = 0x3;
+			byte SOUTH = 0x0;
+			byte NORTH = 0x1;
+			if (matchingFace == BlockFace.WEST && (direction & EAST) == EAST) {
+				return block;
+			} else if (matchingFace == BlockFace.EAST && (direction & WEST) == WEST) {
+				return block;
+			} else if (matchingFace == BlockFace.NORTH && (direction & SOUTH) == SOUTH) {
+				return block;
+			} else if (matchingFace == BlockFace.SOUTH && (direction & NORTH) == NORTH) {
+				return block;
+			}
+		}
+
 		return null;
 	}
 
