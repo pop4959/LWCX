@@ -42,6 +42,7 @@ import com.griefcraft.util.locale.LWCResourceBundle;
 import com.griefcraft.util.locale.LocaleClassLoader;
 import com.griefcraft.util.locale.UTF8Control;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -52,14 +53,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LWCPlugin extends JavaPlugin {
 
@@ -195,10 +201,9 @@ public class LWCPlugin extends JavaPlugin {
 		LWC.ENABLED = false;
 
 		// Clean up static instances
-		BlockCache.destruct();
-
 		if (lwc != null) {
 			lwc.destruct();
+			BlockCache.destruct();
 		}
 
 		// cancel all tasks we created
@@ -209,6 +214,24 @@ public class LWCPlugin extends JavaPlugin {
 	public void onEnable() {
 		lwc = new LWC(this);
 		preload();
+
+		// make sure this is a safe version
+		Set<String> unsupportedVersions = new HashSet<>(Arrays.asList("1.8", "1.9", "1.10", "1.11", "1.12"));
+		Matcher matcher = Pattern.compile("\\d[.]\\d+").matcher(Bukkit.getVersion());
+		if (matcher.find() && unsupportedVersions.contains(matcher.group())) {
+			this.log("  _       __          __   _____ ");
+			this.log(" | |      \\ \\        / /  / ____|");
+			this.log(" | |       \\ \\  /\\  / /  | |     ");
+			this.log(" | |        \\ \\/  \\/ /   | |     ");
+			this.log(" | |____     \\  /\\  /    | |____ ");
+			this.log(" |______|     \\/  \\/      \\_____|");
+			this.log("");
+			this.log("This version of ModernLWC is not compatible with MineCraft " + matcher.group());
+			this.log("ModernLWC 2.0.0 and above can only be used on servers running MineCraft 1.13+");
+			this.log("Please download an older version of the plugin at " + this.getDescription().getWebsite());
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
 		Metrics m = new Metrics(this);
 

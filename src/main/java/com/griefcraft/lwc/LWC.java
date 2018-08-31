@@ -605,11 +605,12 @@ public class LWC {
 	 */
 	public void destruct() {
 		// destroy the modules
-		moduleLoader.shutdown();
-
-		log("Flushing protection updates (" + databaseThread.size() + ")");
+		if (moduleLoader != null) {
+			moduleLoader.shutdown();
+		}
 
 		if (databaseThread != null) {
+			log("Flushing protection updates (" + databaseThread.size() + ")");
 			databaseThread.stop();
 			databaseThread = null;
 		}
