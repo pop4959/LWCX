@@ -39,7 +39,6 @@ import com.griefcraft.scripting.event.LWCProtectionRegistrationPostEvent;
 import com.griefcraft.scripting.event.LWCRedstoneEvent;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.MaterialUtil;
-import com.griefcraft.util.matchers.DoorMatcher;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 
 import org.bukkit.Material;
@@ -47,6 +46,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.type.Chest;
+import org.bukkit.block.data.type.Piston;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -61,8 +61,6 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.world.StructureGrowEvent;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.PistonBaseMaterial;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -305,42 +303,19 @@ public class LWCBlockListener implements Listener {
 			return;
 		}
 		LWC lwc = this.plugin.getLWC();
-		Block piston = event.getBlock();
-			BlockState state = piston.getState();
-				MaterialData data = state.getData();
-				BlockFace direction = null;
-				if ((data instanceof PistonBaseMaterial)) {
-					direction = ((PistonBaseMaterial) data).getFacing();
-				}
-				if (direction == null) {
-					return;
-				}
-				Block moved = piston.getRelative(direction);
-				for (BlockFace bf : POSSIBLE_FACES) {
-					Block slime = moved.getRelative(direction);
-					Block sign = slime.getRelative(bf, 1);
-					if ((lwc.findProtection(sign) != null)) {
-						event.setCancelled(true);
-						break;
-					}
-				}
-				if (DoorMatcher.PROTECTABLES_DOORS.contains(moved.getType())) {
-					Block below = moved.getRelative(BlockFace.DOWN).getRelative(direction.getOppositeFace());
-					if (lwc.findProtection(below.getLocation()) != null) {
-						event.setCancelled(true);
-						return;
-					}
-			}
-		if (lwc.findProtection(moved.getLocation()) != null) {
-			event.setCancelled(true);
-		}
-		for (Block meh : event.getBlocks()) {
-			Protection protection = (lwc.findProtection(meh.getLocation()));
-			if (protection != null) {
-				event.setCancelled(true);
-				break;
-			}
-		}
+        Block pistonBlock = event.getBlock();
+        Piston piston = null;
+        try {
+            piston = (Piston) pistonBlock.getBlockData();
+        } catch (ClassCastException e) {
+            return;
+        }
+        BlockFace facing = piston.getFacing();
+        Block pulledBlock = pistonBlock.getRelative(facing).getRelative(facing);
+        Protection protection = lwc.findProtection(pulledBlock);
+        if (protection != null) {
+            event.setCancelled(true);
+        }
 	}
 
 	@EventHandler
@@ -349,50 +324,19 @@ public class LWCBlockListener implements Listener {
 			return;
 		}
 		LWC lwc = plugin.getLWC();
-			Block piston = event.getBlock();
-				BlockState state = piston.getState();
-				MaterialData data = state.getData();
-				BlockFace direction = null;
-				// Check the block it pushed directly
-				if (data instanceof PistonBaseMaterial) {
-					direction = ((PistonBaseMaterial) data).getFacing();
-					Block block = event.getBlock().getRelative(direction);
-					Protection protection = lwc.findProtection(block.getLocation());
-					if (protection != null) {
-						event.setCancelled(true);
-						return;
-					}
-			}
-		// if no direction was found, no point in going on
-		if (direction == null) {
+		Block pistonBlock = event.getBlock();
+		Piston piston = null;
+		try {
+			piston = (Piston) pistonBlock.getBlockData();
+		} catch (ClassCastException e) {
 			return;
 		}
-		Block moved = piston.getRelative(direction);
-		for (BlockFace bf : POSSIBLE_FACES) {
-			if (moved.getType() == Material.SLIME_BLOCK) {
-				Block slime = moved.getRelative(direction);
-				Block sign = slime.getRelative(bf, 1);
-				if ((lwc.findProtection(sign) != null)) {
-					event.setCancelled(true);
-					break;
-				}
-			}
-			}
-			if (DoorMatcher.PROTECTABLES_DOORS.contains(moved.getType())) {
-				Block below = moved.getRelative(BlockFace.DOWN).getRelative(direction.getOppositeFace());
-				if (lwc.findProtection(below.getLocation()) != null) {
-					event.setCancelled(true);
-					return;
-				}
-		}
-			// Check the affected blocks
-			for (Block meh : event.getBlocks()) {
-				Protection protection = (lwc.findProtection(meh.getLocation()));
-				if (protection != null) {
-					event.setCancelled(true);
-					break;
-				}
-			}
+		BlockFace facing = piston.getFacing();
+		Block pushedBlock = pistonBlock.getRelative(facing);
+        Protection protection = lwc.findProtection(pushedBlock);
+        if (protection != null) {
+            event.setCancelled(true);
+        }
 	}
 
 	@SuppressWarnings("deprecation")
