@@ -162,7 +162,8 @@ public class LimitsV2 extends JavaModule {
 
 		@Override
 		public int getProtectionCount(Player player, Material material) {
-			return LWC.getInstance().getPhysicalDatabase().getProtectionCount(player.getName(), material.getId());
+			BlockCache blockCache = BlockCache.getInstance();
+			return LWC.getInstance().getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(material));
 		}
 
 		/**
@@ -210,8 +211,9 @@ public class LimitsV2 extends JavaModule {
 		@Override
 		public int getProtectionCount(Player player, Material material) {
 			LWC lwc = LWC.getInstance();
-			return lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.SIGN.getId())
-					+ lwc.getPhysicalDatabase().getProtectionCount(player.getName(), Material.WALL_SIGN.getId());
+			BlockCache blockCache = BlockCache.getInstance();
+			return lwc.getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(Material.SIGN))
+					+ lwc.getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(Material.WALL_SIGN));
 		}
 
 	}
@@ -373,7 +375,7 @@ public class LimitsV2 extends JavaModule {
 	}
 
 	/**
-	 * Checks if a player has reached their protection limit
+	 * Checks if a player has reached their protection limit (both for the block limit, and default global limit)
 	 *
 	 * @param player
 	 * @param material
@@ -382,20 +384,23 @@ public class LimitsV2 extends JavaModule {
 	 */
 	public boolean hasReachedLimit(Player player, Material material) {
 		Limit limit = getEffectiveLimit(player, material);
+		Limit defaultLimit = getEffectiveLimit(player, null);
 
 		// if they don't have a limit it's not possible to reach it ^^
 		// ... but if it's null, what the hell did the server owner do?
-		if (limit == null) {
+		if (limit == null || defaultLimit == null) {
 			return false;
 		}
 
 		// Get the effective limit placed upon them
-		int neverPassThisNumber = limit.getLimit();
+		int maxProtections = limit.getLimit();
+		int maxProtectionsDefault = defaultLimit.getLimit();
 
 		// get the amount of protections the player has
 		int protections = limit.getProtectionCount(player, material);
+		int protectionsDefault = defaultLimit.getProtectionCount(player, material);
 
-		return protections >= neverPassThisNumber;
+		return protections >= maxProtections || protectionsDefault >= maxProtectionsDefault;
 	}
 
 	/**
@@ -599,6 +604,9 @@ public class LimitsV2 extends JavaModule {
 		for (Limit limit : limits) {
 			// Record the default limit if found
 			if (limit instanceof DefaultLimit) {
+				if (material == null) {
+					return limit;
+				}
 				defaultLimit = limit;
 			} else if (limit instanceof SignLimit) {
 				if (material == Material.WALL_SIGN || material == Material.SIGN) {
