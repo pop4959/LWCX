@@ -1,7 +1,7 @@
 ![alt Future LWC](https://i.imgur.com/m7XcQUt.png)
 # Modern LWC
 
-The unofficial continuation of LWC with support for modern versions of Minecraft. You can download the ~~[latest stable version on Spigot](https://ci.zeusmainframe.ml/)~~ **(Currently not available during restructuring)** or the developer versions [on our Jenkins server](https://ci.zeusmainframe.ml/).
+The unofficial continuation of LWC with support for modern versions of Minecraft. You can download the [latest stable version on Spigot](https://www.spigotmc.org/resources/modern-lwc-continuation-of-lwc.2162/) or the developer versions [on our Jenkins server](https://ci.zeusmainframe.ml/).
 
 ### Authors and Maintainers
   * Hidendra, Original author
