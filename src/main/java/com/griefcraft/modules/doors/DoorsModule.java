@@ -41,6 +41,8 @@ import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Openable;
+import org.bukkit.block.data.type.Chest;
 import org.bukkit.entity.Player;
 
 public class DoorsModule extends JavaModule {
@@ -88,7 +90,6 @@ public class DoorsModule extends JavaModule {
 		loadAction();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onProtectionInteract(LWCProtectionInteractEvent event) {
 		if (event.getResult() == Result.CANCEL || !isEnabled()) {
@@ -101,22 +102,12 @@ public class DoorsModule extends JavaModule {
 		}
 
 		Protection protection = event.getProtection();
-		Block block = event.getEvent().getClickedBlock(); // The block they
-															// actually clicked
-															// :)
+		Block block = event.getEvent().getClickedBlock(); // The block they actually clicked :)
 		Player player = event.getPlayer();
 
 		// Check if the block is even something that should be opened
 		if (!isValid(block.getType())) {
 			return;
-		}
-
-		// Are we looking at the top half?
-		// If we are, we need to get the bottom half instead
-		if (!WallMatcher.PROTECTABLES_TRAP_DOORS.contains(block.getType())
-				&& !DoorMatcher.FENCE_GATES.contains(block.getType())) {
-			// Inspect the bottom half instead, fool!
-			block = block.getRelative(BlockFace.DOWN);
 		}
 
 		// Should we look for double doors?
@@ -139,7 +130,8 @@ public class DoorsModule extends JavaModule {
 
 		// toggle the other side of the door open
 		boolean opensWhenClicked = (DoorMatcher.WOODEN_DOORS.contains(block.getType())
-				|| DoorMatcher.FENCE_GATES.contains(block.getType()) || block.getType() == Material.LEGACY_TRAP_DOOR);
+				|| DoorMatcher.FENCE_GATES.contains(block.getType())
+				|| DoorMatcher.TRAP_DOORS.contains(block.getType()));
 		changeDoorStates(true, (opensWhenClicked ? null : block), doubleDoorBlock);
 
 		if (action == Action.OPEN_AND_CLOSE || protection.hasFlag(Flag.Type.AUTOCLOSE)) {
@@ -183,31 +175,66 @@ public class DoorsModule extends JavaModule {
 	 * @param doors
 	 *            Blocks given must be the bottom block of the door
 	 */
-	@SuppressWarnings("deprecation")
 	private void changeDoorStates(boolean allowDoorToOpen, Block... doors) {
 		for (Block door : doors) {
 			if (door == null) {
 				continue;
 			}
 
-			// If we aren't allowing the door to open, check if it's already closed
-			if (!allowDoorToOpen) {
-				// The door is already closed and we don't want to open it
-				// the bit 0x4 is set when the door is open
+			// ensure this is an openable door
+			Openable doorBlockData = null;
+			try {
+				doorBlockData = (Openable) door.getBlockData();
+			} catch (ClassCastException e) {
 				continue;
 			}
 
-			// Get the top half of the door
-			Block topHalf = door.getRelative(BlockFace.UP);
+			boolean doorIsOpen = doorBlockData.isOpen();
 
-			// Now xor both data values with 0x4, the flag that states if the door is open
-			door.getState().setRawData((byte) (door.getState().getData().getData() ^ 0x4));
-			// Play the door open/close sound
-			door.getWorld().playEffect(door.getLocation(), Effect.DOOR_TOGGLE, 0);
+			// If we aren't allowing the door to open, check if it's already closed
+			if (!allowDoorToOpen && !doorIsOpen) {
+				// The door is already closed and we don't want to open it
+				continue;
+			}
 
-			// Only change the block above it if it is something we can open or close
-			if (isValid(topHalf.getType())) {
-				topHalf.getState().setRawData((byte) (topHalf.getState().getData().getData() ^ 0x4));
+			// toggle the door!
+			doorBlockData.setOpen(!doorIsOpen);
+			door.setBlockData(doorBlockData);
+
+			// make the correct door sound
+			switch (door.getType()) {
+				case OAK_DOOR:
+				case SPRUCE_DOOR:
+				case BIRCH_DOOR:
+				case JUNGLE_DOOR:
+				case ACACIA_DOOR:
+				case DARK_OAK_DOOR:
+					door.getWorld().playEffect(door.getLocation(),
+                            doorIsOpen ? Effect.DOOR_CLOSE : Effect.DOOR_TOGGLE, 0);
+				case IRON_DOOR:
+					door.getWorld().playEffect(door.getLocation(),
+                            doorIsOpen ? Effect.IRON_DOOR_CLOSE : Effect.IRON_DOOR_TOGGLE, 0);
+				case OAK_TRAPDOOR:
+				case SPRUCE_TRAPDOOR:
+				case BIRCH_TRAPDOOR:
+				case JUNGLE_TRAPDOOR:
+				case ACACIA_TRAPDOOR:
+				case DARK_OAK_TRAPDOOR:
+					door.getWorld().playEffect(door.getLocation(),
+                            doorIsOpen ? Effect.TRAPDOOR_CLOSE : Effect.TRAPDOOR_TOGGLE, 0);
+				case IRON_TRAPDOOR:
+					door.getWorld().playEffect(door.getLocation(),
+                            doorIsOpen ? Effect.IRON_TRAPDOOR_CLOSE : Effect.IRON_TRAPDOOR_TOGGLE, 0);
+				case OAK_FENCE_GATE:
+				case SPRUCE_FENCE_GATE:
+				case BIRCH_FENCE_GATE:
+				case JUNGLE_FENCE_GATE:
+				case ACACIA_FENCE_GATE:
+				case DARK_OAK_FENCE_GATE:
+					door.getWorld().playEffect(door.getLocation(),
+                            doorIsOpen ? Effect.FENCE_GATE_CLOSE : Effect.FENCE_GATE_TOGGLE, 0);
+				default:
+					break;
 			}
 		}
 	}

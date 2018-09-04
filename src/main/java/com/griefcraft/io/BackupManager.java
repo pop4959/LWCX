@@ -233,7 +233,7 @@ public class BackupManager {
             scheduler.scheduleAsyncDelayedTask(plugin, new Runnable() {
                 public void run() {
                     try {
-                        System.out.println("Processing backup request now in a separate thread");
+                        lwc.log("Processing backup request now in a separate thread");
 
                         // the list of protections work off of. We batch updates to the world
                         // so we can more than 20 results/second.
@@ -266,7 +266,7 @@ public class BackupManager {
                             final Protection tprotection = database.resolveProtection(result);
 
                             if (count % 2000 == 0) {
-                                System.out.println("[Backup] Parsed protections: " + count + "/" + totalProtections);
+                                lwc.log("[Backup] Parsed protections: " + count + "/" + totalProtections);
                             }
                             count ++;
 
@@ -315,7 +315,7 @@ public class BackupManager {
                                         backup.writeRestorable(rprotection);
                                     }
                                 } catch (Exception e) {
-                                    System.out.println("Caught: " + e.getMessage() + ". Carrying on...");
+                                    lwc.log("Caught: " + e.getMessage() + ". Carrying on...");
                                 }
                             }
 
@@ -330,9 +330,9 @@ public class BackupManager {
                         // close the backup file
                         backup.close();
 
-                        System.out.println("Backup completed!");
+                        lwc.log("Backup completed!");
                     } catch (Exception e) { // database.connect() throws Exception
-                        System.out.println("Backup exception caught: " + e.getMessage());
+                        lwc.log("Backup exception caught: " + e.getMessage());
                     }
                 }
             });

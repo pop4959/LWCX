@@ -29,6 +29,7 @@
 package com.griefcraft.listeners;
 
 import com.griefcraft.bukkit.EntityBlock;
+import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Flag;
@@ -97,15 +98,8 @@ public class LWCPlayerListener implements Listener {
 	 */
 	private static LWCPlugin plugin;
 
-	@SuppressWarnings("static-access")
 	public LWCPlayerListener(LWCPlugin plugin) {
-		this.plugin = plugin;
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				lastHopper = null;
-			}
-		}.runTaskTimer(plugin, 1, 1);
+		LWCPlayerListener.plugin = plugin;
 	}
 
 	@EventHandler
@@ -274,9 +268,6 @@ public class LWCPlayerListener implements Listener {
 						LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
 								LWCProtectionDestroyEvent.Method.ENTITY_DESTRUCTION, canAccess, canAdmin);
 						lwc.getModuleLoader().dispatchEvent(evt);
-						protection.remove();
-						protection.removeAllPermissions();
-						protection.removeCache();
 					} else {
 						protection.remove();
 						protection.removeAllPermissions();
@@ -363,7 +354,7 @@ public class LWCPlayerListener implements Listener {
 		}
 	}
 
-	public static boolean onPlayerEntityInteract(Player player, Entity entity, boolean cancelled) {
+	private boolean onPlayerEntityInteract(Player player, Entity entity, boolean cancelled) {
 		int A = EntityBlock.POSITION_OFFSET + entity.getUniqueId().hashCode();
 
 		// attempt to load the protection for this cart
@@ -471,10 +462,6 @@ public class LWCPlayerListener implements Listener {
 		UUIDRegistry.updateCache(player.getUniqueId(), player.getName());
 	}
 
-	private Inventory lastHopper;
-	private boolean lastHopperWasSource;
-	private boolean lastHopperResult;
-
 	@EventHandler(ignoreCancelled = true)
 	public void onMoveItem(InventoryMoveItemEvent event) {
 		boolean result;
@@ -482,29 +469,9 @@ public class LWCPlayerListener implements Listener {
 		// if the initiator is the same as the source it is a dropper i.e.
 		// depositing items
 		if (event.getInitiator() == event.getSource()) {
-			if (Objects.equals(lastHopper, event.getInitiator()) && lastHopperWasSource == true) {
-				result = lastHopperResult;
-				// plugin.getLogger().info("Hopper == lasthopper");
-			} else {
-				result = handleMoveItemEvent(event.getInitiator(), event.getDestination());
-
-				lastHopper = event.getInitiator();
-				lastHopperWasSource = true;
-				lastHopperResult = result;
-				// plugin.getLogger().info("Hopper != lasthopper");
-			}
+			result = handleMoveItemEvent(event.getInitiator(), event.getDestination());
 		} else {
-			if (Objects.equals(lastHopper, event.getInitiator()) && lastHopperWasSource == false) {
-				result = lastHopperResult;
-				// plugin.getLogger().info("Hopper == lasthopper");
-			} else {
-				result = handleMoveItemEvent(event.getInitiator(), event.getSource());
-
-				lastHopper = event.getInitiator();
-				lastHopperWasSource = false;
-				lastHopperResult = result;
-				// plugin.getLogger().info("Hopper != lasthopper");
-			}
+			result = handleMoveItemEvent(event.getInitiator(), event.getSource());
 		}
 
 		if (result) {
@@ -580,8 +547,9 @@ public class LWCPlayerListener implements Listener {
 			}
 		}
 
+		BlockCache blockCache = BlockCache.getInstance();
 		boolean denyHoppers = Boolean.parseBoolean(
-				lwc.resolveProtectionConfiguration(Material.getMaterial(protection.getBlockName()), "denyHoppers"));
+				lwc.resolveProtectionConfiguration(blockCache.getBlockType(protection.getBlockId()), "denyHoppers"));
 
 		// xor = (a && !b) || (!a && b)
 		if (denyHoppers ^ protection.hasFlag(Flag.Type.HOPPER)) {
@@ -610,13 +578,13 @@ public class LWCPlayerListener implements Listener {
 	/*
 	 * @EventHandler public void onPlayerChat(PlayerChatEvent event) { if
 	 * (event.isCancelled() || !LWC.ENABLED) { return; }
-	 * 
+	 *
 	 * LWC lwc = plugin.getLWC(); if
 	 * (!lwc.getConfiguration().getBoolean("core.filterunlock", true)) { return; }
-	 * 
+	 *
 	 * // We want to block messages starting with cunlock incase someone screws up
 	 * /cunlock password. String message = event.getMessage();
-	 * 
+	 *
 	 * if (message.startsWith("cunlock") || message.startsWith("lcunlock") ||
 	 * message.startsWith(".cunlock")) { event.setCancelled(true);
 	 * lwc.sendLocale(event.getPlayer(), "lwc.blockedmessage"); } }
@@ -640,9 +608,6 @@ public class LWCPlayerListener implements Listener {
 		try {
 			state = block.getState();
 		} catch (NullPointerException e) {
-			//
-			lwc.log("Invalid Tile Entity detected at " + block.getLocation());
-			lwc.log("This is either an issue with your world or a bug in Bukkit");
 			return;
 		}
 
@@ -777,7 +742,7 @@ public class LWCPlayerListener implements Listener {
 		LWCPlayer.removePlayer(event.getPlayer());
 	}
 
-	@SuppressWarnings({ "deprecation" })
+	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		LWC lwc = LWC.getInstance();
@@ -803,10 +768,6 @@ public class LWCPlayerListener implements Listener {
 		try {
 			holder = event.getInventory().getHolder();
 		} catch (AbstractMethodError e) {
-			lwc.log("Caught issue with Bukkit's Inventory.getHolder() method! This is occuring NEAR the player: "
-					+ player.getName());
-			lwc.log("This player is located at: " + player.getLocation().toString());
-			lwc.log("This should be reported to the Bukkit developers.");
 			e.printStackTrace();
 			return;
 		}
@@ -822,10 +783,6 @@ public class LWCPlayerListener implements Listener {
 		} catch (Exception e) {
 			Location ploc = player.getLocation();
 			String holderName = holder != null ? holder.getClass().getSimpleName() : "Unknown Block";
-			lwc.log("Exception with getting the location of a " + holderName + " has occurred NEAR the player: "
-					+ player.getName() + " [" + ploc.getBlockX() + " " + ploc.getBlockY() + " " + ploc.getBlockZ()
-					+ "]");
-			lwc.log("The exact location of the block is not possible to obtain. This is caused by a Minecraft or Bukkit exception normally.");
 			e.printStackTrace();
 			return;
 		}

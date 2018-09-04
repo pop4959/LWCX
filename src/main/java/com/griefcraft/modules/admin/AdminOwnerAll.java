@@ -97,7 +97,7 @@ public class AdminOwnerAll extends JavaModule {
 			prot.setOwner(owner);
 			lwc.getPhysicalDatabase().saveProtection(prot);
 			lwc.removeModes(player);
-			System.out.println(prot.getOwner() + " Changed");
+			lwc.log(prot.getOwner() + " Changed");
 			lwc.sendLocale(player, "protection.interact.forceowner.finalize",
 					"player", prot.getFormattedOwnerPlayerName());
 		}

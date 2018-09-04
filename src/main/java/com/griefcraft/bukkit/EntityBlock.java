@@ -182,19 +182,19 @@ public class EntityBlock implements Block{
 	@Override
 	public Block getRelative(BlockFace arg0) {
 		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override
 	public Block getRelative(BlockFace arg0, int arg1) {
 		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override
 	public Block getRelative(int arg0, int arg1, int arg2) {
 		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override

@@ -49,7 +49,7 @@ public class RestorableProtection implements Restorable {
     /**
      * The block id
      */
-    private String blockName;
+    private int blockId;
 
     /**
      * The protection owner
@@ -98,7 +98,7 @@ public class RestorableProtection implements Restorable {
     @SuppressWarnings("unused")
 	public void restore() {
         LWC lwc = LWC.getInstance();
-        Protection protection = lwc.getPhysicalDatabase().registerProtection(blockName, Protection.Type.values()[protectionType],
+        Protection protection = lwc.getPhysicalDatabase().registerProtection(blockId, Protection.Type.values()[protectionType],
                 world, owner, data, x, y, z);
         // TODO fix the ID?
     }
@@ -118,7 +118,7 @@ public class RestorableProtection implements Restorable {
             RestorableProtection rprotection = new RestorableProtection();
             rprotection.id = protection.getId();
             rprotection.protectionType = protection.getType().ordinal();
-            rprotection.blockName = protection.getBlockName();
+            rprotection.blockId = protection.getBlockId();
             rprotection.owner = protection.getOwner();
             rprotection.world = protection.getWorld();
             rprotection.x = protection.getX();
@@ -151,12 +151,12 @@ public class RestorableProtection implements Restorable {
         this.protectionType = protectionType;
     }
 
-    public String getBlockNeme() {
-        return blockName;
+    public int getBlockId() {
+        return blockId;
     }
 
-    public void setBlockId(String blockId) {
-        this.blockName = blockId;
+    public void setBlockId(int blockId) {
+        this.blockId = blockId;
     }
 
     public String getOwner() {

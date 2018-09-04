@@ -1,13 +1,15 @@
 name: LWC
 main: com.griefcraft.lwc.LWCPlugin
-version: 2.0.9
+version: ${project.version}
 api-version: 1.13
-author: Hidendra, Tsuser1
+author: Hidendra
+authors: [Tsuser1, pop4959, Me_Goes_RAWR]
+website: http://modernlwc.com
 description: >
              Inventory protection & management utilizing SQLite or MySQL as its backend
              Other blocks can also be protected individually, if configured.
 load: startup
-softdepend: [Vault, ProtocolLib]
+softdepend: [Vault]
 
 commands:
   lwc:

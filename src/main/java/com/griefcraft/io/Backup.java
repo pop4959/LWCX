@@ -28,6 +28,8 @@
 
 package com.griefcraft.io;
 
+import com.griefcraft.cache.BlockCache;
+import jdk.nashorn.internal.ir.Block;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -82,7 +84,7 @@ public class Backup {
     private DataOutputStream outputStream;
 
     @SuppressWarnings("resource")
-	public Backup(File file, OperationMode operationMode, EnumSet<BackupManager.Flag> flags) throws IOException {
+    public Backup(File file, OperationMode operationMode, EnumSet<BackupManager.Flag> flags) throws IOException {
         this.operationMode = operationMode;
         if (!file.exists()) {
             if (operationMode == OperationMode.READ) {
@@ -134,7 +136,7 @@ public class Backup {
             RestorableProtection rprotection = new RestorableProtection();
             rprotection.setId(inputStream.readInt());
             rprotection.setProtectionType(inputStream.readByte());
-            rprotection.setBlockId(inputStream.readUTF());
+            rprotection.setBlockId(inputStream.readShort());
             rprotection.setOwner(inputStream.readUTF());
             rprotection.setWorld(inputStream.readUTF());
             rprotection.setX(inputStream.readInt());
@@ -147,23 +149,24 @@ public class Backup {
             return rprotection;
         } else if (type == 1) { // Block
             RestorableBlock rblock = new RestorableBlock();
-            rblock.setId(Material.getMaterial(inputStream.readUTF()));
+            rblock.setId(inputStream.readShort());
             rblock.setWorld(inputStream.readUTF());
             rblock.setX(inputStream.readInt());
             rblock.setY(inputStream.readShort());
             rblock.setZ(inputStream.readInt());
-            rblock.setData(Material.getMaterial(inputStream.readUTF()).createBlockData());
+            rblock.setData(inputStream.read() & 0xFF);
             int itemCount = inputStream.readShort();
 
             for (int i = 0; i < itemCount; i++) {
                 // Read in us some RestorableItems
                 int slot = inputStream.readShort();
-                String itemId = inputStream.readUTF();
+                int itemId = inputStream.readShort();
                 int amount = inputStream.readShort();
                 short damage = inputStream.readShort();
 
                 // Create the stack
-                ItemStack itemStack = new ItemStack(Material.getMaterial(itemId), amount, damage);
+                BlockCache blockCache = BlockCache.getInstance();
+                ItemStack itemStack = new ItemStack(blockCache.getBlockType(itemId), amount, damage);
 
                 // add it to the block
                 rblock.setSlot(slot, itemStack);
@@ -195,7 +198,7 @@ public class Backup {
 
             outputStream.writeInt(rprotection.getId());
             outputStream.writeByte(rprotection.getType());
-            outputStream.writeUTF(rprotection.getBlockNeme());
+            outputStream.writeShort(rprotection.getBlockId());
             outputStream.writeUTF(rprotection.getOwner());
             outputStream.writeUTF(rprotection.getWorld());
             outputStream.writeInt(rprotection.getX());
@@ -207,12 +210,12 @@ public class Backup {
         } else if (restorable.getType() == 1) { // Block, TODO DID I SAY TO DO THE ENUM YET??
             RestorableBlock rblock = (RestorableBlock) restorable;
 
-            outputStream.writeUTF(rblock.getId().name());
+            outputStream.writeShort(rblock.getId());
             outputStream.writeUTF(rblock.getWorld());
             outputStream.writeInt(rblock.getX());
             outputStream.writeShort(rblock.getY());
             outputStream.writeInt(rblock.getZ());
-            outputStream.writeUTF(rblock.getData().toString());
+            outputStream.write((byte) rblock.getData());
             outputStream.writeShort(rblock.getItems().size());
 
             // Write the items if there are any
@@ -220,8 +223,9 @@ public class Backup {
                 int slot = entry.getKey();
                 ItemStack stack = entry.getValue();
 
+                BlockCache blockCache = BlockCache.getInstance();
                 outputStream.writeShort(slot);
-                outputStream.writeUTF(stack.getType().name());
+                outputStream.writeShort(blockCache.getBlockId(stack.getType()));
                 outputStream.writeShort(stack.getAmount());
                 outputStream.writeShort(stack.getDurability());
             }

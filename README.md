@@ -7,6 +7,7 @@ The unofficial continuation of LWC with support for modern versions of Minecraft
   * Hidendra, Original author
   * Tsuser1, Project Lead
   * theyapps, Collaborator
+  * Me_Goes_RAWR, Retired Project Lead
 
 ### Support
 For support please [make a ticket on Github](https://github.com/Tsuser1/Modern-LWC/issues) or [join our casual Discord server](https://discordapp.com/invite/UTBMyRZ) or for more urgent or serious support, [M.O.S.S.](https://discord.gg/SBfB2Dd). Please make sure you are using the most recent version of the plugin first.

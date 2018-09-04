@@ -260,7 +260,6 @@ public class ProtectionFinder {
      * @param noAutoCache if a match is found, don't cache it to be the protection we use
      * @return
      */
-    @SuppressWarnings("deprecation")
 	protected Result tryLoadProtection(BlockState block, boolean noAutoCache) {
         if (matchedProtection != null) {
             return Result.E_FOUND;
@@ -281,8 +280,8 @@ public class ProtectionFinder {
         }
 
         // Manual intervention is required
-        if (block.getType() == Material.REDSTONE_WIRE || block.getType() == Material.LEGACY_REDSTONE_TORCH_OFF ||
-                block.getType() == Material.LEGACY_REDSTONE_TORCH_ON) {
+        if (block.getType() == Material.REDSTONE_WIRE || block.getType() == Material.REDSTONE_WALL_TORCH ||
+                block.getType() == Material.REDSTONE_TORCH) {
             return Result.E_ABORT;
         }
 
@@ -293,7 +292,6 @@ public class ProtectionFinder {
 
         // Null-check
         if (block.getWorld() == null) {
-            lwc.log("World is null for the block " + block);
             return Result.E_NOT_FOUND;
         }
 
@@ -307,7 +305,7 @@ public class ProtectionFinder {
             }
 
             // ensure it's the right block
-            if (protection.getBlockName() != null) {
+            if (protection.getBlockId() > 0) {
                 if (protection.isBlockInWorld()) {
                     if (noAutoCache) {
                         return Result.E_FOUND;
@@ -316,8 +314,7 @@ public class ProtectionFinder {
                     this.matchedProtection = protection;
                     searched = true;
                 } else {
-                    // Corrupted protection
-                    lwc.log("Removing corrupted protection: " + protection);
+                    // Removing orrupted protection
                     protection.remove();
                 }
             }

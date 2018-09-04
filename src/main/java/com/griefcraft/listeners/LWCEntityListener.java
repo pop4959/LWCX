@@ -104,7 +104,7 @@ public class LWCEntityListener implements Listener {
                 if(event.getDamage() < 1.0 ||
                         ((Player) event.getDamager()).getGameMode().equals(GameMode.CREATIVE)) { // Armor Stand Broke
                     ProtectionCache cache = lwc.getProtectionCache();
-                    String cacheKey = ProtectionCache.cacheKey(entityBlock.getLocation());
+                    String cacheKey = cache.cacheKey(entityBlock.getLocation());
 
                     // In the event they place a block, remove any known nulls there
                     if (cache.isKnownNull(cacheKey)) {
@@ -121,7 +121,7 @@ public class LWCEntityListener implements Listener {
                     boolean canAdmin = lwc.canAdminProtection(player, protection);
 
                     try {
-                        lwc.log("Removing protection");
+                        // Removing protection
                         LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
                                 LWCProtectionDestroyEvent.Method.ENTITY_DESTRUCTION, canAccess, canAdmin);
                         lwc.getModuleLoader().dispatchEvent(evt);
@@ -189,7 +189,7 @@ public class LWCEntityListener implements Listener {
 			placedArmorStandPlayer = null;
 			if (player != null) {
 				if (player.getWorld().equals(block.getWorld())
-						&& player.getLocation().distanceSquared(block.getLocation()) <= 5) {
+						&& player.getLocation().distance(block.getLocation()) <= 5) {
 					entityCreatedByPlayer(block, player);
 				}
 			}
@@ -203,8 +203,6 @@ public class LWCEntityListener implements Listener {
 
 		LWC lwc = plugin.getLWC();
 
-		lwc.log("Player created entity [" + entity.getType().name() + "]");
-
 		int A = 50000 + entity.getUniqueId().hashCode();
 
 		// Update the cache if a protection is matched here
@@ -212,8 +210,7 @@ public class LWCEntityListener implements Listener {
             Protection current = lwc.findProtection(EntityBlock.getEntityBlock(entity));
             if (current != null) {
                 if (!current.isBlockInWorld()) {
-                    // Corrupted protection
-                    lwc.log("Removing corrupted protection: " + current);
+                    // Removing corrupted protection
                     current.remove();
                 } else {
                     if (current.getProtectionFinder() != null) {
@@ -271,7 +268,7 @@ public class LWCEntityListener implements Listener {
 			}
 
 			// All good!
-			Protection protection = lwc.getPhysicalDatabase().registerProtection(EntityBlock.ENTITY_BLOCK_NAME, type,
+			Protection protection = lwc.getPhysicalDatabase().registerProtection(EntityBlock.ENTITY_BLOCK_ID, type,
                     entity.getWorld().getName(), player.getUniqueId().toString(), "", A, A, A);
 
 			if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(EntityBlock.getEntityBlock(entity), "quiet"))) {

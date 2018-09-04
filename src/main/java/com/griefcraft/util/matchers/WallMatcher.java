@@ -42,35 +42,34 @@ import java.util.Set;
 /**
  * Matches wall entities TODO fix buttons and levers
  */
-@SuppressWarnings("deprecation")
 public class WallMatcher implements ProtectionFinder.Matcher {
 
 	/**
 	 * Blocks that can be attached to the wall and be protected. This assumes that
 	 * the block is DESTROYED if the wall they are attached to is broken.
 	 */
-	public static final Set<Material> PROTECTABLES_WALL = EnumSet.of(Material.WALL_SIGN, Material.LEGACY_WALL_BANNER,
-			Material.BLACK_WALL_BANNER, Material.BLUE_WALL_BANNER, Material.BROWN_WALL_BANNER,
-			Material.CYAN_WALL_BANNER, Material.GRAY_WALL_BANNER, Material.GREEN_WALL_BANNER,
-			Material.YELLOW_WALL_BANNER, Material.WHITE_WALL_BANNER, Material.RED_WALL_BANNER,
-			Material.PURPLE_WALL_BANNER, Material.PINK_WALL_BANNER, Material.ORANGE_WALL_BANNER,
-			Material.MAGENTA_WALL_BANNER, Material.LIME_WALL_BANNER, Material.LIGHT_GRAY_WALL_BANNER,
-			Material.LIGHT_BLUE_WALL_BANNER);
+	public static final Set<Material> PROTECTABLES_WALL = EnumSet.of(Material.WALL_SIGN, Material.WHITE_WALL_BANNER,
+			Material.ORANGE_WALL_BANNER, Material.MAGENTA_WALL_BANNER, Material.LIGHT_BLUE_WALL_BANNER,
+			Material.YELLOW_WALL_BANNER, Material.LIME_WALL_BANNER, Material.PINK_WALL_BANNER,
+			Material.GRAY_WALL_BANNER, Material.LIGHT_GRAY_WALL_BANNER, Material.CYAN_WALL_BANNER,
+			Material.PURPLE_WALL_BANNER, Material.BLUE_WALL_BANNER, Material.BROWN_WALL_BANNER,
+			Material.GREEN_WALL_BANNER, Material.RED_WALL_BANNER, Material.BLACK_WALL_BANNER);
 
 	/**
 	 * Those evil levers and buttons have all different bits for directions. Gah!
 	 */
-	public static final Set<Material> PROTECTABLES_LEVERS_ET_AL = EnumSet.of(Material.STONE_BUTTON, Material.LEVER,
-			Material.LEGACY_WOOD_BUTTON, Material.ACACIA_BUTTON, Material.BIRCH_BUTTON, Material.DARK_OAK_BUTTON,
-			Material.JUNGLE_BUTTON, Material.LEGACY_STONE_BUTTON, Material.OAK_BUTTON, Material.SPRUCE_BUTTON);
+	public static final Set<Material> PROTECTABLES_LEVERS_ET_AL = EnumSet.of(Material.LEVER, Material.OAK_BUTTON,
+			Material.BIRCH_BUTTON, Material.SPRUCE_BUTTON, Material.JUNGLE_BUTTON, Material.ACACIA_BUTTON,
+			Material.DARK_OAK_BUTTON, Material.STONE_BUTTON);
 
 	/**
 	 * Same as PROTECTABLE_WALL, except the facing direction is reversed, such as
 	 * trap doors
 	 */
-	public static final Set<Material> PROTECTABLES_TRAP_DOORS = EnumSet.of(Material.LEGACY_TRAP_DOOR,
-			Material.IRON_TRAPDOOR, Material.ACACIA_TRAPDOOR, Material.BIRCH_TRAPDOOR, Material.DARK_OAK_TRAPDOOR,
-			Material.IRON_TRAPDOOR, Material.JUNGLE_TRAPDOOR, Material.OAK_TRAPDOOR, Material.SPRUCE_TRAPDOOR);
+	public static final Set<Material> PROTECTABLES_TRAP_DOORS = EnumSet.of(Material.OAK_TRAPDOOR,
+			Material.SPRUCE_TRAPDOOR, Material.BIRCH_TRAPDOOR, Material.JUNGLE_TRAPDOOR, Material.ACACIA_TRAPDOOR,
+			Material.DARK_OAK_TRAPDOOR, Material.IRON_TRAPDOOR);
+
 	/**
 	 * Possible faces around the base block that protections could be at
 	 */
@@ -116,7 +115,7 @@ public class WallMatcher implements ProtectionFinder.Matcher {
 				if (((Sign) block.getState().getData()).getAttachedFace().getOppositeFace() == matchingFace) {
 					return block;
 				}
-			} else if (block.getType() == Material.LEGACY_WALL_BANNER) {
+			} else if (block.getType().name().contains("_WALL_BANNER")) {
 				if (((Banner) block.getState().getData()).getAttachedFace().getOppositeFace() == matchingFace) {
 					return block;
 				}
@@ -137,6 +136,24 @@ public class WallMatcher implements ProtectionFinder.Matcher {
 			} else if (matchingFace == BlockFace.SOUTH && (direction & SOUTH) == SOUTH) {
 				return block;
 			} else if (matchingFace == BlockFace.NORTH && (direction & NORTH) == NORTH) {
+				return block;
+			}
+		}
+
+
+		// Blocks such as trap doors
+		else if (PROTECTABLES_TRAP_DOORS.contains(block.getType())) {
+			byte EAST = 0x2;
+			byte WEST = 0x3;
+			byte SOUTH = 0x0;
+			byte NORTH = 0x1;
+			if (matchingFace == BlockFace.WEST && (direction & EAST) == EAST) {
+				return block;
+			} else if (matchingFace == BlockFace.EAST && (direction & WEST) == WEST) {
+				return block;
+			} else if (matchingFace == BlockFace.NORTH && (direction & SOUTH) == SOUTH) {
+				return block;
+			} else if (matchingFace == BlockFace.SOUTH && (direction & NORTH) == NORTH) {
 				return block;
 			}
 		}
