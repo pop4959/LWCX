@@ -1,6 +1,6 @@
 name: LWC
 main: com.griefcraft.lwc.LWCPlugin
-version: ${project.version}
+version: ${project.version}-${git.commit.id.describe-short}
 api-version: 1.13
 author: Hidendra
 authors: [Tsuser1, pop4959, Me_Goes_RAWR]

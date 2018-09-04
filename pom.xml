@@ -3,7 +3,7 @@
   <groupId>com.griefcraft.lwc</groupId>
   <artifactId>Modern-LWC</artifactId>
   <name>Modern-LWC</name>
-  <version>2.1.0</version>
+  <version>2.1.1-dev</version>
   <description>The unofficial continuation of LWC with support for modern versions of Minecraft.</description>
   <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
