@@ -167,28 +167,28 @@ public class ProtectionFinder {
 
         // Double chests
         if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(material)) {
-            return new Matcher[] {
+            return new Matcher[]{
                     new DoubleChestMatcher()
             };
         }
 
         // Gravity
         else if (GravityMatcher.PROTECTABLES_POSTS.contains(material)) {
-            return new Matcher[] {
+            return new Matcher[]{
                     new GravityMatcher()
             };
         }
 
         // Doors
         else if (DoorMatcher.PROTECTABLES_DOORS.contains(material)) {
-            return new Matcher[] {
+            return new Matcher[]{
                     new DoorMatcher()
             };
         }
 
         // Anything else
         else {
-            return new Matcher[] {
+            return new Matcher[]{
                     new DoorMatcher(),
                     new GravityMatcher(),
                     new WallMatcher()
@@ -260,7 +260,7 @@ public class ProtectionFinder {
      * @param noAutoCache if a match is found, don't cache it to be the protection we use
      * @return
      */
-	protected Result tryLoadProtection(BlockState block, boolean noAutoCache) {
+    protected Result tryLoadProtection(BlockState block, boolean noAutoCache) {
         if (matchedProtection != null) {
             return Result.E_FOUND;
         }
@@ -404,6 +404,6 @@ public class ProtectionFinder {
 
     }
 
-    private enum Result { E_FOUND, E_ABORT, E_NOT_FOUND }
+    private enum Result {E_FOUND, E_ABORT, E_NOT_FOUND}
 
 }

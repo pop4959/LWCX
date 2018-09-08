@@ -45,7 +45,7 @@ public class LWCProtectionDestroyEvent extends LWCProtectionEvent implements Can
          * Via block destruction
          */
         BLOCK_DESTRUCTION,
-        
+
         /**
          * Via entity destruction
          */

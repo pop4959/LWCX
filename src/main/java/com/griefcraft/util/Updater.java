@@ -39,50 +39,50 @@ import org.json.simple.JSONValue;
 
 public class Updater {
 
-	@SuppressWarnings("deprecation")
-	public void init() {
-		final LWC lwc = LWC.getInstance();
-		if (lwc.getConfiguration().getBoolean("core.updateNotifier", true)) {
-			lwc.getPlugin().getServer().getScheduler().scheduleAsyncDelayedTask(lwc.getPlugin(), new Runnable() {
-				public void run() {
-					Object[] updates = Updater.getLastUpdate();
-					if (updates.length == 2) {
-						lwc.log("[ModernLWC] New update avaible:");
-						lwc.log("New version: " + updates[0]);
-						lwc.log(
-								"Your version: " + LWC.getInstance().getPlugin().getDescription().getVersion());
-						lwc.log("What's new: " + updates[1]);
-					}
-				}
+    @SuppressWarnings("deprecation")
+    public void init() {
+        final LWC lwc = LWC.getInstance();
+        if (lwc.getConfiguration().getBoolean("core.updateNotifier", true)) {
+            lwc.getPlugin().getServer().getScheduler().scheduleAsyncDelayedTask(lwc.getPlugin(), new Runnable() {
+                public void run() {
+                    Object[] updates = Updater.getLastUpdate();
+                    if (updates.length == 2) {
+                        lwc.log("[ModernLWC] New update avaible:");
+                        lwc.log("New version: " + updates[0]);
+                        lwc.log(
+                                "Your version: " + LWC.getInstance().getPlugin().getDescription().getVersion());
+                        lwc.log("What's new: " + updates[1]);
+                    }
+                }
 
-			});
-		}
-	}
+            });
+        }
+    }
 
-	final static String VERSION_URL = "https://api.spiget.org/v2/resources/2162/versions?size=" + Integer.MAX_VALUE
-			+ "&spiget__ua=SpigetDocs";
-	final static String DESCRIPTION_URL = "https://api.spiget.org/v2/resources/2162/updates?size=" + Integer.MAX_VALUE
-			+ "&spiget__ua=SpigetDocs";
+    final static String VERSION_URL = "https://api.spiget.org/v2/resources/2162/versions?size=" + Integer.MAX_VALUE
+            + "&spiget__ua=SpigetDocs";
+    final static String DESCRIPTION_URL = "https://api.spiget.org/v2/resources/2162/updates?size=" + Integer.MAX_VALUE
+            + "&spiget__ua=SpigetDocs";
 
-	public static Object[] getLastUpdate() {
-		try {
-			JSONArray versionsArray = (JSONArray) JSONValue
-					.parseWithException(IOUtils.toString(new URL(String.valueOf(VERSION_URL))));
-			Double lastVersion = Double
-					.parseDouble(((JSONObject) versionsArray.get(versionsArray.size() - 1)).get("name").toString());
+    public static Object[] getLastUpdate() {
+        try {
+            JSONArray versionsArray = (JSONArray) JSONValue
+                    .parseWithException(IOUtils.toString(new URL(String.valueOf(VERSION_URL))));
+            Double lastVersion = Double
+                    .parseDouble(((JSONObject) versionsArray.get(versionsArray.size() - 1)).get("name").toString());
 
-			if (lastVersion > Double.parseDouble(LWC.getInstance().getPlugin().getDescription().getVersion())) {
-				JSONArray updatesArray = (JSONArray) JSONValue
-						.parseWithException(IOUtils.toString(new URL(String.valueOf(DESCRIPTION_URL))));
-				String updateName = ((JSONObject) updatesArray.get(updatesArray.size() - 1)).get("title").toString();
+            if (lastVersion > Double.parseDouble(LWC.getInstance().getPlugin().getDescription().getVersion())) {
+                JSONArray updatesArray = (JSONArray) JSONValue
+                        .parseWithException(IOUtils.toString(new URL(String.valueOf(DESCRIPTION_URL))));
+                String updateName = ((JSONObject) updatesArray.get(updatesArray.size() - 1)).get("title").toString();
 
-				Object[] update = { lastVersion, updateName };
-				return update;
-			}
-		} catch (Exception e) {
-			return new String[0];
-		}
+                Object[] update = {lastVersion, updateName};
+                return update;
+            }
+        } catch (Exception e) {
+            return new String[0];
+        }
 
-		return new String[0];
-	}
+        return new String[0];
+    }
 }

@@ -43,112 +43,112 @@ import java.util.Set;
  */
 public class DoorMatcher implements ProtectionFinder.Matcher {
 
-	public static final Set<Material> PROTECTABLES_DOORS = EnumSet.of(Material.OAK_DOOR, Material.SPRUCE_DOOR,
+    public static final Set<Material> PROTECTABLES_DOORS = EnumSet.of(Material.OAK_DOOR, Material.SPRUCE_DOOR,
             Material.BIRCH_DOOR, Material.ACACIA_DOOR, Material.JUNGLE_DOOR, Material.DARK_OAK_DOOR,
             Material.IRON_DOOR);
 
-	// doors that open when clicked
-	public static final Set<Material> WOODEN_DOORS = EnumSet.of(Material.OAK_DOOR, Material.SPRUCE_DOOR,
+    // doors that open when clicked
+    public static final Set<Material> WOODEN_DOORS = EnumSet.of(Material.OAK_DOOR, Material.SPRUCE_DOOR,
             Material.BIRCH_DOOR, Material.ACACIA_DOOR, Material.JUNGLE_DOOR, Material.DARK_OAK_DOOR);
 
-	public static final Set<Material> PRESSURE_PLATES = EnumSet.of(Material.OAK_PRESSURE_PLATE,
+    public static final Set<Material> PRESSURE_PLATES = EnumSet.of(Material.OAK_PRESSURE_PLATE,
             Material.SPRUCE_PRESSURE_PLATE, Material.BIRCH_PRESSURE_PLATE, Material.JUNGLE_PRESSURE_PLATE,
             Material.ACACIA_PRESSURE_PLATE, Material.DARK_OAK_PRESSURE_PLATE, Material.STONE_PRESSURE_PLATE,
             Material.LIGHT_WEIGHTED_PRESSURE_PLATE, Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
 
-	public static final Set<Material> FENCE_GATES = EnumSet.of(Material.OAK_FENCE_GATE, Material.SPRUCE_FENCE_GATE,
+    public static final Set<Material> FENCE_GATES = EnumSet.of(Material.OAK_FENCE_GATE, Material.SPRUCE_FENCE_GATE,
             Material.BIRCH_FENCE_GATE, Material.JUNGLE_FENCE_GATE, Material.ACACIA_FENCE_GATE,
             Material.DARK_OAK_FENCE_GATE);
 
-	public static final Set<Material> TRAP_DOORS = EnumSet.of(Material.OAK_TRAPDOOR, Material.SPRUCE_TRAPDOOR,
+    public static final Set<Material> TRAP_DOORS = EnumSet.of(Material.OAK_TRAPDOOR, Material.SPRUCE_TRAPDOOR,
             Material.BIRCH_TRAPDOOR, Material.JUNGLE_TRAPDOOR, Material.ACACIA_TRAPDOOR, Material.DARK_OAK_TRAPDOOR,
             Material.IRON_TRAPDOOR);
 
-	private static final BlockFace[] faces = new BlockFace[] { BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH,
-			BlockFace.SOUTH };
+    private static final BlockFace[] faces = new BlockFace[]{BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH,
+            BlockFace.SOUTH};
 
-	public boolean matches(ProtectionFinder finder) {
-		BlockState baseBlockState = finder.getBaseBlock();
-		Block block = baseBlockState.getBlock();
-		// Get the block above the base block
-		Block aboveBaseBlock = block.getRelative(BlockFace.UP);
+    public boolean matches(ProtectionFinder finder) {
+        BlockState baseBlockState = finder.getBaseBlock();
+        Block block = baseBlockState.getBlock();
+        // Get the block above the base block
+        Block aboveBaseBlock = block.getRelative(BlockFace.UP);
 
-		// Get the block above the block above the base block
-		Block aboveAboveBaseBlock = aboveBaseBlock.getRelative(BlockFace.UP);
+        // Get the block above the block above the base block
+        Block aboveAboveBaseBlock = aboveBaseBlock.getRelative(BlockFace.UP);
 
-		// look for door if they're clicking a pressure plate
-		if (PRESSURE_PLATES.contains(baseBlockState.getType()) || PRESSURE_PLATES.contains(aboveBaseBlock.getType())) {
-			Block pressurePlate = PRESSURE_PLATES.contains(baseBlockState.getType()) ? block : aboveBaseBlock;
+        // look for door if they're clicking a pressure plate
+        if (PRESSURE_PLATES.contains(baseBlockState.getType()) || PRESSURE_PLATES.contains(aboveBaseBlock.getType())) {
+            Block pressurePlate = PRESSURE_PLATES.contains(baseBlockState.getType()) ? block : aboveBaseBlock;
 
-			for (BlockFace face : faces) {
-				Block relative = pressurePlate.getRelative(face);
+            for (BlockFace face : faces) {
+                Block relative = pressurePlate.getRelative(face);
 
-				// only check if it's a door
-				if (!PROTECTABLES_DOORS.contains(relative.getType())) {
-					continue;
-				}
+                // only check if it's a door
+                if (!PROTECTABLES_DOORS.contains(relative.getType())) {
+                    continue;
+                }
 
-				// create a protection finder
-				ProtectionFinder doorFinder = new ProtectionFinder(LWC.getInstance());
+                // create a protection finder
+                ProtectionFinder doorFinder = new ProtectionFinder(LWC.getInstance());
 
-				// attempt to match the door
-				if (doorFinder.matchBlocks(relative)) {
-					// add the blocks it matched
-					for (BlockState found : doorFinder.getBlocks()) {
-						finder.addBlock(found);
-					}
+                // attempt to match the door
+                if (doorFinder.matchBlocks(relative)) {
+                    // add the blocks it matched
+                    for (BlockState found : doorFinder.getBlocks()) {
+                        finder.addBlock(found);
+                    }
 
-					// add the pressure plate
-					finder.addBlock(pressurePlate);
-					return true;
-				}
-			}
-		}
+                    // add the pressure plate
+                    finder.addBlock(pressurePlate);
+                    return true;
+                }
+            }
+        }
 
-		// Match the block UNDER the door
-		if (PROTECTABLES_DOORS.contains(aboveAboveBaseBlock.getType())
-				&& PROTECTABLES_DOORS.contains(aboveBaseBlock.getType())) {
-			finder.addBlock(aboveAboveBaseBlock);
-			finder.addBlock(aboveBaseBlock);
-			findPressurePlate(finder, aboveBaseBlock);
-			return true;
-		}
+        // Match the block UNDER the door
+        if (PROTECTABLES_DOORS.contains(aboveAboveBaseBlock.getType())
+                && PROTECTABLES_DOORS.contains(aboveBaseBlock.getType())) {
+            finder.addBlock(aboveAboveBaseBlock);
+            finder.addBlock(aboveBaseBlock);
+            findPressurePlate(finder, aboveBaseBlock);
+            return true;
+        }
 
-		// Match the bottom half of the door
-		else if (PROTECTABLES_DOORS.contains(aboveBaseBlock.getType())) {
-			finder.addBlock(aboveBaseBlock);
-			finder.addBlock(block.getRelative(BlockFace.DOWN));
-			findPressurePlate(finder, block);
-			return true;
-		}
+        // Match the bottom half of the door
+        else if (PROTECTABLES_DOORS.contains(aboveBaseBlock.getType())) {
+            finder.addBlock(aboveBaseBlock);
+            finder.addBlock(block.getRelative(BlockFace.DOWN));
+            findPressurePlate(finder, block);
+            return true;
+        }
 
-		// Match the top half of the door
-		else if (PROTECTABLES_DOORS.contains(baseBlockState.getType())) {
-			Block bottomHalf = block.getRelative(BlockFace.DOWN);
+        // Match the top half of the door
+        else if (PROTECTABLES_DOORS.contains(baseBlockState.getType())) {
+            Block bottomHalf = block.getRelative(BlockFace.DOWN);
 
-			finder.addBlock(bottomHalf);
-			finder.addBlock(bottomHalf.getRelative(BlockFace.DOWN));
-			findPressurePlate(finder, bottomHalf);
-			return true;
-		}
+            finder.addBlock(bottomHalf);
+            finder.addBlock(bottomHalf.getRelative(BlockFace.DOWN));
+            findPressurePlate(finder, bottomHalf);
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Found a pressure plate that is around a specific block
-	 *
-	 * @param finder
-	 * @param block
-	 */
-	private void findPressurePlate(ProtectionFinder finder, Block block) {
-		for (BlockFace face : faces) {
-			Block relative = block.getRelative(face);
+    /**
+     * Found a pressure plate that is around a specific block
+     *
+     * @param finder
+     * @param block
+     */
+    private void findPressurePlate(ProtectionFinder finder, Block block) {
+        for (BlockFace face : faces) {
+            Block relative = block.getRelative(face);
 
-			if (PRESSURE_PLATES.contains(relative.getType())) {
-				finder.addBlock(relative);
-			}
-		}
-	}
+            if (PRESSURE_PLATES.contains(relative.getType())) {
+                finder.addBlock(relative);
+            }
+        }
+    }
 
 }

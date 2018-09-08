@@ -70,7 +70,7 @@ public class ConfigUpdater {
      * @return
      */
     @SuppressWarnings("resource")
-	private Map<String, Configuration> loadReferenceConfigFiles() throws IOException {
+    private Map<String, Configuration> loadReferenceConfigFiles() throws IOException {
         if (referenceConfigFileCache.size() > 0) {
             return referenceConfigFileCache;
         }

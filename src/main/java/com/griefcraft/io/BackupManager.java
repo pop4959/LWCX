@@ -163,13 +163,13 @@ public class BackupManager {
                 if (count % 2000 == 0) {
                     System.out.println("[Backup] Restored restorables: " + count);
                 }
-                count ++;
+                count++;
 
                 // TODO THIS IS HACKS :-( ALSO ENUM ENUM
                 if (restorable.getType() == 0) {
-                    protectionCount ++;
+                    protectionCount++;
                 } else if (restorable.getType() == 1) {
-                    blockCount ++;
+                    blockCount++;
                 }
             }
 
@@ -218,7 +218,7 @@ public class BackupManager {
      * @return
      */
     @SuppressWarnings("deprecation")
-	public Backup createBackup(String name, final EnumSet<Flag> flags) {
+    public Backup createBackup(String name, final EnumSet<Flag> flags) {
         final LWC lwc = LWC.getInstance();
         final Plugin plugin = lwc.getPlugin();
         Server server = Bukkit.getServer();
@@ -268,7 +268,7 @@ public class BackupManager {
                             if (count % 2000 == 0) {
                                 lwc.log("[Backup] Parsed protections: " + count + "/" + totalProtections);
                             }
-                            count ++;
+                            count++;
 
                             if (protections.size() != BATCH_SIZE) {
                                 // Wait until we have BATCH_SIZE protections

@@ -93,7 +93,7 @@ public class DropTransferModule extends JavaModule {
     }
 
     @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onDropItem(LWCDropItemEvent event) {
         Player bPlayer = event.getPlayer();
         Item item = event.getEvent().getItemDrop();

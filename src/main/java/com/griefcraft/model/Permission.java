@@ -147,7 +147,7 @@ public class Permission {
      * @return
      */
     @SuppressWarnings("unchecked")
-	public JSONObject encodeToJSON() {
+    public JSONObject encodeToJSON() {
         JSONObject object = new JSONObject();
 
         object.put("name", name);
@@ -196,11 +196,11 @@ public class Permission {
         builder.append(") ");
 
         if (getAccess() == Access.ADMIN) {
-        builder.append(Colors.White);
+            builder.append(Colors.White);
             builder.append("(");
             builder.append(Colors.Red);
             builder.append("ADMIN");
-        builder.append(Colors.White);
+            builder.append(Colors.White);
             builder.append(")");
         }
         return builder.toString();

@@ -85,7 +85,7 @@ public class TownyModule extends JavaModule {
     }
 
     @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onAccessRequest(LWCAccessEvent event) {
         Player player = event.getPlayer();
         Protection protection = event.getProtection();
@@ -140,8 +140,8 @@ public class TownyModule extends JavaModule {
      * Just a note: catching NotRegisteredException (which where an Exception is caught is where its thrown)
      * will throw a ClassNotFoundException when Towny is not installed.
      */
-    @SuppressWarnings({ "deprecation", "static-access" })
-	@Override
+    @SuppressWarnings({"deprecation", "static-access"})
+    @Override
     public void onRegisterProtection(LWCProtectionRegisterEvent event) {
         if (event.isCancelled()) {
             return;

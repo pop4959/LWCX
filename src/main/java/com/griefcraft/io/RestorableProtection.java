@@ -96,7 +96,7 @@ public class RestorableProtection implements Restorable {
     }
 
     @SuppressWarnings("unused")
-	public void restore() {
+    public void restore() {
         LWC lwc = LWC.getInstance();
         Protection protection = lwc.getPhysicalDatabase().registerProtection(blockId, Protection.Type.values()[protectionType],
                 world, owner, data, x, y, z);

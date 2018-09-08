@@ -28,7 +28,6 @@ package com.griefcraft.modules.pluginsupport;
  */
 
 
-
 import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Permission;
@@ -59,375 +58,375 @@ import java.util.List;
 
 public class WorldGuard extends JavaModule {
 
-	/**
-	 * The WorldGuard module configuration
-	 */
-	private Configuration configuration = Configuration.load("worldguard.yml");
+    /**
+     * The WorldGuard module configuration
+     */
+    private Configuration configuration = Configuration.load("worldguard.yml");
 
-	/**
-	 * The world guard plugin if it is enabled
-	 */
-	private WorldGuardPlugin worldGuard = null;
+    /**
+     * The world guard plugin if it is enabled
+     */
+    private WorldGuardPlugin worldGuard = null;
 
-	@Override
-	public void load(LWC lwc) {
-		Plugin plugin = lwc.getPlugin().getServer().getPluginManager()
-				.getPlugin("WorldGuard");
+    @Override
+    public void load(LWC lwc) {
+        Plugin plugin = lwc.getPlugin().getServer().getPluginManager()
+                .getPlugin("WorldGuard");
 
-		if (plugin != null) {
-			worldGuard = (WorldGuardPlugin) plugin;
-		}
-	}
+        if (plugin != null) {
+            worldGuard = (WorldGuardPlugin) plugin;
+        }
+    }
 
-	@Override
-	public void onCommand(LWCCommandEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+    @Override
+    public void onCommand(LWCCommandEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
 
-		if (!event.hasFlag("a", "admin")) {
-			return;
-		}
+        if (!event.hasFlag("a", "admin")) {
+            return;
+        }
 
-		LWC lwc = event.getLWC();
-		CommandSender sender = event.getSender();
-		String[] args = event.getArgs();
+        LWC lwc = event.getLWC();
+        CommandSender sender = event.getSender();
+        String[] args = event.getArgs();
 
-		if (!args[0].equals("purgeregion") && !args[0].equals("protectregion")) {
-			return;
-		}
+        if (!args[0].equals("purgeregion") && !args[0].equals("protectregion")) {
+            return;
+        }
 
-		// The command name to send to them
-		String commandName = args[0];
+        // The command name to send to them
+        String commandName = args[0];
 
-		event.setCancelled(true);
+        event.setCancelled(true);
 
-		// check for worldguard
-		if (worldGuard == null) {
-			sender.sendMessage(Colors.Red + "WorldGuard is not enabled.");
-			return;
-		}
+        // check for worldguard
+        if (worldGuard == null) {
+            sender.sendMessage(Colors.Red + "WorldGuard is not enabled.");
+            return;
+        }
 
-		if (args.length < 2) {
-			lwc.sendSimpleUsage(sender, "/lwc admin " + commandName
-					+ " <RegionName> [World]");
-			return;
-		}
+        if (args.length < 2) {
+            lwc.sendSimpleUsage(sender, "/lwc admin " + commandName
+                    + " <RegionName> [World]");
+            return;
+        }
 
-		if (!(sender instanceof Player) && args.length < 3) {
-			sender.sendMessage(Colors.Red
-					+ "You must specify the world name the region is in since you are not logged in as a player.");
-			return;
-		}
+        if (!(sender instanceof Player) && args.length < 3) {
+            sender.sendMessage(Colors.Red
+                    + "You must specify the world name the region is in since you are not logged in as a player.");
+            return;
+        }
 
-		// the region
-		String regionName = args[1];
+        // the region
+        String regionName = args[1];
 
-		// the world the region is in
-		String worldName = args.length > 2 ? args[2] : "";
+        // the world the region is in
+        String worldName = args.length > 2 ? args[2] : "";
 
-		// get the world to use
-		World world;
+        // get the world to use
+        World world;
 
-		if (!worldName.isEmpty()) {
-			world = lwc.getPlugin().getServer().getWorld(worldName);
-		} else {
-			world = ((Player) sender).getWorld();
-		}
+        if (!worldName.isEmpty()) {
+            world = lwc.getPlugin().getServer().getWorld(worldName);
+        } else {
+            world = ((Player) sender).getWorld();
+        }
 
-		// was the world found?
-		if (world == null) {
-			sender.sendMessage(Colors.Red + "Invalid world.");
-			return;
-		}
+        // was the world found?
+        if (world == null) {
+            sender.sendMessage(Colors.Red + "Invalid world.");
+            return;
+        }
 
-		RegionContainer regions = worldGuard.getRegionContainer();
+        RegionContainer regions = worldGuard.getRegionContainer();
 
-		// get the region manager for the world
-		RegionManager regionManager = regions.get(world);
+        // get the region manager for the world
+        RegionManager regionManager = regions.get(world);
 
-		// try and get the region
-		ProtectedRegion region = regionManager.getRegion(regionName);
+        // try and get the region
+        ProtectedRegion region = regionManager.getRegion(regionName);
 
-		if (region == null) {
-			sender.sendMessage(Colors.Red
-					+ "Region not found. If you region is in a different world than you, please use: /lwc admin "
-					+ commandName + " " + regionName + " WorldName");
-			return;
-		}
+        if (region == null) {
+            sender.sendMessage(Colors.Red
+                    + "Region not found. If you region is in a different world than you, please use: /lwc admin "
+                    + commandName + " " + regionName + " WorldName");
+            return;
+        }
 
-		BlockVector minimum = region.getMinimumPoint();
-		BlockVector maximum = region.getMaximumPoint();
+        BlockVector minimum = region.getMinimumPoint();
+        BlockVector maximum = region.getMaximumPoint();
 
-		// Min values
-		int minBlockX = minimum.getBlockX();
-		int minBlockY = minimum.getBlockY();
-		int minBlockZ = minimum.getBlockZ();
+        // Min values
+        int minBlockX = minimum.getBlockX();
+        int minBlockY = minimum.getBlockY();
+        int minBlockZ = minimum.getBlockZ();
 
-		// Max values
-		int maxBlockX = maximum.getBlockX();
-		int maxBlockY = maximum.getBlockY();
-		int maxBlockZ = maximum.getBlockZ();
+        // Max values
+        int maxBlockX = maximum.getBlockX();
+        int maxBlockY = maximum.getBlockY();
+        int maxBlockZ = maximum.getBlockZ();
 
-		if (args[0].equals("purgeregion")) {
-			// get all of the protections inside of the region
-			List<Protection> protections = lwc.getPhysicalDatabase()
-					.loadProtections(world.getName(), minBlockX, maxBlockX,
-							minBlockY, maxBlockY, minBlockZ, maxBlockZ);
+        if (args[0].equals("purgeregion")) {
+            // get all of the protections inside of the region
+            List<Protection> protections = lwc.getPhysicalDatabase()
+                    .loadProtections(world.getName(), minBlockX, maxBlockX,
+                            minBlockY, maxBlockY, minBlockZ, maxBlockZ);
 
-			// remove all of them
-			for (Protection protection : protections) {
-				protection.remove();
-			}
+            // remove all of them
+            for (Protection protection : protections) {
+                protection.remove();
+            }
 
-			sender.sendMessage(Colors.Green + "Removed " + protections.size()
-					+ " protections from the region " + regionName);
-		} else if (args[0].equals("protectregion")) {
-			// The owner to assign to the protections
-			String ownerName = "LWCWorldGuard";
+            sender.sendMessage(Colors.Green + "Removed " + protections.size()
+                    + " protections from the region " + regionName);
+        } else if (args[0].equals("protectregion")) {
+            // The owner to assign to the protections
+            String ownerName = "LWCWorldGuard";
 
-			// the number of blocks that were registered
-			int registered = 0;
+            // the number of blocks that were registered
+            int registered = 0;
 
-			for (int x = minBlockX; x <= maxBlockX; x++) {
-				for (int y = minBlockY; y <= maxBlockY; y++) {
-					for (int z = minBlockZ; z <= maxBlockZ; z++) {
-						// Get the block at that location
-						Block block = world.getBlockAt(x, y, z);
+            for (int x = minBlockX; x <= maxBlockX; x++) {
+                for (int y = minBlockY; y <= maxBlockY; y++) {
+                    for (int z = minBlockZ; z <= maxBlockZ; z++) {
+                        // Get the block at that location
+                        Block block = world.getBlockAt(x, y, z);
 
-						// Ensure it's protectable
-						if (!lwc.isProtectable(block)) {
-							continue;
-						}
+                        // Ensure it's protectable
+                        if (!lwc.isProtectable(block)) {
+                            continue;
+                        }
 
-						// Check if it's already protected
-						if (lwc.findProtection(block.getLocation()) != null) {
-							continue;
-						}
+                        // Check if it's already protected
+                        if (lwc.findProtection(block.getLocation()) != null) {
+                            continue;
+                        }
 
-						// Protect it!
-						BlockCache blockCache = BlockCache.getInstance();
-						int blockId = blockCache.getBlockId(block);
-						if (blockId < 0) {
-							continue;
-						}
-						lwc.getPhysicalDatabase().registerProtection(
-								blockId, Protection.Type.PRIVATE,
-								world.getName(), ownerName, "", x, y, z);
-						registered++;
-					}
-				}
-			}
+                        // Protect it!
+                        BlockCache blockCache = BlockCache.getInstance();
+                        int blockId = blockCache.getBlockId(block);
+                        if (blockId < 0) {
+                            continue;
+                        }
+                        lwc.getPhysicalDatabase().registerProtection(
+                                blockId, Protection.Type.PRIVATE,
+                                world.getName(), ownerName, "", x, y, z);
+                        registered++;
+                    }
+                }
+            }
 
-			sender.sendMessage("Registered " + registered
-					+ " blocks in the region " + regionName);
-			sender.sendMessage("Currently, the owner of these protections is \""
-					+ ownerName + "\". To change this to someone else, run:");
-			sender.sendMessage("/lwc admin updateprotections set owner = 'NewOwner' where owner = '"
-					+ ownerName + "'");
-		}
-	}
+            sender.sendMessage("Registered " + registered
+                    + " blocks in the region " + regionName);
+            sender.sendMessage("Currently, the owner of these protections is \""
+                    + ownerName + "\". To change this to someone else, run:");
+            sender.sendMessage("/lwc admin updateprotections set owner = 'NewOwner' where owner = '"
+                    + ownerName + "'");
+        }
+    }
 
-	@Override
-	public void onAccessRequest(LWCAccessEvent event) {
-		if (event.getAccess() != Permission.Access.NONE) {
-			// Player already has access.
-			return;
-		}
+    @Override
+    public void onAccessRequest(LWCAccessEvent event) {
+        if (event.getAccess() != Permission.Access.NONE) {
+            // Player already has access.
+            return;
+        }
 
-		// WorldGuard must be running and LWC must be configured to interface
-		// with it.
-		if (worldGuard == null) {
-			return;
-		}
-		if (!configuration.getBoolean("worldguard.enabled", false)) {
-			return;
-		}
-		if (!configuration
-				.getBoolean("worldguard.allowRegionPermissions", true)) {
-			return;
-		}
+        // WorldGuard must be running and LWC must be configured to interface
+        // with it.
+        if (worldGuard == null) {
+            return;
+        }
+        if (!configuration.getBoolean("worldguard.enabled", false)) {
+            return;
+        }
+        if (!configuration
+                .getBoolean("worldguard.allowRegionPermissions", true)) {
+            return;
+        }
 
-		Protection protection = event.getProtection();
-		RegionContainer globalRegionManager = worldGuard.getRegionContainer();
-		LocalPlayer wgPlayer = worldGuard.wrapPlayer(event.getPlayer());
-		for (Permission permission : protection.getPermissions()) {
-			if (permission.getType() != Permission.Type.REGION) {
-				continue;
-			}
-			String regionName = permission.getName();
-			if (regionName.equalsIgnoreCase("#this")) {
-				// Handle the special value which tells us to not actually look
-				// up a region but
-				// check just the player's WG build permissions on the block. It
-				// may be in multiple
-				// regions or none; we don't care here. That's WorldGuard's
-				// domain.
-				if (!worldGuard.canBuild(event.getPlayer(), protection.getBlock())) {
-					continue;
-				}
-			} else if (regionName.startsWith("#")) {
-				// Silently disallow looking up regions by index, a newer WG
-				// feature.
-				// Iterating through potentially thousands of regions each time
-				// we check a block's
-				// ACL is not a good idea. It would be cleaner to use
-				// regionManager.getRegionExact()
-				// below, but that would break compatibility with older versions
-				// of WG.
-				continue;
-			} else {
-				// Region name specified, go look it up
-				World world;
-				int c = regionName.indexOf(':');
-				if (c < 0) {
-					// No world specified in ACL. Use the block's world.
-					world = protection.getBlock().getWorld();
-				} else {
-					// World specified. Partition the string and look up the
-					// world.
-					String worldName = regionName.substring(c + 1);
-					world = event.getLWC().getPlugin().getServer()
-							.getWorld(worldName);
-					regionName = regionName.substring(0, c);
-				}
-				if (world == null) {
-					continue;
-				}
-				RegionManager regionManager = globalRegionManager.get(world);
-				if (regionManager == null) {
-					continue;
-				}
-				ProtectedRegion region = regionManager.getRegion(regionName);
-				if (region == null) {
-					continue;
-				}
-				// Check the region (and its parents) to see if the player is a
-				// member (or an owner).
-				if (!region.isMember(wgPlayer)) {
-					continue;
-				}
-			}
-			// We match the region, so bump up our access level. Whether we get
-			// PLAYER access or
-			// ADMIN access depends solely on the LWC permission entry. (I.e.,
-			// WG owner does not
-			// imply LWC admin.)
-			if (permission.getAccess().ordinal() > event.getAccess().ordinal()) {
-				event.setAccess(permission.getAccess());
-				if (event.getAccess().ordinal() >= Permission.Access.ADMIN
-						.ordinal()) {
-					return;
-				}
-				// else we just have PLAYER access. Keep looking; maybe we match
-				// another region
-				// that grants us ADMIN.
-			}
-		}
-	}
+        Protection protection = event.getProtection();
+        RegionContainer globalRegionManager = worldGuard.getRegionContainer();
+        LocalPlayer wgPlayer = worldGuard.wrapPlayer(event.getPlayer());
+        for (Permission permission : protection.getPermissions()) {
+            if (permission.getType() != Permission.Type.REGION) {
+                continue;
+            }
+            String regionName = permission.getName();
+            if (regionName.equalsIgnoreCase("#this")) {
+                // Handle the special value which tells us to not actually look
+                // up a region but
+                // check just the player's WG build permissions on the block. It
+                // may be in multiple
+                // regions or none; we don't care here. That's WorldGuard's
+                // domain.
+                if (!worldGuard.canBuild(event.getPlayer(), protection.getBlock())) {
+                    continue;
+                }
+            } else if (regionName.startsWith("#")) {
+                // Silently disallow looking up regions by index, a newer WG
+                // feature.
+                // Iterating through potentially thousands of regions each time
+                // we check a block's
+                // ACL is not a good idea. It would be cleaner to use
+                // regionManager.getRegionExact()
+                // below, but that would break compatibility with older versions
+                // of WG.
+                continue;
+            } else {
+                // Region name specified, go look it up
+                World world;
+                int c = regionName.indexOf(':');
+                if (c < 0) {
+                    // No world specified in ACL. Use the block's world.
+                    world = protection.getBlock().getWorld();
+                } else {
+                    // World specified. Partition the string and look up the
+                    // world.
+                    String worldName = regionName.substring(c + 1);
+                    world = event.getLWC().getPlugin().getServer()
+                            .getWorld(worldName);
+                    regionName = regionName.substring(0, c);
+                }
+                if (world == null) {
+                    continue;
+                }
+                RegionManager regionManager = globalRegionManager.get(world);
+                if (regionManager == null) {
+                    continue;
+                }
+                ProtectedRegion region = regionManager.getRegion(regionName);
+                if (region == null) {
+                    continue;
+                }
+                // Check the region (and its parents) to see if the player is a
+                // member (or an owner).
+                if (!region.isMember(wgPlayer)) {
+                    continue;
+                }
+            }
+            // We match the region, so bump up our access level. Whether we get
+            // PLAYER access or
+            // ADMIN access depends solely on the LWC permission entry. (I.e.,
+            // WG owner does not
+            // imply LWC admin.)
+            if (permission.getAccess().ordinal() > event.getAccess().ordinal()) {
+                event.setAccess(permission.getAccess());
+                if (event.getAccess().ordinal() >= Permission.Access.ADMIN
+                        .ordinal()) {
+                    return;
+                }
+                // else we just have PLAYER access. Keep looking; maybe we match
+                // another region
+                // that grants us ADMIN.
+            }
+        }
+    }
 
 
-	@Override
-	public void onRegisterProtection(LWCProtectionRegisterEvent event) {
-		if (worldGuard == null) {
-			return;
-		}
+    @Override
+    public void onRegisterProtection(LWCProtectionRegisterEvent event) {
+        if (worldGuard == null) {
+            return;
+        }
 
-		if (!configuration.getBoolean("worldguard.enabled", false)) {
-			return;
-		}
+        if (!configuration.getBoolean("worldguard.enabled", false)) {
+            return;
+        }
 
-		LWC lwc = event.getLWC();
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
-		// Load the region manager for the world
-		RegionContainer globalRegionManager = worldGuard.getRegionContainer();
-		RegionManager regionManager = globalRegionManager.get(block.getWorld());
+        LWC lwc = event.getLWC();
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        // Load the region manager for the world
+        RegionContainer globalRegionManager = worldGuard.getRegionContainer();
+        RegionManager regionManager = globalRegionManager.get(block.getWorld());
 
-		// Are we enforcing building?
-		if (block.getType() == null) {
-			return;
-		}
-		if (configuration.getBoolean("worldguard.requireBuildRights", true)) {
-			if (!worldGuard.canBuild(player, block)) {
-				lwc.sendLocale(player, "lwc.worldguard.needbuildrights");
-				event.setCancelled(true);
-				return;
-			}
-		}
+        // Are we enforcing building?
+        if (block.getType() == null) {
+            return;
+        }
+        if (configuration.getBoolean("worldguard.requireBuildRights", true)) {
+            if (!worldGuard.canBuild(player, block)) {
+                lwc.sendLocale(player, "lwc.worldguard.needbuildrights");
+                event.setCancelled(true);
+                return;
+            }
+        }
 
-		// Create a vector for the region
-		Vector vector = BukkitUtil.toVector(block);
+        // Create a vector for the region
+        Vector vector = BukkitUtil.toVector(block);
 
-		// Load the regions the block encompasses
-		List<String> regions = regionManager.getApplicableRegionsIDs(vector);
+        // Load the regions the block encompasses
+        List<String> regions = regionManager.getApplicableRegionsIDs(vector);
 
-		// Are they not in a region, and it's blocked there?
-		if (regions.size() == 0) {
-			if (!configuration.getBoolean(
-					"worldguard.allowProtectionsOutsideRegions", true)) {
-				lwc.sendLocale(player, "lwc.worldguard.notallowed");
-				event.setCancelled(true);
-			}
-		} else {
-			// check each region
-			for (String region : regions) {
-				// Should we deny them?
-				// we don't need to explicitly call isRegionAllowed because
-				// isRegionBlacklisted checks that as well
-				if (isRegionBlacklisted(region)) {
-					lwc.sendLocale(player, "lwc.worldguard.blacklisted");
-					event.setCancelled(true);
-					break;
-				}
-			}
-		}
-	}
+        // Are they not in a region, and it's blocked there?
+        if (regions.size() == 0) {
+            if (!configuration.getBoolean(
+                    "worldguard.allowProtectionsOutsideRegions", true)) {
+                lwc.sendLocale(player, "lwc.worldguard.notallowed");
+                event.setCancelled(true);
+            }
+        } else {
+            // check each region
+            for (String region : regions) {
+                // Should we deny them?
+                // we don't need to explicitly call isRegionAllowed because
+                // isRegionBlacklisted checks that as well
+                if (isRegionBlacklisted(region)) {
+                    lwc.sendLocale(player, "lwc.worldguard.blacklisted");
+                    event.setCancelled(true);
+                    break;
+                }
+            }
+        }
+    }
 
-	/**
-	 * Check if a region is blacklisted
-	 *
-	 * @param region
-	 * @return
-	 */
-	private boolean isRegionBlacklisted(String region) {
-		if (!isRegionAllowed(region)) {
-			return true;
-		}
+    /**
+     * Check if a region is blacklisted
+     *
+     * @param region
+     * @return
+     */
+    private boolean isRegionBlacklisted(String region) {
+        if (!isRegionAllowed(region)) {
+            return true;
+        }
 
-		List<String> blacklistedRegions = configuration.getStringList(
-				"worldguard.blacklistedRegions", new ArrayList<String>());
-		return blacklistedRegions.contains("*")
-				|| blacklistedRegions.contains(region);
-	}
+        List<String> blacklistedRegions = configuration.getStringList(
+                "worldguard.blacklistedRegions", new ArrayList<String>());
+        return blacklistedRegions.contains("*")
+                || blacklistedRegions.contains(region);
+    }
 
-	/**
-	 * Check if a region is allowed to be built in
-	 *
-	 * @param region
-	 * @return
-	 */
-	private boolean isRegionAllowed(String region) {
-		List<String> allowedRegions = configuration.getStringList(
-				"worldguard.regions", new ArrayList<String>());
-		return allowedRegions.contains("*") || allowedRegions.contains(region);
-	}
+    /**
+     * Check if a region is allowed to be built in
+     *
+     * @param region
+     * @return
+     */
+    private boolean isRegionAllowed(String region) {
+        List<String> allowedRegions = configuration.getStringList(
+                "worldguard.regions", new ArrayList<String>());
+        return allowedRegions.contains("*") || allowedRegions.contains(region);
+    }
 
-	/**
-	 * Set a config value in the configuration
-	 *
-	 * @param path
-	 * @param value
-	 */
-	public void set(String path, Object value) {
-		configuration.setProperty(path, value);
-	}
+    /**
+     * Set a config value in the configuration
+     *
+     * @param path
+     * @param value
+     */
+    public void set(String path, Object value) {
+        configuration.setProperty(path, value);
+    }
 
-	/**
-	 * Save the configuration
-	 */
-	public boolean save() {
-		return configuration.save();
-	}
+    /**
+     * Save the configuration
+     */
+    public boolean save() {
+        return configuration.save();
+    }
 
 }

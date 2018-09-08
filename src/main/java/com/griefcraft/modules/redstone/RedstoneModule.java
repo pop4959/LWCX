@@ -40,7 +40,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
 public class RedstoneModule extends JavaModule {
-	
+
     @Override
     public void onRedstone(LWCRedstoneEvent event) {
         if (event.isCancelled()) {

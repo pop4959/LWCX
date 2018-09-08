@@ -32,8 +32,9 @@ public interface Restorable {
 
     /**
      * Get the restorable type
-     *
+     * <p>
      * TODO Enum
+     *
      * @return
      */
     public int getType();

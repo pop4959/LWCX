@@ -38,7 +38,7 @@ import org.bukkit.command.CommandSender;
 
 public class AdminVersion extends JavaModule {
 
-	@Override
+    @Override
     public void onCommand(LWCCommandEvent event) {
         if (event.isCancelled()) {
             return;
@@ -61,16 +61,16 @@ public class AdminVersion extends JavaModule {
 
         // force a reload of the latest versions
         String pluginColor = Colors.Green;
-        
-        lwc.sendLocale(sender,"protection.admin.version.finalize", "plugin_color", pluginColor, "plugin_version", lwc.getPlugin().getDescription().getVersion().toString(), "latest_plugin", getVersion());
+
+        lwc.sendLocale(sender, "protection.admin.version.finalize", "plugin_color", pluginColor, "plugin_version", lwc.getPlugin().getDescription().getVersion().toString(), "latest_plugin", getVersion());
     }
 
     public static String getVersion() {
-		String version = "";
-    	Object[] updates = Updater.getLastUpdate();
-		if (updates.length == 2) {
-			version = (String) updates[0];
-		}
-		return version;
+        String version = "";
+        Object[] updates = Updater.getLastUpdate();
+        if (updates.length == 2) {
+            version = (String) updates[0];
+        }
+        return version;
     }
 }

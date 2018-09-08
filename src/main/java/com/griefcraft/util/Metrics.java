@@ -30,7 +30,7 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  * bStats collects some data for plugin authors.
- *
+ * <p>
  * Check out https://bStats.org/ to learn more about bStats!
  */
 public class Metrics {
@@ -102,7 +102,8 @@ public class Metrics {
             ).copyDefaults(true);
             try {
                 config.save(configFile);
-            } catch (IOException ignored) { }
+            } catch (IOException ignored) {
+            }
         }
 
         // Load the data
@@ -116,7 +117,8 @@ public class Metrics {
                     service.getField("B_STATS_VERSION"); // Our identifier :)
                     found = true; // We aren't the first
                     break;
-                } catch (NoSuchFieldException ignored) { }
+                } catch (NoSuchFieldException ignored) {
+                }
             }
             // Register our service
             Bukkit.getServicesManager().register(Metrics.class, this, plugin, ServicePriority.Normal);
@@ -160,7 +162,7 @@ public class Metrics {
                     }
                 });
             }
-        }, 1000*60*5, 1000*60*30);
+        }, 1000 * 60 * 5, 1000 * 60 * 30);
         // Submit the data every 30 minutes, first time after 5 minutes to give other plugins enough time to start
         // WARNING: Changing the frequency has no effect but your plugin WILL be blocked/deleted!
         // WARNING: Just don't do it!
@@ -173,7 +175,7 @@ public class Metrics {
      * @return The plugin specific data.
      */
     @SuppressWarnings("unchecked")
-	public JSONObject getPluginData() {
+    public JSONObject getPluginData() {
         JSONObject data = new JSONObject();
 
         String pluginName = plugin.getDescription().getName();
@@ -201,7 +203,7 @@ public class Metrics {
      * @return The server specific data.
      */
     @SuppressWarnings("unchecked")
-	private JSONObject getServerData() {
+    private JSONObject getServerData() {
         // Minecraft specific data
         int playerAmount;
         try {
@@ -246,7 +248,7 @@ public class Metrics {
      * Collects the data and sends it afterwards.
      */
     @SuppressWarnings("unchecked")
-	private void submitData() {
+    private void submitData() {
         final JSONObject data = getServerData();
 
         JSONArray pluginData = new JSONArray();
@@ -258,9 +260,11 @@ public class Metrics {
                 for (RegisteredServiceProvider<?> provider : Bukkit.getServicesManager().getRegistrations(service)) {
                     try {
                         pluginData.add(provider.getService().getMethod("getPluginData").invoke(provider.getProvider()));
-                    } catch (NullPointerException | NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) { }
+                    } catch (NullPointerException | NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+                    }
                 }
-            } catch (NoSuchFieldException ignored) { }
+            } catch (NoSuchFieldException ignored) {
+            }
         }
 
         data.put("plugins", pluginData);
@@ -358,7 +362,7 @@ public class Metrics {
         }
 
         @SuppressWarnings("unchecked")
-		private JSONObject getRequestJsonObject() {
+        private JSONObject getRequestJsonObject() {
             JSONObject chart = new JSONObject();
             chart.put("chartId", chartId);
             try {
@@ -391,7 +395,7 @@ public class Metrics {
         /**
          * Class constructor.
          *
-         * @param chartId The id of the chart.
+         * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
         public SimplePie(String chartId, Callable<String> callable) {
@@ -400,7 +404,7 @@ public class Metrics {
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         protected JSONObject getChartData() throws Exception {
             JSONObject data = new JSONObject();
             String value = callable.call();
@@ -423,7 +427,7 @@ public class Metrics {
         /**
          * Class constructor.
          *
-         * @param chartId The id of the chart.
+         * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
         public AdvancedPie(String chartId, Callable<Map<String, Integer>> callable) {
@@ -432,7 +436,7 @@ public class Metrics {
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         protected JSONObject getChartData() throws Exception {
             JSONObject data = new JSONObject();
             JSONObject values = new JSONObject();
@@ -468,7 +472,7 @@ public class Metrics {
         /**
          * Class constructor.
          *
-         * @param chartId The id of the chart.
+         * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
         public DrilldownPie(String chartId, Callable<Map<String, Map<String, Integer>>> callable) {
@@ -477,7 +481,7 @@ public class Metrics {
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         public JSONObject getChartData() throws Exception {
             JSONObject data = new JSONObject();
             JSONObject values = new JSONObject();
@@ -518,7 +522,7 @@ public class Metrics {
         /**
          * Class constructor.
          *
-         * @param chartId The id of the chart.
+         * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
         public SingleLineChart(String chartId, Callable<Integer> callable) {
@@ -527,7 +531,7 @@ public class Metrics {
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         protected JSONObject getChartData() throws Exception {
             JSONObject data = new JSONObject();
             int value = callable.call();
@@ -551,7 +555,7 @@ public class Metrics {
         /**
          * Class constructor.
          *
-         * @param chartId The id of the chart.
+         * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
         public MultiLineChart(String chartId, Callable<Map<String, Integer>> callable) {
@@ -560,7 +564,7 @@ public class Metrics {
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         protected JSONObject getChartData() throws Exception {
             JSONObject data = new JSONObject();
             JSONObject values = new JSONObject();
@@ -597,7 +601,7 @@ public class Metrics {
         /**
          * Class constructor.
          *
-         * @param chartId The id of the chart.
+         * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
         public SimpleBarChart(String chartId, Callable<Map<String, Integer>> callable) {
@@ -606,7 +610,7 @@ public class Metrics {
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         protected JSONObject getChartData() throws Exception {
             JSONObject data = new JSONObject();
             JSONObject values = new JSONObject();
@@ -636,7 +640,7 @@ public class Metrics {
         /**
          * Class constructor.
          *
-         * @param chartId The id of the chart.
+         * @param chartId  The id of the chart.
          * @param callable The callable which is used to request the chart data.
          */
         public AdvancedBarChart(String chartId, Callable<Map<String, int[]>> callable) {
@@ -645,7 +649,7 @@ public class Metrics {
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         protected JSONObject getChartData() throws Exception {
             JSONObject data = new JSONObject();
             JSONObject values = new JSONObject();

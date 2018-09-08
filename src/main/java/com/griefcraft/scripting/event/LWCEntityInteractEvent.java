@@ -33,6 +33,7 @@ import com.griefcraft.scripting.ModuleLoader;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+
 import java.util.Set;
 
 public class LWCEntityInteractEvent extends LWCPlayerEvent implements IResult {

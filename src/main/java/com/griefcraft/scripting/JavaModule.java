@@ -48,88 +48,88 @@ import com.griefcraft.scripting.event.LWCSendLocaleEvent;
 
 public class JavaModule implements Module {
 
-	/**
-	 * Allow the event to occur (e.g allow the redstone, allow a protection
-	 * destruction, and so on)
-	 */
-	public final static Result ALLOW = Result.ALLOW;
+    /**
+     * Allow the event to occur (e.g allow the redstone, allow a protection
+     * destruction, and so on)
+     */
+    public final static Result ALLOW = Result.ALLOW;
 
-	/**
-	 * Cancel the event from happening (e.g disallow protection interaction,
-	 * disallow protection registration)
-	 */
-	public final static Result CANCEL = Result.CANCEL;
+    /**
+     * Cancel the event from happening (e.g disallow protection interaction,
+     * disallow protection registration)
+     */
+    public final static Result CANCEL = Result.CANCEL;
 
-	/**
-	 * The default result returned by events
-	 */
-	public final static Result DEFAULT = Result.DEFAULT;
+    /**
+     * The default result returned by events
+     */
+    public final static Result DEFAULT = Result.DEFAULT;
 
-	public void load(LWC lwc) {
-	}
+    public void load(LWC lwc) {
+    }
 
-	public void onReload(LWCReloadEvent event) {
+    public void onReload(LWCReloadEvent event) {
 
-	}
+    }
 
-	public void onAccessRequest(LWCAccessEvent event) {
+    public void onAccessRequest(LWCAccessEvent event) {
 
-	}
+    }
 
-	public void onDropItem(LWCDropItemEvent event) {
+    public void onDropItem(LWCDropItemEvent event) {
 
-	}
+    }
 
-	public void onCommand(LWCCommandEvent event) {
+    public void onCommand(LWCCommandEvent event) {
 
-	}
+    }
 
-	public void onRedstone(LWCRedstoneEvent event) {
+    public void onRedstone(LWCRedstoneEvent event) {
 
-	}
+    }
 
-	public void onDestroyProtection(LWCProtectionDestroyEvent event) {
+    public void onDestroyProtection(LWCProtectionDestroyEvent event) {
 
-	}
+    }
 
-	public void onProtectionInteract(LWCProtectionInteractEvent event) {
+    public void onProtectionInteract(LWCProtectionInteractEvent event) {
 
-	}
+    }
 
-	public void onBlockInteract(LWCBlockInteractEvent event) {
+    public void onBlockInteract(LWCBlockInteractEvent event) {
 
-	}
+    }
 
-	public void onRegisterProtection(LWCProtectionRegisterEvent event) {
+    public void onRegisterProtection(LWCProtectionRegisterEvent event) {
 
-	}
+    }
 
-	public void onPostRegistration(LWCProtectionRegistrationPostEvent event) {
+    public void onPostRegistration(LWCProtectionRegistrationPostEvent event) {
 
-	}
+    }
 
-	public void onPostRemoval(LWCProtectionRemovePostEvent event) {
+    public void onPostRemoval(LWCProtectionRemovePostEvent event) {
 
-	}
+    }
 
-	public void onSendLocale(LWCSendLocaleEvent event) {
+    public void onSendLocale(LWCSendLocaleEvent event) {
 
-	}
-	
-	public void onEntityInteract(LWCEntityInteractEvent event) {
+    }
 
-	}
+    public void onEntityInteract(LWCEntityInteractEvent event) {
 
-	public void onMagnetPull(LWCMagnetPullEvent event) {
-		
-	}
+    }
 
-	public void onEntityInteractProtection(LWCProtectionInteractEntityEvent event) {
+    public void onMagnetPull(LWCMagnetPullEvent event) {
 
-	}
+    }
 
-	public void onRegisterEntity(LWCProtectionRegisterEntityEvent event) {
-		
-	}
-	
+    public void onEntityInteractProtection(LWCProtectionInteractEntityEvent event) {
+
+    }
+
+    public void onRegisterEntity(LWCProtectionRegisterEntityEvent event) {
+
+    }
+
 }

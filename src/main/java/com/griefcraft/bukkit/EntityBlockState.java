@@ -14,7 +14,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class EntityBlockState implements BlockState{
+public class EntityBlockState implements BlockState {
     private static EntityBlock entityBlock;
 
     public EntityBlockState(EntityBlock entityBlock) {
@@ -140,21 +140,21 @@ public class EntityBlockState implements BlockState{
 
     }
 
-	@Override
-	public BlockData getBlockData() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public BlockData getBlockData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void setBlockData(BlockData arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void setBlockData(BlockData arg0) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public MaterialData getData() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
+
+    @Override
+    public MaterialData getData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

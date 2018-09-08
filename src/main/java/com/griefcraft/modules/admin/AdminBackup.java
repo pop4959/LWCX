@@ -39,7 +39,7 @@ import org.bukkit.command.CommandSender;
 public class AdminBackup extends JavaModule {
 
     @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onCommand(LWCCommandEvent event) {
         if (event.isCancelled()) {
             return;

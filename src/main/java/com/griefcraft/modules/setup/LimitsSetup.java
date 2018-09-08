@@ -87,7 +87,7 @@ public class LimitsSetup extends JavaModule {
                 if (!isGroup) {
                     List<LimitsV2.Limit> found = limits.getPlayerLimits().get(name.toLowerCase());
                     @SuppressWarnings("deprecation")
-					Player target = lwc.getPlugin().getServer().getPlayer(name);
+                    Player target = lwc.getPlugin().getServer().getPlayer(name);
 
                     if (found == null) {
                         sender.sendMessage(Colors.Red + "Player override not found.");
@@ -172,7 +172,8 @@ public class LimitsSetup extends JavaModule {
                             if (material == null) {
                                 try {
                                     material = MaterialUtil.getMaterialById(Integer.parseInt(key));
-                                } catch (NumberFormatException e) { }
+                                } catch (NumberFormatException e) {
+                                }
                             }
 
                             if (material == null) {
@@ -213,7 +214,8 @@ public class LimitsSetup extends JavaModule {
                     return key;
                 }
             }
-        } catch (NullPointerException e) { }
+        } catch (NullPointerException e) {
+        }
 
         // Not found, so we assume we're creating a new one
         return player;

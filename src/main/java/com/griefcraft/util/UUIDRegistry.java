@@ -94,7 +94,7 @@ public class UUIDRegistry {
             Map<UUID, String> results = new NameFetcher(Arrays.asList(uuid)).call();
 
             if (results.containsKey(uuid)) {
-            	updateCache(uuid, results.get(uuid));
+                updateCache(uuid, results.get(uuid));
                 return results.get(uuid);
             } else {
                 return null;
@@ -112,7 +112,7 @@ public class UUIDRegistry {
      * @throws Exception
      */
     @SuppressWarnings("deprecation")
-	public static UUID getUUID(String name) {
+    public static UUID getUUID(String name) {
         String nameLower = name.toLowerCase();
 
         try {

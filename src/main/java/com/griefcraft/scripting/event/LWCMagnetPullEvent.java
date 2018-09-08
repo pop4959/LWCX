@@ -33,13 +33,13 @@ import org.bukkit.event.Cancellable;
 import com.griefcraft.scripting.ModuleLoader;
 
 public class LWCMagnetPullEvent extends LWCEvent implements Cancellable {
-	
-	private Item item;
+
+    private Item item;
     private boolean cancelled;
 
     public LWCMagnetPullEvent(Item item) {
-    	super(ModuleLoader.Event.MAGNET_PULL);
-    	
+        super(ModuleLoader.Event.MAGNET_PULL);
+
         this.item = item;
     }
 

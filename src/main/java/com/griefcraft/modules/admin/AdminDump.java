@@ -44,7 +44,7 @@ import java.io.OutputStream;
 public class AdminDump extends JavaModule {
 
     @SuppressWarnings("resource")
-	@Override
+    @Override
     public void onCommand(LWCCommandEvent event) {
         if (event.isCancelled()) {
             return;

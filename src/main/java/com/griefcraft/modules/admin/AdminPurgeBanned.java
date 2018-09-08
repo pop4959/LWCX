@@ -81,7 +81,7 @@ public class AdminPurgeBanned extends JavaModule {
      * @return
      */
     @SuppressWarnings("resource")
-	private List<String> loadBannedPlayers() {
+    private List<String> loadBannedPlayers() {
         List<String> banned = new ArrayList<>();
 
         File file = new File("banned-players.txt");

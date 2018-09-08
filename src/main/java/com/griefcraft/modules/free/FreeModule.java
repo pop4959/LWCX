@@ -49,223 +49,223 @@ import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 
 public class FreeModule extends JavaModule {
 
-	@Override
-	public void onProtectionInteract(LWCProtectionInteractEvent event) {
-		if (event.getResult() != Result.DEFAULT) {
-			return;
-		}
+    @Override
+    public void onProtectionInteract(LWCProtectionInteractEvent event) {
+        if (event.getResult() != Result.DEFAULT) {
+            return;
+        }
 
-		if (!event.hasAction("free")) {
-			return;
-		}
+        if (!event.hasAction("free")) {
+            return;
+        }
 
-		LWC lwc = event.getLWC();
-		Protection protection = event.getProtection();
-		Player player = event.getPlayer();
-		event.setResult(Result.CANCEL);
+        LWC lwc = event.getLWC();
+        Protection protection = event.getProtection();
+        Player player = event.getPlayer();
+        event.setResult(Result.CANCEL);
 
-		/* Due to treating entities as blocks some issues are triggered
-		*  such as when clicking an armor stand the block is air.
-		*  I feel there is something better to be done here but this works */
-		if(protection.getBlock().getType() == Material.AIR) {
-		    if(!protection.toString().contains("ARMOR_STAND")){
+        /* Due to treating entities as blocks some issues are triggered
+         *  such as when clicking an armor stand the block is air.
+         *  I feel there is something better to be done here but this works */
+        if (protection.getBlock().getType() == Material.AIR) {
+            if (!protection.toString().contains("ARMOR_STAND")) {
                 return;
             }
-		}
+        }
 
-		if (!lwc.isAdmin(player)
-				&& Boolean.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "readonly-remove"))) {
-			lwc.sendLocale(player, "protection.accessdenied");
-			return;
-		}
+        if (!lwc.isAdmin(player)
+                && Boolean.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "readonly-remove"))) {
+            lwc.sendLocale(player, "protection.accessdenied");
+            return;
+        }
 
-		if (lwc.hasAdminPermission(player, "lwc.admin.remove") || protection.isOwner(player)) {
-			LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
-					LWCProtectionDestroyEvent.Method.COMMAND, true, true);
-			lwc.getModuleLoader().dispatchEvent(evt);
+        if (lwc.hasAdminPermission(player, "lwc.admin.remove") || protection.isOwner(player)) {
+            LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
+                    LWCProtectionDestroyEvent.Method.COMMAND, true, true);
+            lwc.getModuleLoader().dispatchEvent(evt);
 
-			if (!evt.isCancelled()) {
-			    // bind the player of destroyed the protection
-				// We don't need to save the history we modify because it will
-				// be saved anyway immediately after this
-				for (History history : protection.getRelatedHistory(History.Type.TRANSACTION)) {
-					if (history.getStatus() != History.Status.ACTIVE) {
-						continue;
-					}
+            if (!evt.isCancelled()) {
+                // bind the player of destroyed the protection
+                // We don't need to save the history we modify because it will
+                // be saved anyway immediately after this
+                for (History history : protection.getRelatedHistory(History.Type.TRANSACTION)) {
+                    if (history.getStatus() != History.Status.ACTIVE) {
+                        continue;
+                    }
 
-					history.addMetaData("destroyer=" + player.getName());
-					history.addMetaData("destroyerTime=" + System.currentTimeMillis() / 1000L);
-				}
+                    history.addMetaData("destroyer=" + player.getName());
+                    history.addMetaData("destroyerTime=" + System.currentTimeMillis() / 1000L);
+                }
 
-				protection.remove();
-				if(protection.getBlock() instanceof EntityBlock) {
-					lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
-							EntityBlock.getEntity().getType().name());
-				} else {
-					lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
+                protection.remove();
+                if (protection.getBlock() instanceof EntityBlock) {
+                    lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
+                            EntityBlock.getEntity().getType().name());
+                } else {
+                    lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
                             !protection.toString().contains("ARMOR_STAND") ?
                                     LWC.materialToString(protection.getBlock()) : "ARMOR_STAND");
-				}
-			}
+                }
+            }
 
-			lwc.removeModes(player);
-		} else {
-			if(protection.getBlock() instanceof EntityBlock) {
-				lwc.sendLocale(player, "protection.interact.error.notowner", "block",
-						EntityBlock.getEntity().getType().name());
-			} else {
-				lwc.sendLocale(player, "protection.interact.error.notowner", "block",
-						LWC.materialToString(protection.getBlock()));
-			}
-			lwc.removeModes(player);
-		}
-	}
+            lwc.removeModes(player);
+        } else {
+            if (protection.getBlock() instanceof EntityBlock) {
+                lwc.sendLocale(player, "protection.interact.error.notowner", "block",
+                        EntityBlock.getEntity().getType().name());
+            } else {
+                lwc.sendLocale(player, "protection.interact.error.notowner", "block",
+                        LWC.materialToString(protection.getBlock()));
+            }
+            lwc.removeModes(player);
+        }
+    }
 
-	@Override
-	public void onEntityInteractProtection(LWCProtectionInteractEntityEvent event) {
-		if (event.getResult() != Result.DEFAULT) {
-			return;
-		}
+    @Override
+    public void onEntityInteractProtection(LWCProtectionInteractEntityEvent event) {
+        if (event.getResult() != Result.DEFAULT) {
+            return;
+        }
 
-		if (!event.hasAction("free")) {
-			return;
-		}
-		
-		LWC lwc = event.getLWC();
-		Protection protection = event.getProtection();
-		Player player = event.getPlayer();
-		event.setResult(Result.CANCEL);
+        if (!event.hasAction("free")) {
+            return;
+        }
 
-		if(protection.getBlock().getType() != Material.AIR) {
-			return;
-		}
-		
-		if (!lwc.isAdmin(player)
-				&& Boolean.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "readonly-remove"))) {
-			lwc.sendLocale(player, "protection.accessdenied");
-			return;
-		}
+        LWC lwc = event.getLWC();
+        Protection protection = event.getProtection();
+        Player player = event.getPlayer();
+        event.setResult(Result.CANCEL);
 
-		if (lwc.hasAdminPermission(player, "lwc.admin.remove") || protection.isOwner(player)) {
-			LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
-					LWCProtectionDestroyEvent.Method.COMMAND, true, true);
-			lwc.getModuleLoader().dispatchEvent(evt);
+        if (protection.getBlock().getType() != Material.AIR) {
+            return;
+        }
 
-			if (!evt.isCancelled()) {
-				// bind the player of destroyed the protection
-				// We don't need to save the history we modify because it will
-				// be saved anyway immediately after this
-				for (History history : protection.getRelatedHistory(History.Type.TRANSACTION)) {
-					if (history.getStatus() != History.Status.ACTIVE) {
-						continue;
-					}
+        if (!lwc.isAdmin(player)
+                && Boolean.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "readonly-remove"))) {
+            lwc.sendLocale(player, "protection.accessdenied");
+            return;
+        }
 
-					history.addMetaData("destroyer=" + player.getName());
-					history.addMetaData("destroyerTime=" + System.currentTimeMillis() / 1000L);
-				}
+        if (lwc.hasAdminPermission(player, "lwc.admin.remove") || protection.isOwner(player)) {
+            LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
+                    LWCProtectionDestroyEvent.Method.COMMAND, true, true);
+            lwc.getModuleLoader().dispatchEvent(evt);
 
-				protection.remove();
-				lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
-						event.getEvent().getRightClicked().getType().name());
-			}
+            if (!evt.isCancelled()) {
+                // bind the player of destroyed the protection
+                // We don't need to save the history we modify because it will
+                // be saved anyway immediately after this
+                for (History history : protection.getRelatedHistory(History.Type.TRANSACTION)) {
+                    if (history.getStatus() != History.Status.ACTIVE) {
+                        continue;
+                    }
 
-			lwc.removeModes(player);
-		} else {
-			lwc.sendLocale(player, "protection.interact.error.notowner", "block",
-					event.getEvent().getRightClicked().getType().name());
-			lwc.removeModes(player);
-		}
-	}
+                    history.addMetaData("destroyer=" + player.getName());
+                    history.addMetaData("destroyerTime=" + System.currentTimeMillis() / 1000L);
+                }
 
-	@Override
-	public void onBlockInteract(LWCBlockInteractEvent event) {
-		if (!event.hasAction("free")) {
-			return;
-		}
+                protection.remove();
+                lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
+                        event.getEvent().getRightClicked().getType().name());
+            }
 
-		LWC lwc = event.getLWC();
-		Block block = event.getBlock();
-		Player player = event.getPlayer();
-		event.setResult(Result.CANCEL);
+            lwc.removeModes(player);
+        } else {
+            lwc.sendLocale(player, "protection.interact.error.notowner", "block",
+                    event.getEvent().getRightClicked().getType().name());
+            lwc.removeModes(player);
+        }
+    }
 
-		lwc.sendLocale(player, "protection.interact.error.notregistered", "block", LWC.materialToString(block));
-		lwc.removeModes(player);
-	}
+    @Override
+    public void onBlockInteract(LWCBlockInteractEvent event) {
+        if (!event.hasAction("free")) {
+            return;
+        }
 
-	@Override
-	public void onCommand(LWCCommandEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+        LWC lwc = event.getLWC();
+        Block block = event.getBlock();
+        Player player = event.getPlayer();
+        event.setResult(Result.CANCEL);
 
-		if (!event.hasFlag("r", "remove")) {
-			return;
-		}
+        lwc.sendLocale(player, "protection.interact.error.notregistered", "block", LWC.materialToString(block));
+        lwc.removeModes(player);
+    }
 
-		final LWC lwc = event.getLWC();
-		CommandSender sender = event.getSender();
-		String[] args = event.getArgs();
+    @Override
+    public void onCommand(LWCCommandEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
 
-		if (!(sender instanceof Player)) {
-			return;
-		}
+        if (!event.hasFlag("r", "remove")) {
+            return;
+        }
 
-		event.setCancelled(true);
+        final LWC lwc = event.getLWC();
+        CommandSender sender = event.getSender();
+        String[] args = event.getArgs();
 
-		if (!lwc.hasPlayerPermission(sender, "lwc.remove")) {
-			lwc.sendLocale(sender, "protection.accessdenied");
-			return;
-		}
+        if (!(sender instanceof Player)) {
+            return;
+        }
 
-		if (args.length < 1) {
-			lwc.sendSimpleUsage(sender, "/lwc -r <protection|modes>");
-			return;
-		}
+        event.setCancelled(true);
 
-		String type = args[0].toLowerCase();
-		final LWCPlayer player = lwc.wrapPlayer(sender);
+        if (!lwc.hasPlayerPermission(sender, "lwc.remove")) {
+            lwc.sendLocale(sender, "protection.accessdenied");
+            return;
+        }
 
-		if (type.equals("protection") || type.equals("chest") || type.equals("furnace") || type.equals("dispenser")) {
-			Action action = new Action();
-			action.setName("free");
-			action.setPlayer(player);
+        if (args.length < 1) {
+            lwc.sendSimpleUsage(sender, "/lwc -r <protection|modes>");
+            return;
+        }
 
-			player.removeAllActions();
-			player.addAction(action);
+        String type = args[0].toLowerCase();
+        final LWCPlayer player = lwc.wrapPlayer(sender);
 
-			lwc.sendLocale(sender, "protection.remove.protection.finalize");
-		} else if (type.equals("modes")) {
-			player.disableAllModes();
-			lwc.sendLocale(sender, "protection.remove.modes.finalize");
-		} else if (type.equals("allprotections")) {
-			// Prompt them for /lwc confirm
-			lwc.sendLocale(player, "lwc.remove.allprotections");
+        if (type.equals("protection") || type.equals("chest") || type.equals("furnace") || type.equals("dispenser")) {
+            Action action = new Action();
+            action.setName("free");
+            action.setPlayer(player);
 
-			// our callback (remove all of their protections :p)
-			Runnable callback = new Runnable() {
-				public void run() {
-					// Get all of the player's protections
-					for (Protection protection : lwc.getPhysicalDatabase()
-							.loadProtectionsByPlayer(player.getUniqueId().toString())) {
-						// Remove the protection
-						protection.remove();
-					}
+            player.removeAllActions();
+            player.addAction(action);
 
-					// Notify them
-					lwc.sendLocale(player, "lwc.remove.allprotections.success");
-				}
-			};
+            lwc.sendLocale(sender, "protection.remove.protection.finalize");
+        } else if (type.equals("modes")) {
+            player.disableAllModes();
+            lwc.sendLocale(sender, "protection.remove.modes.finalize");
+        } else if (type.equals("allprotections")) {
+            // Prompt them for /lwc confirm
+            lwc.sendLocale(player, "lwc.remove.allprotections");
 
-			// Create the action
-			Action action = new ConfirmAction(callback);
-			action.setPlayer(player);
+            // our callback (remove all of their protections :p)
+            Runnable callback = new Runnable() {
+                public void run() {
+                    // Get all of the player's protections
+                    for (Protection protection : lwc.getPhysicalDatabase()
+                            .loadProtectionsByPlayer(player.getUniqueId().toString())) {
+                        // Remove the protection
+                        protection.remove();
+                    }
 
-			// bind it to the player
-			player.addAction(action);
-		} else {
-			lwc.sendSimpleUsage(sender, "/lwc -r <protection|allprotections|modes>");
-		}
+                    // Notify them
+                    lwc.sendLocale(player, "lwc.remove.allprotections.success");
+                }
+            };
 
-	}
+            // Create the action
+            Action action = new ConfirmAction(callback);
+            action.setPlayer(player);
+
+            // bind it to the player
+            player.addAction(action);
+        } else {
+            lwc.sendSimpleUsage(sender, "/lwc -r <protection|allprotections|modes>");
+        }
+
+    }
 
 }

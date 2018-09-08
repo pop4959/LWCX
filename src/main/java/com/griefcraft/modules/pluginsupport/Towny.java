@@ -55,176 +55,176 @@ import java.util.List;
 
 public class Towny extends JavaModule {
 
-	/**
-	 * If Towny borders are to be used
-	 */
-	private boolean townyBorders;
+    /**
+     * If Towny borders are to be used
+     */
+    private boolean townyBorders;
 
-	/**
-	 * The Towny plugin
-	 */
-	private com.palmergames.bukkit.towny.Towny towny = null;
+    /**
+     * The Towny plugin
+     */
+    private com.palmergames.bukkit.towny.Towny towny = null;
 
-	/**
-	 * Load the module
-	 */
-	@Override
-	public void load(LWC lwc) {
-		this.townyBorders = lwc.getConfiguration().getBoolean("core.townyBorders", false);
+    /**
+     * Load the module
+     */
+    @Override
+    public void load(LWC lwc) {
+        this.townyBorders = lwc.getConfiguration().getBoolean("core.townyBorders", false);
 
-		// check for Towny
-		Plugin townyPlugin = lwc.getPlugin().getServer().getPluginManager().getPlugin("Towny");
+        // check for Towny
+        Plugin townyPlugin = lwc.getPlugin().getServer().getPluginManager().getPlugin("Towny");
 
-		// abort !
-		if (townyPlugin == null) {
-			return;
-		}
+        // abort !
+        if (townyPlugin == null) {
+            return;
+        }
 
-		this.towny = (com.palmergames.bukkit.towny.Towny) townyPlugin;
-	}
+        this.towny = (com.palmergames.bukkit.towny.Towny) townyPlugin;
+    }
 
-	/**
-	 * Cancel the event and inform the player that they cannot protect there
-	 *
-	 * @param event
-	 */
-	private void trigger(LWCProtectionRegisterEvent event) {
-		event.getLWC().sendLocale(event.getPlayer(), "lwc.towny.blocked");
-		event.setCancelled(true);
-	}
+    /**
+     * Cancel the event and inform the player that they cannot protect there
+     *
+     * @param event
+     */
+    private void trigger(LWCProtectionRegisterEvent event) {
+        event.getLWC().sendLocale(event.getPlayer(), "lwc.towny.blocked");
+        event.setCancelled(true);
+    }
 
-	@Override
-	public void onAccessRequest(LWCAccessEvent event) {
-		Player player = event.getPlayer();
-		Protection protection = event.getProtection();
+    @Override
+    public void onAccessRequest(LWCAccessEvent event) {
+        Player player = event.getPlayer();
+        Protection protection = event.getProtection();
 
-		if (event.getAccess() != Permission.Access.NONE) {
-			return;
-		}
+        if (event.getAccess() != Permission.Access.NONE) {
+            return;
+        }
 
-		if (protection.getType() != Protection.Type.PRIVATE) {
-			return;
-		}
+        if (protection.getType() != Protection.Type.PRIVATE) {
+            return;
+        }
 
-		if (towny == null) {
-			return;
-		}
+        if (towny == null) {
+            return;
+        }
 
-		for (Permission permission : protection.getPermissions()) {
-			if (permission.getType() != Permission.Type.TOWN) {
-				continue;
-			}
+        for (Permission permission : protection.getPermissions()) {
+            if (permission.getType() != Permission.Type.TOWN) {
+                continue;
+            }
 
-			// Does the town exist?
-			try {
-				Town town = WorldCoord.parseWorldCoord(event.getProtection().getBlock()).getTownBlock().getTown();
+            // Does the town exist?
+            try {
+                Town town = WorldCoord.parseWorldCoord(event.getProtection().getBlock()).getTownBlock().getTown();
 
-				if (town == null) {
-					return;
-				}
+                if (town == null) {
+                    return;
+                }
 
-				// check if the player is a resident of said town
-				if (!town.hasResident(player.getName())) {
-					// Uh-oh!
-					event.setAccess(Permission.Access.NONE);
-				} else if (town.getMayor().getName().equalsIgnoreCase(player.getName())) {
-					event.setAccess(Permission.Access.ADMIN);
-				} else {
-					// They're in the town :-)
-					event.setAccess(Permission.Access.PLAYER);
-				}
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			}
-		}
-	}
+                // check if the player is a resident of said town
+                if (!town.hasResident(player.getName())) {
+                    // Uh-oh!
+                    event.setAccess(Permission.Access.NONE);
+                } else if (town.getMayor().getName().equalsIgnoreCase(player.getName())) {
+                    event.setAccess(Permission.Access.ADMIN);
+                } else {
+                    // They're in the town :-)
+                    event.setAccess(Permission.Access.PLAYER);
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 
-	/**
-	 * Just a note: catching NotRegisteredException (which where an Exception is
-	 * caught is where its thrown) will throw a ClassNotFoundException when
-	 * Towny is not installed.
-	 */
-	@Override
-	public void onRegisterProtection(LWCProtectionRegisterEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+    /**
+     * Just a note: catching NotRegisteredException (which where an Exception is
+     * caught is where its thrown) will throw a ClassNotFoundException when
+     * Towny is not installed.
+     */
+    @Override
+    public void onRegisterProtection(LWCProtectionRegisterEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
 
-		if (!townyBorders || towny == null) {
-			return;
-		}
+        if (!townyBorders || towny == null) {
+            return;
+        }
 
-		// the block being protected
-		Block block = event.getBlock();
+        // the block being protected
+        Block block = event.getBlock();
 
-		// Get the towny world
-		TownyWorld world = null;
+        // Get the towny world
+        TownyWorld world = null;
 
-		try {
-			try {
-				world = WorldCoord.parseWorldCoord(block).getTownyWorld();
-			} catch (IncompatibleClassChangeError e) {
-				// Towny Advanced
-				try {
-					// We need to use Reflection because of the two
-					// TownyUniverse instances
-					// loaded (to retain Towny: CE support)
-					Method method = TownyUniverse.class.getDeclaredMethod("getWorld", String.class);
+        try {
+            try {
+                world = WorldCoord.parseWorldCoord(block).getTownyWorld();
+            } catch (IncompatibleClassChangeError e) {
+                // Towny Advanced
+                try {
+                    // We need to use Reflection because of the two
+                    // TownyUniverse instances
+                    // loaded (to retain Towny: CE support)
+                    Method method = TownyUniverse.class.getDeclaredMethod("getWorld", String.class);
 
-					// resolve the world
-					// the method is static!
-					world = (TownyWorld) method.invoke(null, block.getWorld().getName());
-				} catch (Exception ex) {
-					// no world or something bad happened
-					trigger(event);
-					return;
-				}
-			}
-		} catch (Exception e) {
-			// No world, don't let them protect it!
-			trigger(event);
-			return;
-		}
+                    // resolve the world
+                    // the method is static!
+                    world = (TownyWorld) method.invoke(null, block.getWorld().getName());
+                } catch (Exception ex) {
+                    // no world or something bad happened
+                    trigger(event);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            // No world, don't let them protect it!
+            trigger(event);
+            return;
+        }
 
-		if (!world.isUsingTowny()) {
-			return;
-		}
+        if (!world.isUsingTowny()) {
+            return;
+        }
 
-		// attempt to get the town block
-		@SuppressWarnings("unused")
-		TownBlock townBlock;
+        // attempt to get the town block
+        @SuppressWarnings("unused")
+        TownBlock townBlock;
 
-		try {
-			townBlock = world.getTownBlock(Coord.parseCoord(block));
-		} catch (Exception e) {
-			// No world, don't let them protect it!
-			trigger(event);
-		}
-	}
+        try {
+            townBlock = world.getTownBlock(Coord.parseCoord(block));
+        } catch (Exception e) {
+            // No world, don't let them protect it!
+            trigger(event);
+        }
+    }
 
-	public void unclaimTowny(TownUnclaimEvent event) throws NotRegisteredException, TownyException {
-		if (towny == null) {
-			return;
-		}
-		List<WorldCoord> wcl = AreaSelectionUtil.selectWorldCoordArea(event.getTown(), event.getWorldCoord(),
-				new String[] { "auto" });
-		wcl = AreaSelectionUtil.filterOwnedBlocks(event.getTown(), wcl);
-		for (WorldCoord wc : wcl) {
-			PlotBlockData pbd = new PlotBlockData(wc.getTownBlock());
-			for (int z = 0; z < pbd.getSize(); z++)
-				for (int x = 0; x < pbd.getSize(); x++)
-					for (int y = pbd.getHeight(); y > 0; y--) {
-						Block b = event.getWorldCoord().getBukkitWorld().getBlockAt((pbd.getX() * pbd.getSize()) + x, y,
-								(pbd.getZ() * pbd.getSize()) + z);
-						LWC lwc = LWC.getInstance();
-						Protection protection = lwc.getPhysicalDatabase()
-								.loadProtection(event.getWorldCoord().getWorldName(), b.getX(), b.getY(), b.getZ());
-						if (protection != null) {
-							protection.remove();
-						}
+    public void unclaimTowny(TownUnclaimEvent event) throws NotRegisteredException, TownyException {
+        if (towny == null) {
+            return;
+        }
+        List<WorldCoord> wcl = AreaSelectionUtil.selectWorldCoordArea(event.getTown(), event.getWorldCoord(),
+                new String[]{"auto"});
+        wcl = AreaSelectionUtil.filterOwnedBlocks(event.getTown(), wcl);
+        for (WorldCoord wc : wcl) {
+            PlotBlockData pbd = new PlotBlockData(wc.getTownBlock());
+            for (int z = 0; z < pbd.getSize(); z++)
+                for (int x = 0; x < pbd.getSize(); x++)
+                    for (int y = pbd.getHeight(); y > 0; y--) {
+                        Block b = event.getWorldCoord().getBukkitWorld().getBlockAt((pbd.getX() * pbd.getSize()) + x, y,
+                                (pbd.getZ() * pbd.getSize()) + z);
+                        LWC lwc = LWC.getInstance();
+                        Protection protection = lwc.getPhysicalDatabase()
+                                .loadProtection(event.getWorldCoord().getWorldName(), b.getX(), b.getY(), b.getZ());
+                        if (protection != null) {
+                            protection.remove();
+                        }
 
-					}
-		}
-	}
+                    }
+        }
+    }
 
 }

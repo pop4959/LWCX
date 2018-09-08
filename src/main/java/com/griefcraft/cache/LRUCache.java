@@ -33,11 +33,11 @@ import java.util.LinkedHashMap;
 public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * The max number of entries allowed
      */
     protected int maxCapacity;

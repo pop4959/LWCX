@@ -72,7 +72,7 @@ public class InfoModule extends JavaModule {
                     }
 
                     player.sendMessage(permission.toString());
-                    index ++;
+                    index++;
                 }
 
                 if (index == 0) {

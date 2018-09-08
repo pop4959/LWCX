@@ -117,7 +117,7 @@ public class SimpleMessageParser implements MessageParser {
 
             value = StringUtil.fastReplace(value, "%" + bindKey + "%", object.toString());
         }
-        
+
         // include the binds
         bindMessageCache.put(cacheKey, value);
         return value;

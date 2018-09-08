@@ -49,8 +49,8 @@ public class WeakLRUCache<K, V> implements Map<K, V> {
     /**
      * The queue of references to be removed
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	private final ReferenceQueue<? super V> queue = new ReferenceQueue();
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private final ReferenceQueue<? super V> queue = new ReferenceQueue();
 
     /**
      * The cache's max capacity
@@ -72,11 +72,11 @@ public class WeakLRUCache<K, V> implements Map<K, V> {
 
         this.weakCache = new LinkedHashMap<K, WeakValue<V, K>>(maxCapacity) {
             /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
-			@Override
+            @Override
             protected boolean removeEldestEntry(java.util.Map.Entry<K, WeakValue<V, K>> eldest) {
                 return size() > maxCapacity;
             }
@@ -101,7 +101,7 @@ public class WeakLRUCache<K, V> implements Map<K, V> {
      * Processes the reference queue and removes any garbage collected values
      */
     @SuppressWarnings("unchecked")
-	private void processQueue() {
+    private void processQueue() {
         WeakValue<V, K> weakValue;
         while ((weakValue = (WeakValue<V, K>) queue.poll()) != null) {
             // remove it from the cache
@@ -196,7 +196,7 @@ public class WeakLRUCache<K, V> implements Map<K, V> {
      * @param <K>
      */
     @SuppressWarnings("hiding")
-	private final class WeakValue<V, K> extends WeakReference<V> {
+    private final class WeakValue<V, K> extends WeakReference<V> {
 
         /**
          * The key for the value

@@ -212,7 +212,7 @@ public class StringUtil {
      */
     private static String byteArray2Hex(byte[] hash) {
         @SuppressWarnings("resource")
-		Formatter formatter = new Formatter();
+        Formatter formatter = new Formatter();
         for (final byte b : hash) {
             formatter.format("%02x", b);
         }

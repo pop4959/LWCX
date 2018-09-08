@@ -104,7 +104,7 @@ public class Flag {
     private final JSONObject data = new JSONObject();
 
     @SuppressWarnings("unchecked")
-	public Flag(Type type) {
+    public Flag(Type type) {
         this.type = type;
         data.put("id", type.ordinal());
     }
@@ -116,7 +116,7 @@ public class Flag {
      * @return
      */
     @SuppressWarnings("unchecked")
-	public static Flag decodeJSON(JSONObject node) {
+    public static Flag decodeJSON(JSONObject node) {
         if (node == null) {
             return null;
         }

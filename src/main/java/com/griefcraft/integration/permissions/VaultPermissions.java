@@ -41,42 +41,42 @@ import java.util.List;
 
 public class VaultPermissions extends SuperPermsPermissions {
 
-	private String groupPrefix;
+    private String groupPrefix;
 
-	@Override
-	public List<String> getGroups(Player player) {
-		RegisteredServiceProvider<Permission> serviceProvider = Bukkit.getServer().getServicesManager()
-				.getRegistration(Permission.class);
-		groupPrefix = LWC.getInstance().getConfiguration().getString("core.groupPrefix", "group.");
-		if (serviceProvider == null) {
-			return super.getGroups(player);
-		}
+    @Override
+    public List<String> getGroups(Player player) {
+        RegisteredServiceProvider<Permission> serviceProvider = Bukkit.getServer().getServicesManager()
+                .getRegistration(Permission.class);
+        groupPrefix = LWC.getInstance().getConfiguration().getString("core.groupPrefix", "group.");
+        if (serviceProvider == null) {
+            return super.getGroups(player);
+        }
 
-		Permission perm = serviceProvider.getProvider();
+        Permission perm = serviceProvider.getProvider();
 
-		try {
-			// the player's groups
-			String[] groups = perm.getPlayerGroups(player);
+        try {
+            // the player's groups
+            String[] groups = perm.getPlayerGroups(player);
 
-			// fallback to superperms if it appears that they have no groups
-			if (groups == null || groups.length == 0) {
-				return super.getGroups(player);
-			}
-			
-			List<String> groupss = Arrays.asList(groups);
-			
-			for (PermissionAttachmentInfo pai : player.getEffectivePermissions()) {
-				if (pai.getPermission().startsWith(groupPrefix)) {
-					groupss.add(pai.getPermission().substring(groupPrefix.length()));
-				}
-			}
+            // fallback to superperms if it appears that they have no groups
+            if (groups == null || groups.length == 0) {
+                return super.getGroups(player);
+            }
 
-			return groupss;
-		} catch (UnsupportedOperationException e) {
-			// Can be thrown by vault or asList. Thrown by Vault when using SuperPerms -
-			// getPlayerGroups() will throw it :-(
-			return super.getGroups(player);
-		}
-	}
+            List<String> groupss = Arrays.asList(groups);
+
+            for (PermissionAttachmentInfo pai : player.getEffectivePermissions()) {
+                if (pai.getPermission().startsWith(groupPrefix)) {
+                    groupss.add(pai.getPermission().substring(groupPrefix.length()));
+                }
+            }
+
+            return groupss;
+        } catch (UnsupportedOperationException e) {
+            // Can be thrown by vault or asList. Thrown by Vault when using SuperPerms -
+            // getPlayerGroups() will throw it :-(
+            return super.getGroups(player);
+        }
+    }
 
 }

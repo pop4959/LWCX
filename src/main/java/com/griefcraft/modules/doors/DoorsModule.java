@@ -47,280 +47,276 @@ import org.bukkit.entity.Player;
 
 public class DoorsModule extends JavaModule {
 
-	/**
-	 * The amount of server ticks there usually are per second
-	 */
-	private final static int TICKS_PER_SECOND = 20;
+    /**
+     * The amount of server ticks there usually are per second
+     */
+    private final static int TICKS_PER_SECOND = 20;
 
-	/**
-	 * The course of action for opening doors
-	 */
-	private enum Action {
+    /**
+     * The course of action for opening doors
+     */
+    private enum Action {
 
-		/**
-		 * The door should automatically open and then close
-		 */
-		OPEN_AND_CLOSE,
+        /**
+         * The door should automatically open and then close
+         */
+        OPEN_AND_CLOSE,
 
-		/**
-		 * The doors should just be opened, not closed after a set amount of time
-		 */
-		TOGGLE
+        /**
+         * The doors should just be opened, not closed after a set amount of time
+         */
+        TOGGLE
 
-	}
+    }
 
-	/**
-	 * The configuration file
-	 */
-	private final Configuration configuration = Configuration.load("doors.yml");
+    /**
+     * The configuration file
+     */
+    private final Configuration configuration = Configuration.load("doors.yml");
 
-	/**
-	 * The LWC object, set by load ()
-	 */
-	private LWC lwc;
+    /**
+     * The LWC object, set by load ()
+     */
+    private LWC lwc;
 
-	/**
-	 * The current action to use, default to toggling the door open and closed
-	 */
-	private Action action = Action.TOGGLE;
+    /**
+     * The current action to use, default to toggling the door open and closed
+     */
+    private Action action = Action.TOGGLE;
 
-	@Override
-	public void load(LWC lwc) {
-		this.lwc = lwc;
-		loadAction();
-	}
+    @Override
+    public void load(LWC lwc) {
+        this.lwc = lwc;
+        loadAction();
+    }
 
-	@Override
-	public void onProtectionInteract(LWCProtectionInteractEvent event) {
-		if (event.getResult() == Result.CANCEL || !isEnabled()) {
-			return;
-		}
+    @Override
+    public void onProtectionInteract(LWCProtectionInteractEvent event) {
+        if (event.getResult() == Result.CANCEL || !isEnabled()) {
+            return;
+        }
 
-		// The more important check
-		if (!event.canAccess()) {
-			return;
-		}
+        // The more important check
+        if (!event.canAccess()) {
+            return;
+        }
 
-		Protection protection = event.getProtection();
-		Block block = event.getEvent().getClickedBlock(); // The block they actually clicked :)
-		Player player = event.getPlayer();
+        Protection protection = event.getProtection();
+        Block block = event.getEvent().getClickedBlock(); // The block they actually clicked :)
+        Player player = event.getPlayer();
 
-		// Check if the block is even something that should be opened
-		if (!isValid(block.getType())) {
-			return;
-		}
+        // Check if the block is even something that should be opened
+        if (!isValid(block.getType())) {
+            return;
+        }
 
-		// Should we look for double doors?
-		boolean doubleDoors = usingDoubleDoors();
+        // Should we look for double doors?
+        boolean doubleDoors = usingDoubleDoors();
 
-		// The BOTTOM half of the other side of the double door
-		Block doubleDoorBlock = null;
+        // The BOTTOM half of the other side of the double door
+        Block doubleDoorBlock = null;
 
-		// Only waste CPU if we need the double door block
-		if (doubleDoors) {
-			doubleDoorBlock = getDoubleDoor(block);
+        // Only waste CPU if we need the double door block
+        if (doubleDoors) {
+            doubleDoorBlock = getDoubleDoor(block);
 
-			if (doubleDoorBlock != null) {
-				Protection other = lwc.findProtection(doubleDoorBlock.getLocation());
-				if (!lwc.canAccessProtection(player, other)) {
-					doubleDoorBlock = null; // don't open the other door :-)
-				}
-			}
-		}
+            if (doubleDoorBlock != null) {
+                Protection other = lwc.findProtection(doubleDoorBlock.getLocation());
+                if (!lwc.canAccessProtection(player, other)) {
+                    doubleDoorBlock = null; // don't open the other door :-)
+                }
+            }
+        }
 
-		// toggle the other side of the door open
-		boolean opensWhenClicked = (DoorMatcher.WOODEN_DOORS.contains(block.getType())
-				|| DoorMatcher.FENCE_GATES.contains(block.getType())
-				|| DoorMatcher.TRAP_DOORS.contains(block.getType()));
-		changeDoorStates(true, (opensWhenClicked ? null : block), doubleDoorBlock);
+        // toggle the other side of the door open
+        boolean opensWhenClicked = (DoorMatcher.WOODEN_DOORS.contains(block.getType())
+                || DoorMatcher.FENCE_GATES.contains(block.getType())
+                || DoorMatcher.TRAP_DOORS.contains(block.getType()));
+        changeDoorStates(true, (opensWhenClicked ? null : block), doubleDoorBlock);
 
-		if (action == Action.OPEN_AND_CLOSE || protection.hasFlag(Flag.Type.AUTOCLOSE)) {
-			// Abuse the fact that we still use final variables inside the task
-			// The double door block object is initially only assigned if we
-			// need
-			// it, so we just create a second variable ^^
-			final Block finalBlock = block;
-			final Block finalDoubleDoorBlock = doubleDoorBlock;
+        if (action == Action.OPEN_AND_CLOSE || protection.hasFlag(Flag.Type.AUTOCLOSE)) {
+            // Abuse the fact that we still use final variables inside the task
+            // The double door block object is initially only assigned if we
+            // need
+            // it, so we just create a second variable ^^
+            final Block finalBlock = block;
+            final Block finalDoubleDoorBlock = doubleDoorBlock;
 
-			// Calculate the wait time
-			// This is basically Interval * TICKS_PER_SECOND
-			int wait = getAutoCloseInterval() * TICKS_PER_SECOND;
+            // Calculate the wait time
+            // This is basically Interval * TICKS_PER_SECOND
+            int wait = getAutoCloseInterval() * TICKS_PER_SECOND;
 
-			// Create the task
-			// If we are set to close the door after a set period, let's create
-			// a sync task for it
-			lwc.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(lwc.getPlugin(), new Runnable() {
-				public void run() {
+            // Create the task
+            // If we are set to close the door after a set period, let's create
+            // a sync task for it
+            lwc.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(lwc.getPlugin(), new Runnable() {
+                public void run() {
 
-					// Essentially all we need to do is reset the door
-					// states
-					// But DO NOT open the door if it's closed !
-					changeDoorStates(false, finalBlock, finalDoubleDoorBlock);
+                    // Essentially all we need to do is reset the door
+                    // states
+                    // But DO NOT open the door if it's closed !
+                    changeDoorStates(false, finalBlock, finalDoubleDoorBlock);
 
-				}
-			}, wait);
-		}
+                }
+            }, wait);
+        }
 
-	}
+    }
 
-	/**
-	 * Change all of the given door states to be inverse; that is, if a door is
-	 * open, it will be closed afterwards. If the door is closed, it will become
-	 * open.
-	 * <p/>
-	 * Note that the blocks given must be the bottom block of the door.
-	 *
-	 * @param allowDoorToOpen
-	 *            If FALSE, and the door is currently CLOSED, it will NOT be opened!
-	 * @param doors
-	 *            Blocks given must be the bottom block of the door
-	 */
-	private void changeDoorStates(boolean allowDoorToOpen, Block... doors) {
-		for (Block door : doors) {
-			if (door == null) {
-				continue;
-			}
+    /**
+     * Change all of the given door states to be inverse; that is, if a door is
+     * open, it will be closed afterwards. If the door is closed, it will become
+     * open.
+     * <p/>
+     * Note that the blocks given must be the bottom block of the door.
+     *
+     * @param allowDoorToOpen If FALSE, and the door is currently CLOSED, it will NOT be opened!
+     * @param doors           Blocks given must be the bottom block of the door
+     */
+    private void changeDoorStates(boolean allowDoorToOpen, Block... doors) {
+        for (Block door : doors) {
+            if (door == null) {
+                continue;
+            }
 
-			// ensure this is an openable door
-			Openable doorBlockData = null;
-			try {
-				doorBlockData = (Openable) door.getBlockData();
-			} catch (ClassCastException e) {
-				continue;
-			}
+            // ensure this is an openable door
+            Openable doorBlockData = null;
+            try {
+                doorBlockData = (Openable) door.getBlockData();
+            } catch (ClassCastException e) {
+                continue;
+            }
 
-			boolean doorIsOpen = doorBlockData.isOpen();
+            boolean doorIsOpen = doorBlockData.isOpen();
 
-			// If we aren't allowing the door to open, check if it's already closed
-			if (!allowDoorToOpen && !doorIsOpen) {
-				// The door is already closed and we don't want to open it
-				continue;
-			}
+            // If we aren't allowing the door to open, check if it's already closed
+            if (!allowDoorToOpen && !doorIsOpen) {
+                // The door is already closed and we don't want to open it
+                continue;
+            }
 
-			// toggle the door!
-			doorBlockData.setOpen(!doorIsOpen);
-			door.setBlockData(doorBlockData);
+            // toggle the door!
+            doorBlockData.setOpen(!doorIsOpen);
+            door.setBlockData(doorBlockData);
 
-			// make the correct door sound
-			switch (door.getType()) {
-				case OAK_DOOR:
-				case SPRUCE_DOOR:
-				case BIRCH_DOOR:
-				case JUNGLE_DOOR:
-				case ACACIA_DOOR:
-				case DARK_OAK_DOOR:
-					door.getWorld().playEffect(door.getLocation(),
+            // make the correct door sound
+            switch (door.getType()) {
+                case OAK_DOOR:
+                case SPRUCE_DOOR:
+                case BIRCH_DOOR:
+                case JUNGLE_DOOR:
+                case ACACIA_DOOR:
+                case DARK_OAK_DOOR:
+                    door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.DOOR_CLOSE : Effect.DOOR_TOGGLE, 0);
-				case IRON_DOOR:
-					door.getWorld().playEffect(door.getLocation(),
+                case IRON_DOOR:
+                    door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.IRON_DOOR_CLOSE : Effect.IRON_DOOR_TOGGLE, 0);
-				case OAK_TRAPDOOR:
-				case SPRUCE_TRAPDOOR:
-				case BIRCH_TRAPDOOR:
-				case JUNGLE_TRAPDOOR:
-				case ACACIA_TRAPDOOR:
-				case DARK_OAK_TRAPDOOR:
-					door.getWorld().playEffect(door.getLocation(),
+                case OAK_TRAPDOOR:
+                case SPRUCE_TRAPDOOR:
+                case BIRCH_TRAPDOOR:
+                case JUNGLE_TRAPDOOR:
+                case ACACIA_TRAPDOOR:
+                case DARK_OAK_TRAPDOOR:
+                    door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.TRAPDOOR_CLOSE : Effect.TRAPDOOR_TOGGLE, 0);
-				case IRON_TRAPDOOR:
-					door.getWorld().playEffect(door.getLocation(),
+                case IRON_TRAPDOOR:
+                    door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.IRON_TRAPDOOR_CLOSE : Effect.IRON_TRAPDOOR_TOGGLE, 0);
-				case OAK_FENCE_GATE:
-				case SPRUCE_FENCE_GATE:
-				case BIRCH_FENCE_GATE:
-				case JUNGLE_FENCE_GATE:
-				case ACACIA_FENCE_GATE:
-				case DARK_OAK_FENCE_GATE:
-					door.getWorld().playEffect(door.getLocation(),
+                case OAK_FENCE_GATE:
+                case SPRUCE_FENCE_GATE:
+                case BIRCH_FENCE_GATE:
+                case JUNGLE_FENCE_GATE:
+                case ACACIA_FENCE_GATE:
+                case DARK_OAK_FENCE_GATE:
+                    door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.FENCE_GATE_CLOSE : Effect.FENCE_GATE_TOGGLE, 0);
-				default:
-					break;
-			}
-		}
-	}
+                default:
+                    break;
+            }
+        }
+    }
 
-	/**
-	 * Get the double door for the given block
-	 *
-	 * @param block
-	 * @return
-	 */
-	private Block getDoubleDoor(Block block) {
-		if (!isValid(block.getType())) {
-			return null;
-		}
+    /**
+     * Get the double door for the given block
+     *
+     * @param block
+     * @return
+     */
+    private Block getDoubleDoor(Block block) {
+        if (!isValid(block.getType())) {
+            return null;
+        }
 
-		Block found;
+        Block found;
 
-		for (Material material : DoorMatcher.PROTECTABLES_DOORS) {
-			if ((found = lwc.findAdjacentBlock(block, material)) != null) {
-				return found;
-			}
-		}
+        for (Material material : DoorMatcher.PROTECTABLES_DOORS) {
+            if ((found = lwc.findAdjacentBlock(block, material)) != null) {
+                return found;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Check if automatic door opening is enabled
-	 *
-	 * @return
-	 */
-	public boolean isEnabled() {
-		return configuration.getBoolean("doors.enabled", true);
-	}
+    /**
+     * Check if automatic door opening is enabled
+     *
+     * @return
+     */
+    public boolean isEnabled() {
+        return configuration.getBoolean("doors.enabled", true);
+    }
 
-	/**
-	 * Check if the material is auto openable/closable
-	 *
-	 * @param material
-	 * @return
-	 */
-	private boolean isValid(Material material) {
-		if (DoorMatcher.PROTECTABLES_DOORS.contains(material)) {
-			return true;
-		}
+    /**
+     * Check if the material is auto openable/closable
+     *
+     * @param material
+     * @return
+     */
+    private boolean isValid(Material material) {
+        if (DoorMatcher.PROTECTABLES_DOORS.contains(material)) {
+            return true;
+        } else if (DoorMatcher.FENCE_GATES.contains(material)) {
+            return true;
+        }
 
-		else if (DoorMatcher.FENCE_GATES.contains(material)) {
-			return true;
-		}
+        if (WallMatcher.PROTECTABLES_TRAP_DOORS.contains(material)) {
+            return true;
+        }
 
-		if (WallMatcher.PROTECTABLES_TRAP_DOORS.contains(material)) {
-			return true;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Get the amount of seconds after opening a door it should be closed
+     *
+     * @return
+     */
+    private int getAutoCloseInterval() {
+        return configuration.getInt("doors.interval", 3);
+    }
 
-	/**
-	 * Get the amount of seconds after opening a door it should be closed
-	 *
-	 * @return
-	 */
-	private int getAutoCloseInterval() {
-		return configuration.getInt("doors.interval", 3);
-	}
+    /**
+     * Get if we are allowing double doors to be used
+     *
+     * @return
+     */
+    private boolean usingDoubleDoors() {
+        return configuration.getBoolean("doors.doubleDoors", true);
+    }
 
-	/**
-	 * Get if we are allowing double doors to be used
-	 *
-	 * @return
-	 */
-	private boolean usingDoubleDoors() {
-		return configuration.getBoolean("doors.doubleDoors", true);
-	}
+    /**
+     * Load the action from the configuration
+     */
+    private void loadAction() {
+        String strAction = configuration.getString("doors.action");
 
-	/**
-	 * Load the action from the configuration
-	 */
-	private void loadAction() {
-		String strAction = configuration.getString("doors.action");
-
-		if (strAction.equalsIgnoreCase("openAndClose")) {
-			this.action = Action.OPEN_AND_CLOSE;
-		} else {
-			this.action = Action.TOGGLE;
-		}
-	}
+        if (strAction.equalsIgnoreCase("openAndClose")) {
+            this.action = Action.OPEN_AND_CLOSE;
+        } else {
+            this.action = Action.TOGGLE;
+        }
+    }
 
 }

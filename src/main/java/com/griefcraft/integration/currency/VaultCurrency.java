@@ -35,6 +35,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
+
 @SuppressWarnings("deprecation")
 public class VaultCurrency implements ICurrency {
 
@@ -85,7 +86,7 @@ public class VaultCurrency implements ICurrency {
         return economy.getBalance(player.getName());
     }
 
-	public boolean canAfford(Player player, double money) {
+    public boolean canAfford(Player player, double money) {
         return economy.has(player.getName(), money);
     }
 

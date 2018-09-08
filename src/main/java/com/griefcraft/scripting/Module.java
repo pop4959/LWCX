@@ -107,14 +107,14 @@ public interface Module {
      * @param event
      */
     public void onProtectionInteract(LWCProtectionInteractEvent event);
-    
+
     /**
      * Called when an unprotected block is interacted with
      *
      * @param event
      */
     public void onBlockInteract(LWCBlockInteractEvent event);
-    
+
     /**
      * Called when an unprotected block is interacted with
      *
@@ -129,8 +129,9 @@ public interface Module {
      */
     public void onRegisterProtection(LWCProtectionRegisterEvent event);
 
-    
+
     public void onEntityInteractProtection(LWCProtectionInteractEntityEvent event);
+
     /**
      * Called after a protection is registered
      *
@@ -152,8 +153,8 @@ public interface Module {
      */
     public void onSendLocale(LWCSendLocaleEvent event);
 
-	public void onMagnetPull(LWCMagnetPullEvent event);
-	
-	public void onRegisterEntity(LWCProtectionRegisterEntityEvent event);
+    public void onMagnetPull(LWCMagnetPullEvent event);
+
+    public void onRegisterEntity(LWCProtectionRegisterEntityEvent event);
 
 }

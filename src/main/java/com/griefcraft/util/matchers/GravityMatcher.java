@@ -32,6 +32,7 @@ import com.griefcraft.util.ProtectionFinder;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -52,17 +53,17 @@ public class GravityMatcher implements ProtectionFinder.Matcher {
             Material.CYAN_BANNER, Material.PURPLE_BANNER, Material.BLUE_BANNER, Material.BROWN_BANNER,
             Material.GREEN_BANNER, Material.RED_BANNER, Material.BLACK_BANNER, Material.ARMOR_STAND);
 
-	public boolean matches(ProtectionFinder finder) {
-		Block block = finder.getBaseBlock().getBlock();
+    public boolean matches(ProtectionFinder finder) {
+        Block block = finder.getBaseBlock().getBlock();
 
-		// Easy to match, just try to match the block above the base block :P
-		Block up = block.getRelative(BlockFace.UP);
+        // Easy to match, just try to match the block above the base block :P
+        Block up = block.getRelative(BlockFace.UP);
 
-		if (PROTECTABLES_POSTS.contains(up.getType())) {
-			finder.addBlock(up);
-			return true;
-		}
-		return false;
-	}
+        if (PROTECTABLES_POSTS.contains(up.getType())) {
+            finder.addBlock(up);
+            return true;
+        }
+        return false;
+    }
 
 }

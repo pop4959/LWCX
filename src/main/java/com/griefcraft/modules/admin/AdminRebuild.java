@@ -131,7 +131,7 @@ public class AdminRebuild extends JavaModule {
 
             if (creator == null) {
                 sender.sendMessage(String.format("Unable to match owner at Id:%d", history.getId()));
-                failed ++;
+                failed++;
                 iter.remove();
                 continue;
             }
@@ -141,7 +141,7 @@ public class AdminRebuild extends JavaModule {
 
             if (block == null) {
                 sender.sendMessage(String.format("Unable to match block at Id:%d [%d, %d, %d] (this is probably OK)", history.getId(), x, y, z));
-                failed ++;
+                failed++;
                 iter.remove();
                 continue;
             }
@@ -157,13 +157,13 @@ public class AdminRebuild extends JavaModule {
 
             if (protection == null) {
                 sender.sendMessage(String.format("Failed to create protection at Id:%d", history.getId()));
-                failed ++;
+                failed++;
                 iter.remove();
                 continue;
             }
 
             // Hell yeah
-            created ++;
+            created++;
             history.remove();
             protection.saveNow();
             iter.remove();
