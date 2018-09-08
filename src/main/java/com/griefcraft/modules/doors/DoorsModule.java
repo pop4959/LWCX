@@ -209,9 +209,11 @@ public class DoorsModule extends JavaModule {
                 case DARK_OAK_DOOR:
                     door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.DOOR_CLOSE : Effect.DOOR_TOGGLE, 0);
+                    break;
                 case IRON_DOOR:
                     door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.IRON_DOOR_CLOSE : Effect.IRON_DOOR_TOGGLE, 0);
+                    break;
                 case OAK_TRAPDOOR:
                 case SPRUCE_TRAPDOOR:
                 case BIRCH_TRAPDOOR:
@@ -220,9 +222,11 @@ public class DoorsModule extends JavaModule {
                 case DARK_OAK_TRAPDOOR:
                     door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.TRAPDOOR_CLOSE : Effect.TRAPDOOR_TOGGLE, 0);
+                    break;
                 case IRON_TRAPDOOR:
                     door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.IRON_TRAPDOOR_CLOSE : Effect.IRON_TRAPDOOR_TOGGLE, 0);
+                    break;
                 case OAK_FENCE_GATE:
                 case SPRUCE_FENCE_GATE:
                 case BIRCH_FENCE_GATE:
@@ -231,6 +235,7 @@ public class DoorsModule extends JavaModule {
                 case DARK_OAK_FENCE_GATE:
                     door.getWorld().playEffect(door.getLocation(),
                             doorIsOpen ? Effect.FENCE_GATE_CLOSE : Effect.FENCE_GATE_TOGGLE, 0);
+                    break;
                 default:
                     break;
             }
