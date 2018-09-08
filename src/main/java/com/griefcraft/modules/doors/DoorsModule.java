@@ -130,8 +130,8 @@ public class DoorsModule extends JavaModule {
 
         // toggle the other side of the door open
         boolean opensWhenClicked = (DoorMatcher.WOODEN_DOORS.contains(block.getType())
-                || DoorMatcher.FENCE_GATES.contains(block.getType())
-                || DoorMatcher.TRAP_DOORS.contains(block.getType()));
+                || DoorMatcher.WOODEN_FENCE_GATES.contains(block.getType())
+                || DoorMatcher.WOODEN_TRAP_DOORS.contains(block.getType()));
         changeDoorStates(true, (opensWhenClicked ? null : block), doubleDoorBlock);
 
         if (action == Action.OPEN_AND_CLOSE || protection.hasFlag(Flag.Type.AUTOCLOSE)) {
