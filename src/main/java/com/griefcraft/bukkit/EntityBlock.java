@@ -210,8 +210,9 @@ public class EntityBlock implements Block {
 
     @Override
     public Material getType() {
-        // TODO Auto-generated method stub
-        return null;
+        // Temporary fix to avoid null pointer exceptions when using /lock on entities.
+        // Entity protections are still locked under ENTITY_BLOCK_ID, not AIR.
+        return Material.AIR;
     }
 
     @Override
