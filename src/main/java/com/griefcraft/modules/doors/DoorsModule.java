@@ -280,17 +280,8 @@ public class DoorsModule extends JavaModule {
      * @return
      */
     private boolean isValid(Material material) {
-        if (DoorMatcher.PROTECTABLES_DOORS.contains(material)) {
-            return true;
-        } else if (DoorMatcher.FENCE_GATES.contains(material)) {
-            return true;
-        }
-
-        if (WallMatcher.PROTECTABLES_TRAP_DOORS.contains(material)) {
-            return true;
-        }
-
-        return false;
+        return DoorMatcher.PROTECTABLES_DOORS.contains(material) || DoorMatcher.FENCE_GATES.contains(material) ||
+                DoorMatcher.TRAP_DOORS.contains(material);
     }
 
     /**
