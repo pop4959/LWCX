@@ -110,6 +110,8 @@ import com.griefcraft.util.UUIDRegistry;
 import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -959,7 +961,16 @@ public class LWC {
         // Send the message!
         // sender.sendMessage(message);
         for (String line : message) {
-            sender.sendMessage(line);
+            if (configuration.getBoolean("optional.useActionBar", false) && sender instanceof Player) {
+                // Attempt to use the Spigot-API action bar if enabled, but use the normal chat message as a fallback.
+                try {
+                    ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(line));
+                } catch (NoSuchMethodError e) {
+                    sender.sendMessage(line);
+                }
+            } else {
+                sender.sendMessage(line);
+            }
         }
     }
 

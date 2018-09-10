@@ -133,6 +133,16 @@ public class LWCPlayer implements CommandSender {
     }
 
     /**
+     * Required by Spigot for plugin compilation.
+     *
+     * @return
+     */
+    @Override
+    public Spigot spigot() {
+        return null;
+    }
+
+    /**
      * Enable a mode on the player
      *
      * @param mode

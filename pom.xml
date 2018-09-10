@@ -27,6 +27,12 @@
     </repository>
   </repositories>
 <dependencies>
+    <dependency>
+        <groupId>org.spigotmc</groupId>
+        <artifactId>spigot-api</artifactId>
+        <version>1.13-R0.1-SNAPSHOT</version>
+        <scope>provided</scope>
+    </dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldguard</artifactId>
@@ -45,12 +51,6 @@
             <groupId>com.palmergames</groupId>
             <artifactId>Towny</artifactId>
             <version>0.89.2.0</version>
-            <scope>provided</scope>
-    </dependency>
-    <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.13-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
     </dependency>
     <dependency>
@@ -183,7 +183,7 @@
                     <injectAllReactorProjects>false</injectAllReactorProjects>
 
                     <!-- @since 2.0.4 -->
-                    <!-- true by default, controls whether the plugin will fail when no .git directory is found, when set to false the plugin will just skip execution -->                    
+                    <!-- true by default, controls whether the plugin will fail when no .git directory is found, when set to false the plugin will just skip execution -->
                     <failOnNoGitDirectory>true</failOnNoGitDirectory>
 
                     <!-- @since 2.1.5 -->
@@ -330,10 +330,10 @@
                         by default describe will run "just like git-describe on the command line", even though it's a JGit reimplementation.
                     -->
                     <gitDescribe>
-                        
+
                         <!-- don't generate the describe property -->
                         <skip>false</skip>
-                        
+
                         <!-- 
                             if no tag was found "near" this commit, just print the commit's id instead, 
                             helpful when you always expect this field to be not-empty 
@@ -346,7 +346,7 @@
                              and 40 is the maximum value here 
                         -->
                         <abbrev>7</abbrev>
-                        
+
                         <!-- when the build is triggered while the repo is in "dirty state", append this suffix -->
                         <dirty>-dirty</dirty>
 

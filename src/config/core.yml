@@ -71,6 +71,10 @@ optional:
     # If protections limits will be enabled (defaults to unlimited protections)
     useProtectionLimits: true
 
+    # If true, LWC will show certain (not all) messages in the action bar instead of the chat.
+    # Spigot or better is recommended. This option will have no effect on CraftBukkit servers.
+    useActionBar: false
+
 # Database information for LWC
 database:
 
