@@ -1,89 +1,90 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.griefcraft.lwc</groupId>
-  <artifactId>Modern-LWC</artifactId>
-  <name>Modern-LWC</name>
-  <version>2.1.1-dev</version>
-  <description>The unofficial continuation of LWC with support for modern versions of Minecraft.</description>
-  <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <repositories>
-    <repository>
-        <id>spigot-repo</id>
-        <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-    </repository>
-    <repository>
-        <id>scarsz</id>
-        <url>https://dl.bintray.com/scarsz/maven</url>
-    </repository>
-    <repository>
-        <id>sk89q-repo</id>
-        <url>http://maven.sk89q.com/repo/</url>
-    </repository>
-    <repository>
-        <id>elmakers-repo</id>
-        <url>http://maven.elmakers.com/repository/</url>
-    </repository>
-  </repositories>
-<dependencies>
-    <dependency>
-        <groupId>org.spigotmc</groupId>
-        <artifactId>spigot-api</artifactId>
-        <version>1.13-R0.1-SNAPSHOT</version>
-        <scope>provided</scope>
-    </dependency>
-		<dependency>
-			<groupId>com.sk89q</groupId>
-			<artifactId>worldguard</artifactId>
-			<version>6.1.1-SNAPSHOT</version>
-			<scope>provided</scope>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>com.sk89q</groupId>
-			<artifactId>worldedit</artifactId>
-			<version>6.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
-			<type>jar</type>
-		</dependency>
-    <dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.griefcraft.lwc</groupId>
+    <artifactId>Modern-LWC</artifactId>
+    <name>Modern-LWC</name>
+    <version>2.1.1-dev</version>
+    <description>The unofficial continuation of LWC with support for modern versions of Minecraft.</description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>scarsz</id>
+            <url>https://dl.bintray.com/scarsz/maven</url>
+        </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>http://maven.sk89q.com/repo/</url>
+        </repository>
+        <repository>
+            <id>elmakers-repo</id>
+            <url>http://maven.elmakers.com/repository/</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.13-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>6.1.1-SNAPSHOT</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldedit</artifactId>
+            <version>6.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>com.palmergames</groupId>
             <artifactId>Towny</artifactId>
             <version>0.89.2.0</version>
             <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>net.milkbowl.vault</groupId>
-        <artifactId>VaultAPI</artifactId>
-        <version>1.5</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>23.0</version>
-    </dependency>
-</dependencies>
+        </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
+        </dependency>
+    </dependencies>
     <build>
-    <finalName>${project.artifactId}-${project.version}</finalName>
-<!--       <pluginManagement> -->
-      <plugins>
-	        <plugin>
-	          <groupId>org.apache.maven.plugins</groupId>
-	          <artifactId>maven-compiler-plugin</artifactId>
-	          <version>3.3</version>
-	          <configuration>
-	            <source>1.8</source>
-	            <target>1.8</target>
-	            <encoding>UTF-8</encoding>
-	          </configuration>
-	        </plugin>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <!--       <pluginManagement> -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -161,7 +162,8 @@
                                 to a target folder (e.g. ${project.build.outputDirectory}) since this is
                                 the place where all derived/generated resources should go.
                     -->
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
 
                     <!-- Denotes the format to save properties in. Valid options are "properties" (default) and "json". Properties will be saved to the generateGitPropertiesFilename if generateGitPropertiesFile is set to `true`. -->
                     <format>properties</format>
@@ -228,7 +230,7 @@
                         Please note that the strings here are Java regexes ({@code .*} is globbing, not plain {@code *}).
                     -->
                     <excludeProperties>
-                      <!-- <excludeProperty>git.user.*</excludeProperty> -->
+                        <!-- <excludeProperty>git.user.*</excludeProperty> -->
                     </excludeProperties>
 
                     <!-- @since 2.1.14 -->
@@ -242,7 +244,7 @@
                         Please note that the strings here are Java regexes ({@code .*} is globbing, not plain {@code *}).
                     -->
                     <includeOnlyProperties>
-                      <!-- <includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty> -->
+                        <!-- <includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty> -->
                     </includeOnlyProperties>
 
                     <!-- @since 2.2.3 -->
@@ -264,25 +266,25 @@
                         If you want to replace properties that are being generated by other plugins you may want to use the maven-replacer-plugin or any other alternative.
                     -->
                     <replacementProperties>
-                      <!-- example: apply replacement only to the specific property git.branch and replace '/' with '-'
-                      <replacementProperty>
-                        <property>git.branch</property>
-                        <propertyOutputSuffix>something</propertyOutputSuffix>
-                        <token>^([^\/]*)\/([^\/]*)$</token>
-                        <value>$1-$2</value>
-                        <regex>true</regex>
-                        <transformationRules>
-                          <transformationRule>
-                            <apply>BEFORE</apply>
-                            <action>UPPER_CASE</action>
-                          </transformationRule>
-                          <transformationRule>
-                            <apply>AFTER</apply>
-                            <action>LOWER_CASE</action>
-                          </transformationRule>
-                        </transformationRules>
-                      </replacementProperty>
-                      -->
+                        <!-- example: apply replacement only to the specific property git.branch and replace '/' with '-'
+                        <replacementProperty>
+                          <property>git.branch</property>
+                          <propertyOutputSuffix>something</propertyOutputSuffix>
+                          <token>^([^\/]*)\/([^\/]*)$</token>
+                          <value>$1-$2</value>
+                          <regex>true</regex>
+                          <transformationRules>
+                            <transformationRule>
+                              <apply>BEFORE</apply>
+                              <action>UPPER_CASE</action>
+                            </transformationRule>
+                            <transformationRule>
+                              <apply>AFTER</apply>
+                              <action>LOWER_CASE</action>
+                            </transformationRule>
+                          </transformationRules>
+                        </replacementProperty>
+                        -->
                     </replacementProperties>
 
                     <!-- @since 2.1.10 -->
@@ -419,18 +421,18 @@
 
             </plugin>
             <!-- END OF GIT COMMIT ID PLUGIN CONFIGURATION -->
-	      </plugins>
-<!--       </pluginManagement> -->
-      <resources>
-        <resource>
-          <filtering>true</filtering>
-          <targetPath>.</targetPath>
-          <directory>${basedir}/src/</directory>
-          <includes>
-            <include>**/*.yml</include>
-            <include>lang/</include>
-          </includes>
-        </resource>
-      </resources>
+        </plugins>
+        <!--       </pluginManagement> -->
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <targetPath>.</targetPath>
+                <directory>${basedir}/src/</directory>
+                <includes>
+                    <include>**/*.yml</include>
+                    <include>lang/</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 </project>
