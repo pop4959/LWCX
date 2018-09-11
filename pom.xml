@@ -15,16 +15,16 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>scarsz</id>
-            <url>https://dl.bintray.com/scarsz/maven</url>
-        </repository>
-        <repository>
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
         <repository>
             <id>elmakers-repo</id>
             <url>http://maven.elmakers.com/repository/</url>
+        </repository>
+        <repository>
+            <id>scarsz</id>
+            <url>https://dl.bintray.com/scarsz/maven</url>
         </repository>
     </repositories>
     <dependencies>
@@ -35,16 +35,16 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldguard</artifactId>
-            <version>6.1.1-SNAPSHOT</version>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit</artifactId>
+            <version>7.0-SNAPSHOT</version>
             <scope>provided</scope>
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldedit</artifactId>
-            <version>6.0.0-SNAPSHOT</version>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-legacy</artifactId>
+            <version>7.0-SNAPSHOT</version>
             <scope>provided</scope>
             <type>jar</type>
         </dependency>
