@@ -30,7 +30,6 @@ package com.griefcraft.scripting.event;
 
 import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.ModuleLoader;
-
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 

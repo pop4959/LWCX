@@ -47,7 +47,6 @@ import com.griefcraft.scripting.event.LWCProtectionRemovePostEvent;
 import com.griefcraft.scripting.event.LWCRedstoneEvent;
 import com.griefcraft.scripting.event.LWCReloadEvent;
 import com.griefcraft.scripting.event.LWCSendLocaleEvent;
-
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;

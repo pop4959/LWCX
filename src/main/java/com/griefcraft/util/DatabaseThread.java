@@ -32,11 +32,9 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.sql.Database;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
 
 public class DatabaseThread implements Runnable {
 

@@ -30,7 +30,6 @@ package com.griefcraft.cache;
 
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;

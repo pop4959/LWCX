@@ -32,8 +32,6 @@ import com.griefcraft.cache.BlockCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.modules.pluginsupport.WorldGuard;
 
-import org.bukkit.Material;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;

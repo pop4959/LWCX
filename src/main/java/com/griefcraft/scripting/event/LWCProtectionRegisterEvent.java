@@ -29,7 +29,6 @@
 package com.griefcraft.scripting.event;
 
 import com.griefcraft.scripting.ModuleLoader;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;

@@ -35,14 +35,10 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.matchers.DoorMatcher;
-import com.griefcraft.util.matchers.WallMatcher;
-
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Openable;
-import org.bukkit.block.data.type.Chest;
 import org.bukkit.entity.Player;
 
 public class DoorsModule extends JavaModule {

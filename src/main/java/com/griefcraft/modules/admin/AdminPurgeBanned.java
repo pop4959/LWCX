@@ -31,7 +31,6 @@ package com.griefcraft.modules.admin;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCCommandEvent;
-
 import org.bukkit.command.CommandSender;
 
 import java.io.BufferedReader;

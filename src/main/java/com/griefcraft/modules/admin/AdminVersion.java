@@ -33,7 +33,6 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.Updater;
-
 import org.bukkit.command.CommandSender;
 
 public class AdminVersion extends JavaModule {

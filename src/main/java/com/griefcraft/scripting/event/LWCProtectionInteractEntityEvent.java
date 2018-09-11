@@ -31,7 +31,6 @@ package com.griefcraft.scripting.event;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.ModuleLoader;
-
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.util.Set;

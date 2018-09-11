@@ -31,7 +31,6 @@ package com.griefcraft.model;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.UUIDRegistry;
-
 import org.json.simple.JSONObject;
 
 public class Permission {

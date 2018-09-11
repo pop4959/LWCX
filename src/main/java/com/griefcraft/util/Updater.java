@@ -29,13 +29,12 @@
 package com.griefcraft.util;
 
 import com.griefcraft.lwc.LWC;
-
-import java.net.URL;
-
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
+import java.net.URL;
 
 public class Updater {
 

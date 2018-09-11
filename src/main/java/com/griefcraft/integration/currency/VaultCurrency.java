@@ -29,9 +29,7 @@
 package com.griefcraft.integration.currency;
 
 import com.griefcraft.integration.ICurrency;
-
 import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;

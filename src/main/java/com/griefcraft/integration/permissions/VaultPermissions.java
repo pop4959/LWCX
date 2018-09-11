@@ -28,13 +28,12 @@
 
 package com.griefcraft.integration.permissions;
 
+import com.griefcraft.lwc.LWC;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.RegisteredServiceProvider;
-
-import com.griefcraft.lwc.LWC;
 
 import java.util.Arrays;
 import java.util.List;

@@ -35,7 +35,6 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCRedstoneEvent;
 import com.griefcraft.util.ProtectionFinder;
 import com.griefcraft.util.matchers.DoorMatcher;
-
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 

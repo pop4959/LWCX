@@ -35,7 +35,6 @@ import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.util.Colors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;

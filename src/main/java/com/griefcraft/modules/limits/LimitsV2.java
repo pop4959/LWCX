@@ -37,7 +37,6 @@ import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCReloadEvent;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.config.Configuration;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;

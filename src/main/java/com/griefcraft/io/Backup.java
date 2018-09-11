@@ -29,8 +29,6 @@
 package com.griefcraft.io;
 
 import com.griefcraft.cache.BlockCache;
-import jdk.nashorn.internal.ir.Block;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.DataInputStream;

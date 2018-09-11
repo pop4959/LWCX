@@ -34,7 +34,6 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.ModuleException;
 import com.griefcraft.util.Statistics;
 import com.griefcraft.util.config.Configuration;
-
 import org.bukkit.Bukkit;
 
 import java.sql.Connection;

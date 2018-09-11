@@ -28,9 +28,9 @@
 
 package com.griefcraft.scripting.event;
 
+import com.griefcraft.scripting.ModuleLoader;
 import org.bukkit.entity.Item;
 import org.bukkit.event.Cancellable;
-import com.griefcraft.scripting.ModuleLoader;
 
 public class LWCMagnetPullEvent extends LWCEvent implements Cancellable {
 

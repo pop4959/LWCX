@@ -32,7 +32,6 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.sql.Database;
 import com.griefcraft.sql.PhysDB;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.block.Block;

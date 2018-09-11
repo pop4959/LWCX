@@ -1,7 +1,7 @@
 package com.griefcraft.bukkit;
 
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.minecart.*;
+import org.bukkit.entity.minecart.StorageMinecart;
 
 public class StoreageMinecartBlock extends EntityBlock {
     private StorageMinecart minecart;

@@ -29,7 +29,6 @@
 package com.griefcraft.model;
 
 import com.griefcraft.util.StringUtil;
-
 import org.json.simple.JSONObject;
 
 public class Flag {

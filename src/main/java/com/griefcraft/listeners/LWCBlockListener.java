@@ -40,7 +40,6 @@ import com.griefcraft.scripting.event.LWCRedstoneEvent;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.MaterialUtil;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

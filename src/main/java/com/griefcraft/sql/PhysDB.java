@@ -42,7 +42,6 @@ import com.griefcraft.scripting.Module;
 import com.griefcraft.util.MaterialUtil;
 import com.griefcraft.util.UUIDRegistry;
 import com.griefcraft.util.config.Configuration;
-
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
