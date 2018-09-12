@@ -78,7 +78,7 @@ public class DestroyModule extends JavaModule {
 
             if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "quiet"))) {
                 BlockCache blockCache = BlockCache.getInstance();
-                lwc.sendLocale(player, "protection.unregistered", "block",
+                lwc.sendLocaleToActionBar(player, "protection.unregistered", "block",
                         LWC.materialToString(blockCache.getBlockType(protection.getBlockId())));
             }
             return;

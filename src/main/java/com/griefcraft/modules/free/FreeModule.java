@@ -98,10 +98,10 @@ public class FreeModule extends JavaModule {
 
                 protection.remove();
                 if (protection.getBlock() instanceof EntityBlock) {
-                    lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
+                    lwc.sendLocaleToActionBar(player, "protection.interact.remove.finalize", "block",
                             EntityBlock.getEntity().getType().name());
                 } else {
-                    lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
+                    lwc.sendLocaleToActionBar(player, "protection.interact.remove.finalize", "block",
                             !protection.toString().contains("ARMOR_STAND") ?
                                     LWC.materialToString(protection.getBlock()) : "ARMOR_STAND");
                 }
@@ -164,7 +164,7 @@ public class FreeModule extends JavaModule {
                 }
 
                 protection.remove();
-                lwc.sendLocale(player, "protection.interact.remove.finalize", "block",
+                lwc.sendLocaleToActionBar(player, "protection.interact.remove.finalize", "block",
                         event.getEvent().getRightClicked().getType().name());
             }
 

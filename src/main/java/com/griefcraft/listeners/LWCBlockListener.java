@@ -481,7 +481,7 @@ public class LWCBlockListener implements Listener {
                     block.getZ());
 
             if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(block, "quiet"))) {
-                lwc.sendLocale(player, "protection.onplace.create.finalize", "type",
+                lwc.sendLocaleToActionBar(player, "protection.onplace.create.finalize", "type",
                         lwc.getPlugin().getMessageParser().parseMessage(autoRegisterType.toLowerCase()), "block",
                         LWC.materialToString(block));
             }

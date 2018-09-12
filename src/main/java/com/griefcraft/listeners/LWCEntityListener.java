@@ -277,7 +277,7 @@ public class LWCEntityListener implements Listener {
                     entity.getWorld().getName(), player.getUniqueId().toString(), "", A, A, A);
 
             if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(EntityBlock.getEntityBlock(entity), "quiet"))) {
-                lwc.sendLocale(player, "protection.onplace.create.finalize", "type",
+                lwc.sendLocaleToActionBar(player, "protection.onplace.create.finalize", "type",
                         lwc.getPlugin().getMessageParser().parseMessage(autoRegisterType.toLowerCase()), "block",
                         LWC.materialToString(EntityBlock.getEntityBlock(entity)));
             }
