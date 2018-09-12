@@ -701,7 +701,7 @@ public class LWC {
                 if (protection.isRealOwner(player)) {
                     owner = parser.parseMessage("you");
                 } else {
-                    owner = protection.getFormattedOwnerPlayerName();
+                    owner = UUIDRegistry.getName(UUID.fromString(protection.getOwner()));
                 }
 
                 String blockName = materialToString(block);
@@ -2119,7 +2119,7 @@ public class LWC {
                 if (protection.isRealOwner(player)) {
                     owner = parser.parseMessage("you");
                 } else {
-                    owner = protection.getFormattedOwnerPlayerName();
+                    owner = UUIDRegistry.getName(UUID.fromString(protection.getOwner()));
                 }
 
                 String blockName = entity.getType().name();
