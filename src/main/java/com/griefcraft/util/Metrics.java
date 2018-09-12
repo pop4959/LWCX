@@ -26,6 +26,8 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -179,7 +181,9 @@ public class Metrics {
         JSONObject data = new JSONObject();
 
         String pluginName = plugin.getDescription().getName();
-        String pluginVersion = plugin.getDescription().getVersion();
+        String rawPluginVersion = plugin.getDescription().getVersion();
+        Matcher matcher = Pattern.compile("\\d+.\\d+.\\d+").matcher(rawPluginVersion);
+        String pluginVersion = matcher.find() ? matcher.group() : rawPluginVersion;
 
         data.put("pluginName", pluginName); // Append the name of the plugin
         data.put("pluginVersion", pluginVersion); // Append the version of the plugin
