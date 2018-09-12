@@ -303,6 +303,11 @@ public class LWCPlugin extends JavaPlugin {
         LWCResourceBundle locale;
         String localization = getCurrentLocale();
 
+        File localeDir = new File("plugins/LWC/locale/");
+        if (!localeDir.exists()) {
+            localeDir.mkdir();
+        }
+
         // located in plugins/LWC/locale/, values in that overrides the ones in
         // the default :-)
         ResourceBundle optionalBundle = null;
