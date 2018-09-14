@@ -38,9 +38,9 @@ import com.griefcraft.scripting.event.LWCBlockInteractEvent;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Container;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -136,12 +136,9 @@ public class DropTransferModule extends JavaModule {
         Block block = world.getBlockAt(protection.getX(), protection.getY(), protection.getZ());
         Map<Integer, ItemStack> remaining = lwc.depositItems(block, itemStack);
 
-        if (remaining.size() > 0) {
+        if (remaining == null || remaining.size() > 0) {
             lwc.sendLocale(player, "lwc.dropxfer.chestfull");
-
-            for (ItemStack temp : remaining.values()) {
-                bPlayer.getInventory().addItem(temp);
-            }
+            event.getEvent().setCancelled(true);
         }
 
         bPlayer.updateInventory(); // if they're in the chest and dropping items, this is required
@@ -165,7 +162,7 @@ public class DropTransferModule extends JavaModule {
         if (!canAccess) {
             lwc.sendLocale(player, "protection.interact.dropxfer.noaccess");
         } else {
-            if (protection.getBlockId() != Material.CHEST.getId()) {
+            if (event.getEvent().getClickedBlock() instanceof Container) {
                 lwc.sendLocale(player, "protection.interact.dropxfer.notchest");
                 player.removeAllActions();
                 event.setResult(Result.CANCEL);
