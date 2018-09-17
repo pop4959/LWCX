@@ -68,18 +68,17 @@ public class WorldGuard extends JavaModule {
      */
     private WorldGuardPlugin worldGuardPlugin = null;
 
-    /**
-     * The WorldGuard instance
-     */
-    private com.sk89q.worldguard.WorldGuard worldGuard = com.sk89q.worldguard.WorldGuard.getInstance();
-
     @Override
     public void load(LWC lwc) {
         Plugin plugin = lwc.getPlugin().getServer().getPluginManager()
                 .getPlugin("WorldGuard");
-
         if (plugin != null) {
-            worldGuardPlugin = (WorldGuardPlugin) plugin;
+            if (plugin.getDescription().getAPIVersion() != null) {
+                worldGuardPlugin = (WorldGuardPlugin) plugin;
+            } else if (configuration.getBoolean("worldguard.enabled", false)) {
+                lwc.log("An outdated version of WorldGuard has been detected.");
+                lwc.log("Please update it if you wish to use WorldGuard with LWC.");
+            }
         }
     }
 
@@ -146,7 +145,7 @@ public class WorldGuard extends JavaModule {
         }
 
         // get the region manager for the world
-        RegionManager regionManager = worldGuard.getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+        RegionManager regionManager = com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
 
         // try and get the region
         ProtectedRegion region = regionManager.getRegion(regionName);
@@ -295,7 +294,7 @@ public class WorldGuard extends JavaModule {
                 if (world == null) {
                     continue;
                 }
-                RegionManager regionManager = worldGuard.getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+                RegionManager regionManager = com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
                 if (regionManager == null) {
                     continue;
                 }
@@ -342,7 +341,7 @@ public class WorldGuard extends JavaModule {
         Player player = event.getPlayer();
         Block block = event.getBlock();
         // Load the region manager for the world
-        RegionManager regionManager = worldGuard.getPlatform().getRegionContainer().get(BukkitAdapter.adapt(block.getWorld()));
+        RegionManager regionManager = com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(block.getWorld()));
 
         // Are we enforcing building?
         if (block.getType() == null) {
@@ -397,7 +396,7 @@ public class WorldGuard extends JavaModule {
         if (regionPermissionModel.mayIgnoreRegionProtection(BukkitAdapter.adapt(block.getWorld()))) {
             return true;
         }
-        RegionQuery regionQuery = worldGuard.getPlatform().getRegionContainer().createQuery();
+        RegionQuery regionQuery = com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
         return regionQuery.testBuild(BukkitAdapter.adapt(block.getLocation()), localPlayer);
     }
 
