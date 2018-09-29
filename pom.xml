@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.griefcraft.lwc</groupId>
   <artifactId>LWCPlugin</artifactId>
-  <version>1.7.4</version>
+  <version>1.9.5</version>
   <name>LWC</name>
   <description>LWC Unofficial</description>
   <repositories>
@@ -47,14 +47,8 @@
     <dependency>
            <groupId>org.spigotmc</groupId>
            <artifactId>spigot-api</artifactId>
-           <version>1.9.4-R0.1-SNAPSHOT</version>
+           <version>1.8-R0.1-SNAPSHOT</version>
            <scope>provided</scope>
-    </dependency>
-    <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.9-SNAPSHOT</version>
-            <scope>provided</scope>
     </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
