@@ -883,22 +883,6 @@ public class LWCPlayerListener implements Listener {
 					&& (!event.isRightClick() && !event.isShiftClick())) {
 				return;
 			}
-
-			// Are they inserting a stack?
-			if (cursor != null && item.getType() == cursor.getType()) {
-				boolean enchantmentsEqual = areEnchantmentsEqual(item, cursor);
-
-				// If they are clicking an item of the stack type, they are
-				// inserting it into the inventory,
-				// not switching it
-				// As long as the item isn't a degradable item, we can
-				// explicitly allow it if they have the same durability
-				if (item.getDurability() == cursor.getDurability()
-						&& item.getAmount() == cursor.getAmount()
-						&& enchantmentsEqual) {
-					return;
-				}
-			}
 		}
 
 		// Attempt to load the protection at that location
