@@ -740,7 +740,6 @@ public class LWCPlayerListener implements Listener {
         LWCPlayer.removePlayer(event.getPlayer());
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         LWC lwc = LWC.getInstance();
@@ -780,7 +779,7 @@ public class LWCPlayerListener implements Listener {
             }
         } catch (Exception e) {
             Location ploc = player.getLocation();
-            String holderName = holder != null ? holder.getClass().getSimpleName() : "Unknown Block";
+            String holderName = holder.getClass().getSimpleName();
             e.printStackTrace();
             return;
         }
@@ -817,23 +816,8 @@ public class LWCPlayerListener implements Listener {
             // click (no shift)
             // this is for when players are INSERTing items (i.e. item in hand
             // and left clicking)
-            if (player.getItemInHand() == null && (!event.isRightClick() && !event.isShiftClick())) {
+            if (player.getInventory().getItemInMainHand() == null && (!event.isRightClick() && !event.isShiftClick())) {
                 return;
-            }
-
-            // Are they inserting a stack?
-            if (cursor != null && item.getType() == cursor.getType()) {
-                boolean enchantmentsEqual = areEnchantmentsEqual(item, cursor);
-
-                // If they are clicking an item of the stack type, they are
-                // inserting it into the inventory,
-                // not switching it
-                // As long as the item isn't a degradable item, we can
-                // explicitly allow it if they have the same durability
-                if (item.getDurability() == cursor.getDurability() && item.getAmount() == cursor.getAmount()
-                        && enchantmentsEqual) {
-                    return;
-                }
             }
         }
 
