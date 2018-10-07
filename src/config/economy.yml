@@ -1,11 +1,11 @@
 # Precedence (order) for values LWC-Economy uses is:
 # PLAYER > GROUP > DEFAULT
-iConomy:
-    enabled: true
+Economy:
+    enabled: false
 
     # If LWC-Economy should refund money paid for a protection when a player removes it.
     # If a player gets a discount, they will be refunded the discount, not the full purchase price!
-    refunds: true
+    refunds: false
 
     # Configure a server bank account for all charges to be deposited into (a central bank).
     # When a protections is removed, money will be withdrawn from this account to refund the player.

@@ -73,6 +73,7 @@ import com.griefcraft.modules.credits.CreditsModule;
 import com.griefcraft.modules.debug.DebugModule;
 import com.griefcraft.modules.destroy.DestroyModule;
 import com.griefcraft.modules.doors.DoorsModule;
+import com.griefcraft.modules.economy.EconomyModule;
 import com.griefcraft.modules.fix.FixModule;
 import com.griefcraft.modules.flag.BaseFlagModule;
 import com.griefcraft.modules.flag.MagnetModule;
@@ -1769,6 +1770,10 @@ public class LWC {
 
         if (resolvePlugin("Towny") != null) {
             registerModule(new Towny());
+        }
+
+        if (resolvePlugin("Vault") != null){
+            registerModule(new EconomyModule());
         }
     }
 
