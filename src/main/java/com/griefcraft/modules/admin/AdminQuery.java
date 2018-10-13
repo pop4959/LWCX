@@ -72,9 +72,9 @@ public class AdminQuery extends JavaModule {
                 Statement statement = lwc.getPhysicalDatabase().getConnection().createStatement();
                 statement.executeUpdate(query);
                 statement.close();
-                sender.sendMessage(Colors.Green + "Done.");
+                sender.sendMessage(Colors.Dark_Green + "Done.");
             } catch (SQLException e) {
-                sender.sendMessage(Colors.Red + "Err: " + e.getMessage());
+                sender.sendMessage(Colors.Dark_Red + "Err: " + e.getMessage());
             }
         }
 
@@ -85,7 +85,7 @@ public class AdminQuery extends JavaModule {
             // Ensure they don't accidentally do /lwc admin deleteprotections
             // which would delete everything..
             if (where.isEmpty()) {
-                sender.sendMessage(Colors.Red + "Unsafe query detected.");
+                sender.sendMessage(Colors.Dark_Red + "Unsafe query detected.");
                 return;
             }
 
@@ -97,10 +97,10 @@ public class AdminQuery extends JavaModule {
                 // choose the statement
                 if (args[0].startsWith("update")) {
                     int affected = statement.executeUpdate("UPDATE " + database.getPrefix() + "protections " + where);
-                    sender.sendMessage(Colors.Green + "Affected rows: " + affected);
+                    sender.sendMessage(Colors.Dark_Green + "Affected rows: " + affected);
                 } else if (args[0].startsWith("delete")) {
                     int affected = statement.executeUpdate("DELETE FROM " + database.getPrefix() + "protections WHERE " + where);
-                    sender.sendMessage(Colors.Green + "Affected rows: " + affected);
+                    sender.sendMessage(Colors.Dark_Green + "Affected rows: " + affected);
                     database.precache();
                 } else if (args[0].startsWith("select")) {
                     ResultSet set = statement.executeQuery("SELECT * FROM " + database.getPrefix() + "protections WHERE " + where);
@@ -113,7 +113,7 @@ public class AdminQuery extends JavaModule {
                     set.close();
                 }
             } catch (SQLException e) {
-                sender.sendMessage(Colors.Red + "Err: " + e.getMessage());
+                sender.sendMessage(Colors.Dark_Red + "Err: " + e.getMessage());
             }
         }
 

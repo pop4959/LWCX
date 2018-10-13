@@ -107,7 +107,7 @@ public class HistoryModule extends JavaModule {
         Action action = lwcPlayer.getAction("history");
 
         if (action == null) {
-            player.sendMessage(Colors.Red + "History action is null!");
+            player.sendMessage(Colors.Dark_Red + "History action is null!");
             return;
         }
 
@@ -219,7 +219,7 @@ public class HistoryModule extends JavaModule {
                     "discount",
                     // Rest your eyes and avoid the line two lines below
                     // Its format: Yes|No (ID)  -- (ID) is only shown if Yes is shown.
-                    ((history.hasKey("discount") ? (Colors.Red + "Yes") : (Colors.Yellow + "No")) + Colors.Yellow + " " + /* Discount id */ (history.hasKey("discountId") ? ("(" + history.getString("discountId") + ")") : "")));
+                    ((history.hasKey("discount") ? (Colors.Dark_Red + "Yes") : (Colors.Yellow + "No")) + Colors.Yellow + " " + /* Discount id */ (history.hasKey("discountId") ? ("(" + history.getString("discountId") + ")") : "")));
         }
 
         // Show the creation date

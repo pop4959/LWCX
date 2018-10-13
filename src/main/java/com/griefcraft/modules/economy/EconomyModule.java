@@ -104,7 +104,7 @@ public class EconomyModule extends JavaModule {
     if (!lwc.getCurrency().canAfford(player, usageFee)) {
       // Nope!
       // TODO: Extract string to string.yml
-      player.sendMessage(Colors.Red + "You need " + lwc.getCurrency().format(usageFee) + " to open your protection!");
+      player.sendMessage(Colors.Dark_Red + "You need " + lwc.getCurrency().format(usageFee) + " to open your protection!");
       event.setResult(Result.CANCEL);
       return;
     }
@@ -112,7 +112,7 @@ public class EconomyModule extends JavaModule {
     // Charge them!
     lwc.getCurrency().removeMoney(player, usageFee);
     // TODO: Extract string to string.yml
-    player.sendMessage(Colors.Green + "You have been charged " + lwc.getCurrency().format(usageFee) + " to open your protection.");
+    player.sendMessage(Colors.Dark_Green + "You have been charged " + lwc.getCurrency().format(usageFee) + " to open your protection.");
   }
 
   @Override
@@ -159,7 +159,7 @@ public class EconomyModule extends JavaModule {
       // check the server bank
       if (!lwc.getCurrency().canCentralBankAfford(charge)) {
         // TODO: Extract string to string.yml
-        player.sendMessage(Colors.Red + "The Server's Bank does not contain enough funds to remove that protection!");
+        player.sendMessage(Colors.Dark_Red + "The Server's Bank does not contain enough funds to remove that protection!");
         event.setCancelled(true);
         return;
       }
@@ -267,7 +267,7 @@ public class EconomyModule extends JavaModule {
 
       currency.addMoney(owner, charge);
       // TODO: Extract string to string.yml
-      owner.sendMessage(Colors.Green + "You have been refunded " + currency.format(charge) + " because an LWC protection of yours was removed!");
+      owner.sendMessage(Colors.Dark_Green + "You have been refunded " + currency.format(charge) + " because an LWC protection of yours was removed!");
     }
   }
 
@@ -358,13 +358,13 @@ public class EconomyModule extends JavaModule {
     // Check if the charge is free
     if (charge == 0) {
       // TODO: Extract string to string.yml
-      player.sendMessage(Colors.Green + "This one's on us!");
+      player.sendMessage(Colors.Dark_Green + "This one's on us!");
     } else {
       if (!currency.canAfford(player, charge)) {
         // TODO: Extract string to string.yml
-        player.sendMessage(Colors.Red + "You do not have enough " + currency.getMoneyName() + " to buy an LWC protection.");
+        player.sendMessage(Colors.Dark_Red + "You do not have enough " + currency.getMoneyName() + " to buy an LWC protection.");
         // TODO: Extract string to string.yml
-        player.sendMessage(Colors.Red + "The balance required for an LWC protection is: " + currency.format(charge));
+        player.sendMessage(Colors.Dark_Red + "The balance required for an LWC protection is: " + currency.format(charge));
 
         // remove from cache
         priceCache.remove(location);
@@ -375,7 +375,7 @@ public class EconomyModule extends JavaModule {
       // remove the money from their account
       currency.removeMoney(player, charge);
       // TODO: Extract string to string.yml
-      player.sendMessage(Colors.Green + "Charged " + currency.format(charge) + (usedDiscount ? (Colors.Red + " (Discount)" + Colors.Green) : "") + " for an LWC protection. Thank you.");
+      player.sendMessage(Colors.Dark_Green + "Charged " + currency.format(charge) + (usedDiscount ? (Colors.Dark_Red + " (Discount)" + Colors.Dark_Green) : "") + " for an LWC protection. Thank you.");
     }
 
   }

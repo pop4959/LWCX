@@ -107,7 +107,7 @@ public class WorldGuard extends JavaModule {
 
         // check for WorldGuard
         if (worldGuardPlugin == null) {
-            sender.sendMessage(Colors.Red + "WorldGuard is not enabled.");
+            sender.sendMessage(Colors.Dark_Red + "WorldGuard is not enabled.");
             return;
         }
 
@@ -118,7 +118,7 @@ public class WorldGuard extends JavaModule {
         }
 
         if (!(sender instanceof Player) && args.length < 3) {
-            sender.sendMessage(Colors.Red
+            sender.sendMessage(Colors.Dark_Red
                     + "You must specify the world name the region is in since you are not logged in as a player.");
             return;
         }
@@ -140,7 +140,7 @@ public class WorldGuard extends JavaModule {
 
         // was the world found?
         if (world == null) {
-            sender.sendMessage(Colors.Red + "Invalid world.");
+            sender.sendMessage(Colors.Dark_Red + "Invalid world.");
             return;
         }
 
@@ -151,7 +151,7 @@ public class WorldGuard extends JavaModule {
         ProtectedRegion region = regionManager.getRegion(regionName);
 
         if (region == null) {
-            sender.sendMessage(Colors.Red
+            sender.sendMessage(Colors.Dark_Red
                     + "Region not found. If you region is in a different world than you, please use: /lwc admin "
                     + commandName + " " + regionName + " WorldName");
             return;
@@ -181,7 +181,7 @@ public class WorldGuard extends JavaModule {
                 protection.remove();
             }
 
-            sender.sendMessage(Colors.Green + "Removed " + protections.size()
+            sender.sendMessage(Colors.Dark_Green + "Removed " + protections.size()
                     + " protections from the region " + regionName);
         } else if (args[0].equals("protectregion")) {
             // The owner to assign to the protections

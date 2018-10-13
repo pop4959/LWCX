@@ -104,15 +104,15 @@ public class Statistics {
         LWC lwc = LWC.getInstance();
 
         sender.sendMessage(" ");
-        sender.sendMessage(Colors.Red + "LWC Report");
-        sender.sendMessage("  Version: " + Colors.Green + LWCInfo.FULL_VERSION);
-        sender.sendMessage("  Running time: " + Colors.Green + TimeUtil.timeToString(getTimeRunningSeconds()));
-        sender.sendMessage("  Players: " + Colors.Green + Bukkit.getServer().getOnlinePlayers().size() + "/" + Bukkit.getServer().getMaxPlayers());
-        sender.sendMessage("  Item entities: " + Colors.Green + getEntityCount(Item.class) + "/" + getEntityCount(null));
-        sender.sendMessage("  Permissions API: " + Colors.Green + lwc.getPermissions().getClass().getSimpleName());
-        sender.sendMessage("  Currency API: " + Colors.Green + lwc.getCurrency().getClass().getSimpleName());
+        sender.sendMessage(Colors.Dark_Red + "LWC Report");
+        sender.sendMessage("  Version: " + Colors.Dark_Green + LWCInfo.FULL_VERSION);
+        sender.sendMessage("  Running time: " + Colors.Dark_Green + TimeUtil.timeToString(getTimeRunningSeconds()));
+        sender.sendMessage("  Players: " + Colors.Dark_Green + Bukkit.getServer().getOnlinePlayers().size() + "/" + Bukkit.getServer().getMaxPlayers());
+        sender.sendMessage("  Item entities: " + Colors.Dark_Green + getEntityCount(Item.class) + "/" + getEntityCount(null));
+        sender.sendMessage("  Permissions API: " + Colors.Dark_Green + lwc.getPermissions().getClass().getSimpleName());
+        sender.sendMessage("  Currency API: " + Colors.Dark_Green + lwc.getCurrency().getClass().getSimpleName());
         sender.sendMessage(" ");
-        sender.sendMessage(Colors.Red + " ==== Modules ====");
+        sender.sendMessage(Colors.Dark_Red + " ==== Modules ====");
 
         for (Map.Entry<Plugin, List<MetaData>> entry : lwc.getModuleLoader().getRegisteredModules().entrySet()) {
             Plugin plugin = entry.getKey();
@@ -123,29 +123,29 @@ public class Statistics {
                 continue;
             }
 
-            sender.sendMessage("  " + Colors.Green + plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion() + Colors.Yellow + " -> " + Colors.Green + modules.size() + Colors.Yellow + " registered modules");
+            sender.sendMessage("  " + Colors.Dark_Green + plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion() + Colors.Yellow + " -> " + Colors.Dark_Green + modules.size() + Colors.Yellow + " registered modules");
         }
         sender.sendMessage(" ");
 
-        sender.sendMessage(Colors.Red + " ==== Database ====");
-        sender.sendMessage("  Engine: " + Colors.Green + Database.DefaultType);
-        sender.sendMessage("  Protections: " + Colors.Green + formatNumber(lwc.getPhysicalDatabase().getProtectionCount()));
-        sender.sendMessage("  Queries: " + Colors.Green + formatNumber(queries) + " | " + String.format("%.2f", getAverage(queries)) + " / second");
+        sender.sendMessage(Colors.Dark_Red + " ==== Database ====");
+        sender.sendMessage("  Engine: " + Colors.Dark_Green + Database.DefaultType);
+        sender.sendMessage("  Protections: " + Colors.Dark_Green + formatNumber(lwc.getPhysicalDatabase().getProtectionCount()));
+        sender.sendMessage("  Queries: " + Colors.Dark_Green + formatNumber(queries) + " | " + String.format("%.2f", getAverage(queries)) + " / second");
         sender.sendMessage(" ");
 
-        sender.sendMessage(Colors.Red + " ==== Cache ==== ");
+        sender.sendMessage(Colors.Dark_Red + " ==== Cache ==== ");
 
         ProtectionCache cache = lwc.getProtectionCache();
 
         double cachePercentFilled = ((double) cache.size() / cache.totalCapacity()) * 100;
 
-        String cacheColour = Colors.Green;
+        String cacheColour = Colors.Dark_Green;
         if (cachePercentFilled > 75 && cachePercentFilled < 85) {
             cacheColour = Colors.Yellow;
         } else if (cachePercentFilled > 85 && cachePercentFilled < 95) {
-            cacheColour = Colors.Rose;
-        } else if (cachePercentFilled > 95) {
             cacheColour = Colors.Red;
+        } else if (cachePercentFilled > 95) {
+            cacheColour = Colors.Dark_Red;
         }
 
         sender.sendMessage("  Usage: " + cacheColour + String.format("%.2f", cachePercentFilled) + "% " + Colors.White + " ( " + cache.size() + "/" + cache.totalCapacity() + " [" + cache.capacity() + "+" + cache.adaptiveCapacity() + "] )");

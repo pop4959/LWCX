@@ -70,7 +70,7 @@ public class AdminCache extends JavaModule {
             int size = cache.size();
             int capacity = cache.capacity();
 
-            sender.sendMessage(Colors.Green + size + Colors.Yellow + "/" + Colors.Green + capacity);
+            sender.sendMessage(Colors.Dark_Green + size + Colors.Yellow + "/" + Colors.Dark_Green + capacity);
         }
     }
 

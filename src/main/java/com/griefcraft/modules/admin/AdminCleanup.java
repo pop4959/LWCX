@@ -143,7 +143,7 @@ public class AdminCleanup extends JavaModule {
                     statement.executeUpdate(builder.toString());
                     builder.setLength(0);
 
-                    sender.sendMessage(Colors.Green + "REMOVED " + (count + 1) + " / " + total);
+                    sender.sendMessage(Colors.Dark_Green + "REMOVED " + (count + 1) + " / " + total);
                 }
 
                 count++;
@@ -161,7 +161,7 @@ public class AdminCleanup extends JavaModule {
             BukkitScheduler scheduler = Bukkit.getScheduler();
 
             try {
-                sender.sendMessage(Colors.Red + "Processing cleanup request now in a separate thread");
+                sender.sendMessage(Colors.Dark_Red + "Processing cleanup request now in a separate thread");
 
                 // the list of protections work off of. We batch updates to the world
                 // so we can more than 20 results/second.
@@ -268,7 +268,7 @@ public class AdminCleanup extends JavaModule {
 
                     if (percent % 5 == 0 && percentChecked != percent) {
                         percentChecked = percent;
-                        sender.sendMessage(Colors.Red + "Cleanup @ " + percent + "% [ " + checked + "/"
+                        sender.sendMessage(Colors.Dark_Red + "Cleanup @ " + percent + "% [ " + checked + "/"
                                 + totalProtections + " protections ] [ removed " + removed + " protections ]");
                     }
 

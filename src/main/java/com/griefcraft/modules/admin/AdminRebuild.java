@@ -74,7 +74,7 @@ public class AdminRebuild extends JavaModule {
             sender.sendMessage("This will attempt to rebuild the entire LWC database from scratch.");
             sender.sendMessage("This WILL repair most of the database, regarding the incident on February 15, 2012. However, please note that old protections may be restored.");
             sender.sendMessage("This may take some time so it is recommended it is ran inside the console.");
-            sender.sendMessage(Colors.Red + "Are you sure you would like to go ahead? Use /lwc admin rebuild confirm to confirm.");
+            sender.sendMessage(Colors.Dark_Red + "Are you sure you would like to go ahead? Use /lwc admin rebuild confirm to confirm.");
         } else if (args[1].equalsIgnoreCase("confirm")) {
             rebuildDatabase(sender);
         }

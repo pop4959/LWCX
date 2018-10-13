@@ -259,7 +259,7 @@ public class LWCEntityListener implements Listener {
 
         // Is it okay?
         if (type == null) {
-            player.sendMessage(Colors.Red + "LWC_INVALID_CONFIG_autoRegister");
+            player.sendMessage(Colors.Dark_Red + "LWC_INVALID_CONFIG_autoRegister");
             return;
         }
 

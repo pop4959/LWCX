@@ -189,7 +189,7 @@ public class Permission {
         }
         builder.append(Colors.White);
         builder.append(" (");
-        builder.append(Colors.Green);
+        builder.append(Colors.Dark_Green);
         builder.append(getType());
         builder.append(Colors.White);
         builder.append(") ");
@@ -197,7 +197,7 @@ public class Permission {
         if (getAccess() == Access.ADMIN) {
             builder.append(Colors.White);
             builder.append("(");
-            builder.append(Colors.Red);
+            builder.append(Colors.Dark_Red);
             builder.append("ADMIN");
             builder.append(Colors.White);
             builder.append(")");

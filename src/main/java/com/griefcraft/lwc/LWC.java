@@ -949,7 +949,7 @@ public class LWC {
         }
 
         if (message == null) {
-            sender.sendMessage(Colors.Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Gray + key
+            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
                     + Colors.White + "\"");
             return;
         }
@@ -996,7 +996,7 @@ public class LWC {
         }
 
         if (message == null) {
-            sender.sendMessage(Colors.Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Gray + key
+            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
                     + Colors.White + "\"");
             return;
         }
@@ -1116,7 +1116,7 @@ public class LWC {
                 count++;
 
                 if (count % 100000 == 0 || count == totalProtections || count == 1) {
-                    sender.sendMessage(Colors.Red + count + " / " + totalProtections);
+                    sender.sendMessage(Colors.Dark_Red + count + " / " + totalProtections);
                 }
 
                 if (world == null) {
@@ -1200,7 +1200,7 @@ public class LWC {
                 deleteProtectionsQuery.setLength(0);
                 deleteHistoryQuery.setLength(0);
 
-                sender.sendMessage(Colors.Green + "REMOVED " + (count + 1) + " / " + total);
+                sender.sendMessage(Colors.Dark_Green + "REMOVED " + (count + 1) + " / " + total);
             }
 
             count++;
@@ -1947,10 +1947,10 @@ public class LWC {
                 if (type == Permission.Type.PLAYER) {
                     sendLocale(sender, "protection.interact.rights.register." + localeChild, "name",
                             UUIDRegistry.formatPlayerName(value), "isadmin",
-                            isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold + "]" : "");
+                            isAdmin ? "[" + Colors.Dark_Red + "ADMIN" + Colors.Gold + "]" : "");
                 } else {
                     sendLocale(sender, "protection.interact.rights.register." + localeChild, "name", value, "isadmin",
-                            isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold + "]" : "");
+                            isAdmin ? "[" + Colors.Dark_Red + "ADMIN" + Colors.Gold + "]" : "");
                 }
             } else {
                 protection.removePermissions(value, type);
@@ -1959,10 +1959,10 @@ public class LWC {
                 if (type == Permission.Type.PLAYER) {
                     sendLocale(sender, "protection.interact.rights.remove." + localeChild, "name",
                             UUIDRegistry.formatPlayerName(value), "isadmin",
-                            isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold + "]" : "");
+                            isAdmin ? "[" + Colors.Dark_Red + "ADMIN" + Colors.Gold + "]" : "");
                 } else {
                     sendLocale(sender, "protection.interact.rights.remove." + localeChild, "name", value, "isadmin",
-                            isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold + "]" : "");
+                            isAdmin ? "[" + Colors.Dark_Red + "ADMIN" + Colors.Gold + "]" : "");
                 }
             }
         }
@@ -2032,7 +2032,7 @@ public class LWC {
 
         if (isAdmin(sender)) {
             sender.sendMessage("");
-            sender.sendMessage(Colors.Red + "/lwc admin - Administration");
+            sender.sendMessage(Colors.Dark_Red + "/lwc admin - Administration");
         }
     }
 

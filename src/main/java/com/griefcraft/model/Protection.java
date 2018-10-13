@@ -1009,7 +1009,7 @@ public class Protection {
                 .format("%s %s"
                                 + Colors.White
                                 + " "
-                                + Colors.Green
+                                + Colors.Dark_Green
                                 + "Id=%d Owner=%s Location=[%s %d,%d,%d] Created=%s Flags=%s LastAccessed=%s",
                         typeToString(),
                         (blockType != null ? LWC.materialToString(blockType)

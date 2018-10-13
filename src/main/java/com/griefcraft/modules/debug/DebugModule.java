@@ -80,7 +80,7 @@ public class DebugModule extends JavaModule {
         Player player = (Player) sender;
 
         player.sendMessage(" ");
-        player.sendMessage(Colors.Gray + "LWC: " + LWCInfo.FULL_VERSION);
+        player.sendMessage(Colors.Dark_Gray + "LWC: " + LWCInfo.FULL_VERSION);
         player.sendMessage(" ");
         player.sendMessage("Groups => " + lwc.getPermissions().getGroups(player));
         lwc.sendLocale(player, "lwc.debug.standard");

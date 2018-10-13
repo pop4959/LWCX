@@ -118,36 +118,36 @@ public class CreditsModule extends JavaModule {
     @Override
     public void load(LWC lwc) {
         credits = new String[]{
-                Colors.Green + "LWC, a Protection mod developed by Hidendra ....",
+                Colors.Dark_Green + "LWC, a Protection mod developed by Hidendra ....",
                 "Serving Minecraft loyally since September 2010 ....",
                 " ",
 
-                Colors.Red + "Core contributions",
+                Colors.Dark_Red + "Core contributions",
                 "angelsl",
                 "morganm",
                 "Me_Goes_RAWR",
                 "Tsuser1",
 
-                Colors.Red + "Translations",
-                Colors.Green + "German - " + Colors.White + "Dawodo",
-                Colors.Green + "Polish - " + Colors.White + "Geoning, dudsonowa, and andrewkm",
-                Colors.Green + "French - " + Colors.White + "cehel",
-                Colors.Green + "Dutch - " + Colors.White + "Madzero and aoa2003",
-                Colors.Green + "Czech - " + Colors.White + "hofec",
-                Colors.Green + "Swedish - " + Colors.White + "christley",
-                Colors.Green + "Russian - " + Colors.White + "IlyaGulya",
-                Colors.Green + "Spanish - " + Colors.White + "Raul \"RME\" Martinez and David \"DME\" Martinez",
-                Colors.Green + "Danish - " + Colors.White + "TCarlsen, cannafix",
-                Colors.Green + "Italian - " + Colors.White + "portaro",
-                Colors.Green + "Hungarian - " + Colors.White + "dretax",
+                Colors.Dark_Red + "Translations",
+                Colors.Dark_Green + "German - " + Colors.White + "Dawodo",
+                Colors.Dark_Green + "Polish - " + Colors.White + "Geoning, dudsonowa, and andrewkm",
+                Colors.Dark_Green + "French - " + Colors.White + "cehel",
+                Colors.Dark_Green + "Dutch - " + Colors.White + "Madzero and aoa2003",
+                Colors.Dark_Green + "Czech - " + Colors.White + "hofec",
+                Colors.Dark_Green + "Swedish - " + Colors.White + "christley",
+                Colors.Dark_Green + "Russian - " + Colors.White + "IlyaGulya",
+                Colors.Dark_Green + "Spanish - " + Colors.White + "Raul \"RME\" Martinez and David \"DME\" Martinez",
+                Colors.Dark_Green + "Danish - " + Colors.White + "TCarlsen, cannafix",
+                Colors.Dark_Green + "Italian - " + Colors.White + "portaro",
+                Colors.Dark_Green + "Hungarian - " + Colors.White + "dretax",
                 " ",
 
-                Colors.Red + "Donations",
-                Colors.Gray + "(chronological order)",
+                Colors.Dark_Red + "Donations",
+                Colors.Dark_Gray + "(chronological order)",
                 "darknavi",
                 "Vetyver",
                 "pablo0713",
-                Colors.Red + "IrishSailor & Land of Legend server X2",
+                Colors.Dark_Red + "IrishSailor & Land of Legend server X2",
                 "aidan",
                 Colors.Bold + Colors.Gold + "MonsterTKE X3",
                 "wokka",
@@ -179,8 +179,8 @@ public class CreditsModule extends JavaModule {
                 "jordan1986",
                 " ",
 
-                Colors.Red + "And....",
-                Colors.LightBlue + "Old Griefcraft server -- love you guys!",
+                Colors.Dark_Red + "And....",
+                Colors.Aqua + "Old Griefcraft server -- love you guys!",
                 "jobsti",
                 "Joy",
                 "KaneHart",
@@ -220,7 +220,7 @@ public class CreditsModule extends JavaModule {
                 Colors.Yellow + "To everyone else and anyone I missed....",
                 "LWC would not be the awesome plugin it is today if not also for those not listed",
                 " ",
-                Colors.Blue + "THANK YOU!"
+                Colors.Dark_Aqua + "THANK YOU!"
         };
 
         // not using the bukkit scheduler because tick rates vary from server to server

@@ -89,7 +89,7 @@ public class LimitsSetup extends JavaModule {
                     Player target = lwc.getPlugin().getServer().getPlayer(name);
 
                     if (found == null) {
-                        sender.sendMessage(Colors.Red + "Player override not found.");
+                        sender.sendMessage(Colors.Dark_Red + "Player override not found.");
                     } else {
                         limits.sendLimits(sender, target, found);
                     }
@@ -97,7 +97,7 @@ public class LimitsSetup extends JavaModule {
                     List<LimitsV2.Limit> found = limits.getGroupLimits().get(name);
 
                     if (found == null) {
-                        sender.sendMessage(Colors.Red + "Group override not found.");
+                        sender.sendMessage(Colors.Dark_Red + "Group override not found.");
                     } else {
                         limits.sendLimits(sender, null, found);
                     }
@@ -128,7 +128,7 @@ public class LimitsSetup extends JavaModule {
                         try {
                             value = Integer.parseInt(args[2]);
                         } catch (NumberFormatException e) {
-                            sender.sendMessage(Colors.Red + "Invalid number for \"" + args[2] + "\"");
+                            sender.sendMessage(Colors.Dark_Red + "Invalid number for \"" + args[2] + "\"");
                             return;
                         }
                     }
@@ -154,7 +154,7 @@ public class LimitsSetup extends JavaModule {
                                 // attempt to parse it as an integer (it must always be one)
                                 intValue = Integer.parseInt(value);
                             } catch (NumberFormatException e) {
-                                sender.sendMessage(Colors.Red + "Invalid number for: \"" + value + "\"!");
+                                sender.sendMessage(Colors.Dark_Red + "Invalid number for: \"" + value + "\"!");
                                 return;
                             }
                         }
@@ -176,7 +176,7 @@ public class LimitsSetup extends JavaModule {
                             }
 
                             if (material == null) {
-                                sender.sendMessage(Colors.Red + "Invalid material/block: \"" + value + "\"!");
+                                sender.sendMessage(Colors.Dark_Red + "Invalid material/block: \"" + value + "\"!");
                                 return;
                             }
 
@@ -191,7 +191,7 @@ public class LimitsSetup extends JavaModule {
                 if (modified) {
                     configuration.save();
                     limits.reload();
-                    sender.sendMessage(Colors.Green + "Set the limits for \"" + name + "\" successfully.");
+                    sender.sendMessage(Colors.Dark_Green + "Set the limits for \"" + name + "\" successfully.");
                 }
             }
 

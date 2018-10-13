@@ -267,7 +267,7 @@ public class LimitsV2 extends JavaModule {
 
         if (args.length == 0) {
             if (args.length == 0 && !(sender instanceof Player)) {
-                sender.sendMessage(Colors.Red + "You are not a player!");
+                sender.sendMessage(Colors.Dark_Red + "You are not a player!");
                 return;
             }
 
@@ -285,7 +285,7 @@ public class LimitsV2 extends JavaModule {
         Player player = lwc.getPlugin().getServer().getPlayer(playerName);
 
         if (player == null) {
-            sender.sendMessage(Colors.Red + "That player is not online!");
+            sender.sendMessage(Colors.Dark_Red + "That player is not online!");
             return;
         }
 
@@ -338,7 +338,7 @@ public class LimitsV2 extends JavaModule {
 
                 boolean reachedLimit = hasReachedLimit(target, material);
 
-                colour = reachedLimit ? Colors.Red : Colors.Green;
+                colour = reachedLimit ? Colors.Dark_Red : Colors.Dark_Green;
             }
 
             if (limit instanceof DefaultLimit) {
