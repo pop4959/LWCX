@@ -2179,8 +2179,26 @@ public class PhysDB extends Database {
             test.close();
         } catch (SQLException e) {
             try {
-                ResultSet rs = statement.executeQuery("SELECT DISTINCT blockName FROM " + prefix + "protections");
                 LWC.getInstance().log("Performing database optimization for 1.13...");
+                // fix any inconsistent entries, such as where blockName is NULL
+                try {
+                    ResultSet fs = statement.executeQuery("SELECT DISTINCT blockId FROM " + prefix + "protections where blockName is null");
+                    PreparedStatement fixSmt = prepare("UPDATE " + prefix + "protections SET blockName = ? WHERE blockId = ?");
+                    while (fs.next()) {
+                        int blockId = fs.getInt(1);
+                        Material blockMaterial = MaterialUtil.getMaterialById(blockId);
+                        fixSmt.setString(1, blockMaterial == null ? Material.AIR.name() : blockMaterial.name());
+                        fixSmt.setInt(2, blockId);
+                        fixSmt.executeUpdate();
+                    }
+                    fs.close();
+                    fixSmt.close();
+                } catch (SQLException e2) {
+                    e2.printStackTrace();
+                    return; // error while trying to fix inconsistencies
+                }
+                // do the rest of the update, assuming no inconsistencies
+                ResultSet rs = statement.executeQuery("SELECT DISTINCT blockName FROM " + prefix + "protections");
                 PreparedStatement updateSmt = prepare("UPDATE " + prefix + "protections SET blockId = ? WHERE blockName = ?");
                 HashSet<String> entityNames = new HashSet<>();
                 entityNames.add("Entity");
