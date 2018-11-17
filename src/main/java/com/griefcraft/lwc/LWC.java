@@ -702,7 +702,7 @@ public class LWC {
                 if (protection.isRealOwner(player)) {
                     owner = parser.parseMessage("you");
                 } else {
-                    owner = UUIDRegistry.getName(UUID.fromString(protection.getOwner()));
+                    owner = UUIDRegistry.formatPlayerName(protection.getOwner(), false);
                 }
 
                 String blockName = materialToString(block);
@@ -1772,7 +1772,7 @@ public class LWC {
             registerModule(new Towny());
         }
 
-        if (resolvePlugin("Vault") != null){
+        if (resolvePlugin("Vault") != null) {
             registerModule(new EconomyModule());
         }
     }
@@ -1946,7 +1946,7 @@ public class LWC {
 
                 if (type == Permission.Type.PLAYER) {
                     sendLocale(sender, "protection.interact.rights.register." + localeChild, "name",
-                            UUIDRegistry.getName(UUID.fromString(value)), "isadmin",
+                            UUIDRegistry.formatPlayerName(value, false), "isadmin",
                             isAdmin ? "[" + Colors.Dark_Red + "ADMIN" + Colors.Gold + "]" : "");
                 } else {
                     sendLocale(sender, "protection.interact.rights.register." + localeChild, "name", value, "isadmin",
@@ -1958,7 +1958,7 @@ public class LWC {
 
                 if (type == Permission.Type.PLAYER) {
                     sendLocale(sender, "protection.interact.rights.remove." + localeChild, "name",
-                            UUIDRegistry.getName(UUID.fromString(value)), "isadmin",
+                            UUIDRegistry.formatPlayerName(value, false), "isadmin",
                             isAdmin ? "[" + Colors.Dark_Red + "ADMIN" + Colors.Gold + "]" : "");
                 } else {
                     sendLocale(sender, "protection.interact.rights.remove." + localeChild, "name", value, "isadmin",
@@ -2171,7 +2171,7 @@ public class LWC {
                 if (protection.isRealOwner(player)) {
                     owner = parser.parseMessage("you");
                 } else {
-                    owner = UUIDRegistry.getName(UUID.fromString(protection.getOwner()));
+                    owner = UUIDRegistry.formatPlayerName(protection.getOwner(), false);
                 }
 
                 String blockName = entity.getType().name();

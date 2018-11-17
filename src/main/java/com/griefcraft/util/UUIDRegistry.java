@@ -162,20 +162,20 @@ public class UUIDRegistry {
      * UUID is unknown, then "Unknown (uuid)" will be returned.
      *
      * @param name
+     * @param showUUID
      * @return
      */
-    public static String formatPlayerName(String name) {
+    public static String formatPlayerName(String name, boolean showUUID) {
         if (isValidUUID(name)) {
             String formattedName = getName(UUID.fromString(name));
-
-            if (formattedName == null) {
-                return "Unknown (" + name + ")";
-            } else {
-                return formattedName + " (" + name + ")";
-            }
+            return (formattedName == null ? "Unknown" : formattedName) + (showUUID ? " (" + name + ")" : "");
         } else {
             return name;
         }
+    }
+
+    public static String formatPlayerName(String name) {
+        return formatPlayerName(name, true);
     }
 
 }
