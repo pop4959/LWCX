@@ -19,16 +19,20 @@
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
         <repository>
-            <id>elmakers-repo</id>
-            <url>http://maven.elmakers.com/repository/</url>
+            <id>vault-repo</id>
+            <url>http://nexus.hc.to/content/repositories/</url>
         </repository>
         <repository>
-            <id>scarsz</id>
-            <url>https://dl.bintray.com/scarsz/maven</url>
+            <id>palmergames-repo</id>
+            <url>http://towny.palmergames.com/file-repo/</url>
         </repository>
         <repository>
-            <id>CodeMC</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
+            <id>scarsz-repo</id>
+            <url>https://dl.bintray.com/scarsz/maven/</url>
+        </repository>
+        <repository>
+            <id>CodeMC-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
     </repositories>
     <dependencies>
