@@ -23,8 +23,8 @@
             <url>http://nexus.hc.to/content/repositories/</url>
         </repository>
         <repository>
-            <id>palmergames-repo</id>
-            <url>http://towny.palmergames.com/file-repo/</url>
+            <id>ModernLWC-repo</id>
+            <url>http://repo.modernlwc.com/</url>
         </repository>
         <repository>
             <id>scarsz-repo</id>
