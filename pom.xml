@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.palmergames</groupId>
             <artifactId>Towny</artifactId>
-            <version>0.89.2.0</version>
+            <version>0.93.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
