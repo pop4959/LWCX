@@ -32,6 +32,7 @@ import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
+import com.griefcraft.model.Flag;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
@@ -51,6 +52,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -335,6 +337,24 @@ public class LWCBlockListener implements Listener {
         Protection protection = lwc.findProtection(pushedBlock);
         if (protection != null) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlockExplode(BlockExplodeEvent event) {
+        if (!LWC.ENABLED || event.isCancelled()) {
+            return;
+        }
+        LWC lwc = plugin.getLWC();
+        for (Block block : event.blockList()) {
+            Protection protection = plugin.getLWC().findProtection(block.getLocation());
+            if (protection != null) {
+                boolean ignoreExplosions = Boolean
+                        .parseBoolean(lwc.resolveProtectionConfiguration(protection.getBlock(), "ignoreExplosions"));
+                if (!(ignoreExplosions || protection.hasFlag(Flag.Type.ALLOWEXPLOSIONS))) {
+                    event.setCancelled(true);
+                }
+            }
         }
     }
 
