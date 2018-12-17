@@ -239,7 +239,7 @@ public class LWCEntityListener implements Listener {
         String autoRegisterType = lwc.resolveProtectionConfiguration(entity.getType(), "autoRegister");
 
         // is it auto protectable?
-        if (!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public")) {
+        if (!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation")) {
             return;
         }
 

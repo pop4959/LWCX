@@ -120,8 +120,8 @@ protections:
     # If false, hoppers will be enabled by DEFAULT and /chopper on will disable hopper use on them
     denyHoppers: true
 
-    # Settable to private, public, or off. It defines what protections are registered as when you place them on
-    # the ground
+    # Settable to private, public, donation, or off. It defines what protections are registered as when you place them
+    # on the ground
     autoRegister: off
 
     # Used in very specific use-cases: makes LWC ignore block destruction for the given block or all blocks, allowing
