@@ -19,20 +19,16 @@
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
         <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.hc.to/content/repositories/</url>
-        </repository>
-        <repository>
-            <id>ModernLWC-repo</id>
-            <url>http://repo.modernlwc.com/</url>
+            <id>elmakers-repo</id>
+            <url>http://maven.elmakers.com/repository/</url>
         </repository>
         <repository>
             <id>scarsz-repo</id>
-            <url>https://dl.bintray.com/scarsz/maven/</url>
+            <url>https://dl.bintray.com/scarsz/maven</url>
         </repository>
         <repository>
             <id>CodeMC-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
     </repositories>
     <dependencies>
@@ -41,13 +37,6 @@
             <artifactId>spigot-api</artifactId>
             <version>1.13-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sk89q.worldedit</groupId>
-            <artifactId>worldedit-bukkit</artifactId>
-            <version>7.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
@@ -66,7 +55,7 @@
         <dependency>
             <groupId>com.palmergames</groupId>
             <artifactId>Towny</artifactId>
-            <version>0.93.0.0</version>
+            <version>0.89.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -146,10 +135,10 @@
                     <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
 
                     <!-- @since 2.2.0 -->
-                    <!-- 
-                         If you want to set the timezone of the dateformat to anything in particular you can do this by using this option. 
-                         As a general warning try to avoid three-letter time zone IDs because the same abbreviation are often used for multiple time zones. 
-                         The default value we'll use the timezone use the timezone that's shipped with java (java.util.TimeZone.getDefault().getID()). 
+                    <!--
+                         If you want to set the timezone of the dateformat to anything in particular you can do this by using this option.
+                         As a general warning try to avoid three-letter time zone IDs because the same abbreviation are often used for multiple time zones.
+                         The default value we'll use the timezone use the timezone that's shipped with java (java.util.TimeZone.getDefault().getID()).
                          *Note*: If you plan to set the java's timezone by using `MAVEN_OPTS=-Duser.timezone=UTC mvn clean package`, `mvn clean package -Duser.timezone=UTC` or any other configuration keep in mind that this option will override those settings and will not take other configurations into account!
                     -->
                     <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
@@ -164,14 +153,14 @@
                         which you can then normally read using new Properties().load(/**/)
                     -->
 
-                    <!-- 
+                    <!--
                         This is false by default, forces the plugin to generate the git.properties file.
                         Note that the functional meaning of git.build.time becomes different in a very subtle way (see later in this README)
                     -->
                     <generateGitPropertiesFile>false</generateGitPropertiesFile>
 
-                    <!-- 
-                        The path for the to be generated properties file, it's relative to ${project.basedir} 
+                    <!--
+                        The path for the to be generated properties file, it's relative to ${project.basedir}
                         The default value is ${project.build.outputDirectory}/git.properties
 
                         *Note*: If you plan to set the generateGitPropertiesFilename-Path to a location where usually the source-files
@@ -198,7 +187,7 @@
                     <skipPoms>true</skipPoms>
 
                     <!-- @since 2.1.4 -->
-                    <!-- 
+                    <!--
                         Tell maven-git-commit-id to inject the git properties into all reactor projects not just the current one.
                         For details about why you might want to skip this, read this issue: https://github.com/ktoso/maven-git-commit-id-plugin/pull/65
                         The property is set to ``false`` by default to prevent the overriding of properties that may be unrelated to the project.
@@ -309,12 +298,12 @@
                     </replacementProperties>
 
                     <!-- @since 2.1.10 -->
-                    <!-- 
+                    <!--
                       false is default here, if set to true it uses native `git` executable for extracting all data.
-                      This usually has better performance than the default (jgit) implementation, but requires you to 
-                      have git available as executable for the build as well as *might break unexpectedly* when you 
+                      This usually has better performance than the default (jgit) implementation, but requires you to
+                      have git available as executable for the build as well as *might break unexpectedly* when you
                       upgrade your system-wide git installation.
-                       
+
                       As rule of thumb - stay on `jgit` (keep this `false`) until you notice performance problems.
                     -->
                     <useNativeGit>false</useNativeGit>
@@ -347,9 +336,9 @@
                     <commitIdGenerationMode>flat</commitIdGenerationMode>
 
                     <!-- @since 2.1.0 -->
-                    <!-- 
-                        read up about git-describe on the in man, or it's homepage - it's a really powerful versioning helper 
-                        and the recommended way to use git-commit-id-plugin. The configuration bellow is optional, 
+                    <!--
+                        read up about git-describe on the in man, or it's homepage - it's a really powerful versioning helper
+                        and the recommended way to use git-commit-id-plugin. The configuration bellow is optional,
                         by default describe will run "just like git-describe on the command line", even though it's a JGit reimplementation.
                     -->
                     <gitDescribe>
@@ -357,16 +346,16 @@
                         <!-- don't generate the describe property -->
                         <skip>false</skip>
 
-                        <!-- 
-                            if no tag was found "near" this commit, just print the commit's id instead, 
-                            helpful when you always expect this field to be not-empty 
+                        <!--
+                            if no tag was found "near" this commit, just print the commit's id instead,
+                            helpful when you always expect this field to be not-empty
                         -->
                         <always>false</always>
                         <!--
-                             how many chars should be displayed as the commit object id? 
-                             7 is git's default, 
-                             0 has a special meaning (see end of this README.md), 
-                             and 40 is the maximum value here 
+                             how many chars should be displayed as the commit object id?
+                             7 is git's default,
+                             0 has a special meaning (see end of this README.md),
+                             and 40 is the maximum value here
                         -->
                         <abbrev>7</abbrev>
 
@@ -385,15 +374,15 @@
                         -->
                         <tags>false</tags>
 
-                        <!-- 
-                             always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag. 
-                             The distance will always be 0 if you're "on" the tag. 
+                        <!--
+                             always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag.
+                             The distance will always be 0 if you're "on" the tag.
                         -->
                         <forceLongFormat>false</forceLongFormat>
                     </gitDescribe>
 
                     <!-- @since 2.2.2 -->
-                    <!-- 
+                    <!--
                         Since version **2.2.2** the maven-git-commit-id-plugin comes equipped with an additional validation utility which can be used to verify if your project properties are set as you would like to have them set.
                         *Note*: This configuration will only be taken into account when the additional goal `validateRevision` is configured inside an execution.
                     -->
@@ -403,9 +392,9 @@
                                  A descriptive name that will be used to be able to identify the validation that does not match up (will be displayed in the error message).
                             -->
                             <name>validating project version</name>
-                            <!-- 
+                            <!--
                                  the value that needs the validation
-                                 *Note* : In order to be able to validate the generated git-properties inside the pom itself you may need to set the configuration `<injectAllReactorProjects>true</injectAllReactorProjects>`. 
+                                 *Note* : In order to be able to validate the generated git-properties inside the pom itself you may need to set the configuration `<injectAllReactorProjects>true</injectAllReactorProjects>`.
                             -->
                             <value>${project.version}</value>
                             <!--
@@ -418,7 +407,7 @@
 
                     <!-- @since 2.2.2 -->
                     <!--
-                        true by default, controls whether the validation will fail if *at least one* of the validationProperties does not match with it's expected values. 
+                        true by default, controls whether the validation will fail if *at least one* of the validationProperties does not match with it's expected values.
                         If you don't care about this, you may want to set this value to false (this makes the configuration of validationProperties useless).
                         *Note*: This configuration will only be taken into account when the additional goal `validateRevision` is configured inside an execution and at least one validationProperty is defined.
                     -->
