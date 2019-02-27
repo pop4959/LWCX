@@ -46,7 +46,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.type.Chest;
-import org.bukkit.block.data.type.Piston;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -304,18 +303,14 @@ public class LWCBlockListener implements Listener {
             return;
         }
         LWC lwc = this.plugin.getLWC();
-        Block pistonBlock = event.getBlock();
-        Piston piston = null;
-        try {
-            piston = (Piston) pistonBlock.getBlockData();
-        } catch (ClassCastException e) {
-            return;
-        }
-        BlockFace facing = piston.getFacing();
-        Block pulledBlock = pistonBlock.getRelative(facing).getRelative(facing);
-        Protection protection = lwc.findProtection(pulledBlock);
-        if (protection != null) {
-            event.setCancelled(true);
+        for (Block block : event.getBlocks()) {
+            if (lwc.isProtectable(block)) {
+                Protection protection = lwc.findProtection(block);
+                if (protection != null) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         }
     }
 
@@ -324,19 +319,15 @@ public class LWCBlockListener implements Listener {
         if (!LWC.ENABLED || event.isCancelled()) {
             return;
         }
-        LWC lwc = plugin.getLWC();
-        Block pistonBlock = event.getBlock();
-        Piston piston = null;
-        try {
-            piston = (Piston) pistonBlock.getBlockData();
-        } catch (ClassCastException e) {
-            return;
-        }
-        BlockFace facing = piston.getFacing();
-        Block pushedBlock = pistonBlock.getRelative(facing);
-        Protection protection = lwc.findProtection(pushedBlock);
-        if (protection != null) {
-            event.setCancelled(true);
+        LWC lwc = this.plugin.getLWC();
+        for (Block block : event.getBlocks()) {
+            if (lwc.isProtectable(block)) {
+                Protection protection = lwc.findProtection(block);
+                if (protection != null) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         }
     }
 
