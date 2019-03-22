@@ -289,7 +289,7 @@ public class LWCBlockListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent event) {
         Block block = event.getBlock();
         LWC lwc = this.plugin.getLWC();
-        if (block.getType() == Material.WATER) {
+        if (block.getType() == Material.WATER && lwc.isProtectable(event.getToBlock())) {
             if (lwc.findProtection(event.getToBlock().getLocation()) != null) {
                 event.setCancelled(true);
                 return;
