@@ -189,15 +189,14 @@ public class Towny extends JavaModule {
             return;
         }
 
-        // attempt to get the town block
-        @SuppressWarnings("unused")
-        TownBlock townBlock;
-
         try {
-            townBlock = world.getTownBlock(Coord.parseCoord(block));
+            TownBlock townBlock = world.getTownBlock(Coord.parseCoord(block));
+            // If an exception is not thrown, we are in a town.
+            if (!townBlock.getTown().hasResident(event.getPlayer().getName())) {
+                trigger(event);
+            }
         } catch (Exception e) {
-            // No world, don't let them protect it!
-            trigger(event);
+            // If an exception is thrown, we are not in a town (do nothing).
         }
     }
 
