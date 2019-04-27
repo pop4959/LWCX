@@ -42,6 +42,7 @@ import com.griefcraft.scripting.Module;
 import com.griefcraft.util.MaterialUtil;
 import com.griefcraft.util.UUIDRegistry;
 import com.griefcraft.util.config.Configuration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -59,6 +60,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PhysDB extends Database {
 
@@ -413,6 +416,7 @@ public class PhysDB extends Database {
         doUpdate400_6();
         doUpdateModernLWC();
         doUpdateAquatic();
+        doUpdateVillageAndPillage();
 
         // Initialize the block cache
         BlockCache.getInstance().loadBlocks();
@@ -2285,6 +2289,27 @@ public class PhysDB extends Database {
                     statement.close();
                 } catch (SQLException e) {
                 }
+            }
+        }
+    }
+
+    /**
+     * Update the database for the "Village and Pillage" update, otherwise known as MineCraft 1.14.
+     */
+    private void doUpdateVillageAndPillage() {
+        Matcher versionCheck = Pattern.compile("\\d[.]\\d+").matcher(Bukkit.getVersion());
+        if (!versionCheck.find()) {
+            return;
+        }
+        int minorVersion = Integer.parseInt(versionCheck.group().substring(2));
+        if (minorVersion >= 14) {
+            Statement statement = null;
+            try {
+                statement = connection.createStatement();
+                statement.executeUpdate("UPDATE " + prefix + "blocks SET name = 'OAK_SIGN' WHERE name = 'SIGN'");
+                statement.executeUpdate("UPDATE " + prefix + "blocks SET name = 'OAK_WALL_SIGN' WHERE name = 'WALL_SIGN'");
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }
