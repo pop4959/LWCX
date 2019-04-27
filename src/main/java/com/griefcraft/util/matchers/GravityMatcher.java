@@ -41,7 +41,8 @@ import java.util.Set;
  */
 public class GravityMatcher implements ProtectionFinder.Matcher {
 
-    public static final Set<Material> PROTECTABLES_POSTS = EnumSet.of(Material.SIGN, Material.RAIL,
+    public static final Set<Material> PROTECTABLES_POSTS = EnumSet.of(Material.OAK_SIGN, Material.BIRCH_SIGN,
+            Material.SPRUCE_SIGN, Material.JUNGLE_SIGN, Material.ACACIA_SIGN, Material.DARK_OAK_SIGN, Material.RAIL,
             Material.ACTIVATOR_RAIL, Material.DETECTOR_RAIL, Material.POWERED_RAIL, Material.LEVER, Material.OAK_BUTTON,
             Material.BIRCH_BUTTON, Material.SPRUCE_BUTTON, Material.JUNGLE_BUTTON, Material.ACACIA_BUTTON,
             Material.DARK_OAK_BUTTON, Material.STONE_BUTTON, Material.OAK_PRESSURE_PLATE,

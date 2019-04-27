@@ -7,6 +7,7 @@ public class MaterialUtil {
     /**
      * Best attempt effort to get the 1.13 Material associated with a 1.12 ID.
      */
+    @SuppressWarnings("deprecation")
     public static Material getMaterialById(int id) {
         switch (id) {
             case 0:
@@ -136,7 +137,7 @@ public class MaterialUtil {
             case 62:
                 return Material.FURNACE;
             case 63:
-                return Material.SIGN;
+                return Material.LEGACY_SIGN;
             case 64:
                 return Material.OAK_DOOR;
             case 65:
@@ -146,7 +147,7 @@ public class MaterialUtil {
             case 67:
                 return Material.COBBLESTONE_STAIRS;
             case 68:
-                return Material.WALL_SIGN;
+                return Material.LEGACY_WALL_SIGN;
             case 69:
                 return Material.LEVER;
             case 70:
@@ -652,7 +653,7 @@ public class MaterialUtil {
             case 322:
                 return Material.GOLDEN_APPLE;
             case 323:
-                return Material.SIGN;
+                return Material.LEGACY_SIGN;
             case 324:
                 return Material.OAK_DOOR;
             case 325:

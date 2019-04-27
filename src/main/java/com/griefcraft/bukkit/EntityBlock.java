@@ -1,6 +1,7 @@
 package com.griefcraft.bukkit;
 
 import org.bukkit.Chunk;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -14,6 +15,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
 import java.util.Collection;
 import java.util.List;
@@ -130,6 +134,21 @@ public class EntityBlock implements Block {
     @Override
     public Collection<ItemStack> getDrops(ItemStack arg0) {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isPassable() {
+        return false;
+    }
+
+    @Override
+    public RayTraceResult rayTrace(Location location, Vector vector, double v, FluidCollisionMode fluidCollisionMode) {
+        return null;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
         return null;
     }
 

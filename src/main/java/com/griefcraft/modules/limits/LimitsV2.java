@@ -48,10 +48,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class LimitsV2 extends JavaModule {
 
@@ -91,6 +93,14 @@ public class LimitsV2 extends JavaModule {
      * counterpart
      */
     private final Map<String, Material> materialCache = new HashMap<>();
+
+    /**
+     * Set of materials for the various sign blocks used in the sign limit
+     */
+    private final Set<Material> signs = EnumSet.of(Material.OAK_WALL_SIGN, Material.BIRCH_WALL_SIGN,
+            Material.SPRUCE_WALL_SIGN, Material.JUNGLE_WALL_SIGN, Material.ACACIA_WALL_SIGN,
+            Material.DARK_OAK_WALL_SIGN, Material.OAK_SIGN, Material.BIRCH_SIGN, Material.SPRUCE_SIGN,
+            Material.JUNGLE_SIGN, Material.ACACIA_SIGN, Material.DARK_OAK_SIGN);
 
     {
         for (Material material : Material.values()) {
@@ -211,8 +221,11 @@ public class LimitsV2 extends JavaModule {
         public int getProtectionCount(Player player, Material material) {
             LWC lwc = LWC.getInstance();
             BlockCache blockCache = BlockCache.getInstance();
-            return lwc.getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(Material.SIGN))
-                    + lwc.getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(Material.WALL_SIGN));
+            int signCount = 0;
+            for (Material sign : signs) {
+                signCount += lwc.getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(sign));
+            }
+            return signCount;
         }
 
     }
@@ -331,7 +344,7 @@ public class LimitsV2 extends JavaModule {
                 if (limit instanceof BlockLimit) {
                     material = ((BlockLimit) limit).getMaterial();
                 } else if (limit instanceof SignLimit) {
-                    material = Material.SIGN;
+                    material = Material.OAK_SIGN;
                 } else if (limit instanceof EntityLimit) {
                     material = Material.AIR;
                 }
@@ -605,7 +618,7 @@ public class LimitsV2 extends JavaModule {
                 }
                 defaultLimit = limit;
             } else if (limit instanceof SignLimit) {
-                if (material == Material.WALL_SIGN || material == Material.SIGN) {
+                if (signs.contains(material)) {
                     return limit;
                 }
             } else if (limit instanceof BlockLimit) {
