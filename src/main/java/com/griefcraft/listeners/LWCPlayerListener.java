@@ -48,6 +48,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Hopper;
 import org.bukkit.enchantments.Enchantment;
@@ -79,6 +80,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -592,6 +594,12 @@ public class LWCPlayerListener implements Listener {
         if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+
+        // Only accept interaction from offhand in exceptional circumstances (when fired somehow for a container)
+        if (event.getHand() == EquipmentSlot.OFF_HAND && !(event.getClickedBlock() instanceof Container)) {
+            return;
+        }
+
         Block block = event.getClickedBlock();
         BlockState state;
         try {

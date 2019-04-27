@@ -1849,6 +1849,11 @@ public class LWC {
             Protection.Type protectionType = Protection.Type.matchType(arguments[0]);
 
             if (protectionType != null) {
+
+                if (!sender.hasPermission("lwc.create." + arguments[0]) || !sender.hasPermission("lwc.create") || !sender.hasPermission("lwc.protect")) {
+                    return;
+                }
+
                 protection.setType(protectionType);
                 protection.save();
 

@@ -2194,8 +2194,7 @@ public class PhysDB extends Database {
                     fs.close();
                     fixSmt.close();
                 } catch (SQLException e2) {
-                    e2.printStackTrace();
-                    return; // error while trying to fix inconsistencies
+                    return; // error while trying to fix inconsistencies (or no blockName column)
                 }
                 // do the rest of the update, assuming no inconsistencies
                 ResultSet rs = statement.executeQuery("SELECT DISTINCT blockName FROM " + prefix + "protections");

@@ -149,6 +149,11 @@ public class MagnetModule extends JavaModule {
                                     continue;
                                 }
 
+                                // never allow a shulker box to enter another shulker box
+                                if (item.getItemStack().getType().toString().contains("SHULKER_BOX") && protection.getBlock().getType().toString().contains("SHULKER_BOX")) {
+                                    continue;
+                                }
+
                                 MagnetNode node = new MagnetNode();
                                 node.item = item;
                                 node.protection = protection;
