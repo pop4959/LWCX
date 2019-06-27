@@ -29,6 +29,7 @@
 package com.griefcraft.lwc;
 
 import com.griefcraft.cache.BlockCache;
+import com.griefcraft.listeners.LWC114Listener;
 import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
@@ -38,6 +39,7 @@ import com.griefcraft.sql.Database;
 import com.griefcraft.util.Metrics;
 import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.Updater;
+import com.griefcraft.util.VersionUtil;
 import com.griefcraft.util.locale.LWCResourceBundle;
 import com.griefcraft.util.locale.LocaleClassLoader;
 import com.griefcraft.util.locale.UTF8Control;
@@ -388,6 +390,9 @@ public class LWCPlugin extends JavaPlugin {
         pluginManager.registerEvents(new LWCEntityListener(this), this);
         pluginManager.registerEvents(new LWCBlockListener(this), this);
         pluginManager.registerEvents(new LWCServerListener(this), this);
+        if (VersionUtil.getMinorVersion() > 13) {
+            pluginManager.registerEvents(new LWC114Listener(), this);
+        }
     }
 
     /**
