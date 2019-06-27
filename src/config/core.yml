@@ -178,6 +178,33 @@ protections:
         dropper:
             enabled: true
             autoRegister: private
+        barrel:
+            enabled: true
+            autoRegister: private
+        blast_furnace:
+            enabled: true
+            autoRegister: private
+        cartography_table:
+            enabled: true
+            autoRegister: private
+        composter:
+            enabled: true
+            autoRegister: private
+        grindstone:
+            enabled: true
+            autoRegister: private
+        lectern:
+            enabled: true
+            autoRegister: private
+        loom:
+            enabled: true
+            autoRegister: private
+        smoker:
+            enabled: true
+            autoRegister: private
+        stonecutter:
+            enabled: true
+            autoRegister: private
         shulker_box:
             enabled: true
             autoRegister: private
