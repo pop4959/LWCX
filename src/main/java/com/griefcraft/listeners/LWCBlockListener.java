@@ -304,12 +304,10 @@ public class LWCBlockListener implements Listener {
         }
         LWC lwc = this.plugin.getLWC();
         for (Block block : event.getBlocks()) {
-            if (lwc.isProtectable(block)) {
-                Protection protection = lwc.findProtection(block);
-                if (protection != null) {
-                    event.setCancelled(true);
-                    return;
-                }
+            Protection protection = lwc.findProtection(block);
+            if (protection != null) {
+                event.setCancelled(true);
+                return;
             }
         }
     }
@@ -321,12 +319,10 @@ public class LWCBlockListener implements Listener {
         }
         LWC lwc = this.plugin.getLWC();
         for (Block block : event.getBlocks()) {
-            if (lwc.isProtectable(block)) {
-                Protection protection = lwc.findProtection(block);
-                if (protection != null) {
-                    event.setCancelled(true);
-                    return;
-                }
+            Protection protection = lwc.findProtection(block);
+            if (protection != null) {
+                event.setCancelled(true);
+                return;
             }
         }
     }
