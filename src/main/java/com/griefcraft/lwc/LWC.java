@@ -1409,9 +1409,9 @@ public class LWC {
         names.add(materialName);
         names.add(materialName + ":" + state.getRawData());
 
-        if (!materialName.equals(material.toString().toLowerCase())) {
-            names.add(material.toString().toLowerCase());
-        }
+        // add both upper and lower material name
+        names.add(material.toString());
+        names.add(material.toString().toLowerCase());
 
         // Add the wildcards last so it can be overriden
         names.add("*");
@@ -1576,9 +1576,9 @@ public class LWC {
         names.add(materialName);
         names.add(materialName + ":" + block.getData());
 
-        if (!materialName.equals(material.toString().toLowerCase())) {
-            names.add(material.toString().toLowerCase());
-        }
+        // add both upper and lower material name
+        names.add(material.toString());
+        names.add(material.toString().toLowerCase());
 
         // Add the wildcards last so it can be overriden
         names.add("*");
@@ -1624,9 +1624,9 @@ public class LWC {
         // add the name & the block id
         names.add(materialName);
 
-        if (!materialName.equals(material.toString().toLowerCase())) {
-            names.add(material.toString().toLowerCase());
-        }
+        // add both upper and lower material name
+        names.add(material.toString());
+        names.add(material.toString().toLowerCase());
 
         // Add the wildcards last so it can be overriden
         names.add("*");
