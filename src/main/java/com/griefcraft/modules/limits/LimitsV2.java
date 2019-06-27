@@ -36,6 +36,7 @@ import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.scripting.event.LWCReloadEvent;
 import com.griefcraft.util.Colors;
+import com.griefcraft.util.VersionUtil;
 import com.griefcraft.util.config.Configuration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -53,6 +54,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class LimitsV2 extends JavaModule {
@@ -97,10 +99,18 @@ public class LimitsV2 extends JavaModule {
     /**
      * Set of materials for the various sign blocks used in the sign limit
      */
-    private final Set<Material> signs = EnumSet.of(Material.OAK_WALL_SIGN, Material.BIRCH_WALL_SIGN,
-            Material.SPRUCE_WALL_SIGN, Material.JUNGLE_WALL_SIGN, Material.ACACIA_WALL_SIGN,
-            Material.DARK_OAK_WALL_SIGN, Material.OAK_SIGN, Material.BIRCH_SIGN, Material.SPRUCE_SIGN,
-            Material.JUNGLE_SIGN, Material.ACACIA_SIGN, Material.DARK_OAK_SIGN);
+    private static final Set<Material> SIGNS;
+
+    static {
+        if (VersionUtil.getMinorVersion() > 13) {
+            SIGNS = EnumSet.of(Material.OAK_WALL_SIGN, Material.BIRCH_WALL_SIGN,
+                    Material.SPRUCE_WALL_SIGN, Material.JUNGLE_WALL_SIGN, Material.ACACIA_WALL_SIGN,
+                    Material.DARK_OAK_WALL_SIGN, Material.OAK_SIGN, Material.BIRCH_SIGN, Material.SPRUCE_SIGN,
+                    Material.JUNGLE_SIGN, Material.ACACIA_SIGN, Material.DARK_OAK_SIGN);
+        } else {
+            SIGNS = EnumSet.of(Objects.requireNonNull(Material.getMaterial("SIGN")), Objects.requireNonNull(Material.getMaterial("WALL_SIGN")));
+        }
+    }
 
     {
         for (Material material : Material.values()) {
@@ -222,7 +232,7 @@ public class LimitsV2 extends JavaModule {
             LWC lwc = LWC.getInstance();
             BlockCache blockCache = BlockCache.getInstance();
             int signCount = 0;
-            for (Material sign : signs) {
+            for (Material sign : SIGNS) {
                 signCount += lwc.getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(sign));
             }
             return signCount;
@@ -618,7 +628,7 @@ public class LimitsV2 extends JavaModule {
                 }
                 defaultLimit = limit;
             } else if (limit instanceof SignLimit) {
-                if (signs.contains(material)) {
+                if (SIGNS.contains(material)) {
                     return limit;
                 }
             } else if (limit instanceof BlockLimit) {
