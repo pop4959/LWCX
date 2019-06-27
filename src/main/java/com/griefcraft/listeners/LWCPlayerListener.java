@@ -34,6 +34,7 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Flag;
 import com.griefcraft.model.LWCPlayer;
+import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.event.LWCBlockInteractEvent;
@@ -79,6 +80,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
@@ -725,6 +727,18 @@ public class LWCPlayerListener implements Listener {
             event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
             lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
             e.printStackTrace();
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerTakeLecternBook(PlayerTakeLecternBookEvent event) {
+        LWC lwc = LWC.getInstance();
+        Protection protection = lwc.findProtection(event.getLectern());
+        if (protection == null || protection.isOwner(event.getPlayer()) || protection.getType() == Protection.Type.PUBLIC) {
+            return;
+        }
+        if (protection.getAccess(event.getPlayer().getUniqueId().toString(), Permission.Type.PLAYER) == Permission.Access.NONE) {
+            event.setCancelled(true);
         }
     }
 
