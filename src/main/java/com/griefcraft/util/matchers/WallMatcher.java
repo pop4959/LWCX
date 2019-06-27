@@ -32,8 +32,8 @@ import com.griefcraft.util.ProtectionFinder;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.material.Banner;
-import org.bukkit.material.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -101,17 +101,12 @@ public class WallMatcher implements ProtectionFinder.Matcher {
      */
     private Block tryMatchBlock(Block block, BlockFace matchingFace) {
         byte direction = block.getData();
+        BlockData blockData = block.getBlockData();
 
-        // Blocks such as wall signs
-        if (PROTECTABLES_WALL.contains(block.getType())) {
-            if (block.getType().name().contains("_WALL_SIGN")) {
-                if (((Sign) block.getState().getData()).getAttachedFace().getOppositeFace() == matchingFace) {
-                    return block;
-                }
-            } else if (block.getType().name().contains("_WALL_BANNER")) {
-                if (((Banner) block.getState().getData()).getAttachedFace().getOppositeFace() == matchingFace) {
-                    return block;
-                }
+        // Blocks such as wall signs or banners
+        if (PROTECTABLES_WALL.contains(block.getType()) && blockData instanceof Directional) {
+            if (((Directional) block.getState().getBlockData()).getFacing() == matchingFace) {
+                return block;
             }
         }
 
