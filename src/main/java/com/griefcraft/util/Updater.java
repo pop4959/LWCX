@@ -29,7 +29,6 @@
 package com.griefcraft.util;
 
 import com.griefcraft.lwc.LWC;
-import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -66,13 +65,13 @@ public class Updater {
     public static Object[] getLastUpdate() {
         try {
             JSONArray versionsArray = (JSONArray) JSONValue
-                    .parseWithException(IOUtils.toString(new URL(String.valueOf(VERSION_URL))));
+                    .parseWithException((new URL(String.valueOf(VERSION_URL))).toString());
             Double lastVersion = Double
                     .parseDouble(((JSONObject) versionsArray.get(versionsArray.size() - 1)).get("name").toString());
 
             if (lastVersion > Double.parseDouble(LWC.getInstance().getPlugin().getDescription().getVersion())) {
                 JSONArray updatesArray = (JSONArray) JSONValue
-                        .parseWithException(IOUtils.toString(new URL(String.valueOf(DESCRIPTION_URL))));
+                        .parseWithException((new URL(String.valueOf(DESCRIPTION_URL))).toString());
                 String updateName = ((JSONObject) updatesArray.get(updatesArray.size() - 1)).get("title").toString();
 
                 Object[] update = {lastVersion, updateName};

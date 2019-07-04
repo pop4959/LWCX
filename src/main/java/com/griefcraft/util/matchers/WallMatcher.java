@@ -29,11 +29,12 @@
 package com.griefcraft.util.matchers;
 
 import com.griefcraft.util.ProtectionFinder;
+import com.griefcraft.util.VersionUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.material.Banner;
-import org.bukkit.material.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -47,12 +48,23 @@ public class WallMatcher implements ProtectionFinder.Matcher {
      * Blocks that can be attached to the wall and be protected. This assumes that
      * the block is DESTROYED if the wall they are attached to is broken.
      */
-    public static final Set<Material> PROTECTABLES_WALL = EnumSet.of(Material.WALL_SIGN, Material.WHITE_WALL_BANNER,
-            Material.ORANGE_WALL_BANNER, Material.MAGENTA_WALL_BANNER, Material.LIGHT_BLUE_WALL_BANNER,
-            Material.YELLOW_WALL_BANNER, Material.LIME_WALL_BANNER, Material.PINK_WALL_BANNER,
-            Material.GRAY_WALL_BANNER, Material.LIGHT_GRAY_WALL_BANNER, Material.CYAN_WALL_BANNER,
-            Material.PURPLE_WALL_BANNER, Material.BLUE_WALL_BANNER, Material.BROWN_WALL_BANNER,
-            Material.GREEN_WALL_BANNER, Material.RED_WALL_BANNER, Material.BLACK_WALL_BANNER);
+    public static final Set<Material> PROTECTABLES_WALL;
+
+    static {
+        PROTECTABLES_WALL = EnumSet.of(Material.WHITE_WALL_BANNER, Material.ORANGE_WALL_BANNER,
+                Material.MAGENTA_WALL_BANNER, Material.LIGHT_BLUE_WALL_BANNER, Material.YELLOW_WALL_BANNER,
+                Material.LIME_WALL_BANNER, Material.PINK_WALL_BANNER, Material.GRAY_WALL_BANNER,
+                Material.LIGHT_GRAY_WALL_BANNER, Material.CYAN_WALL_BANNER, Material.PURPLE_WALL_BANNER,
+                Material.BLUE_WALL_BANNER, Material.BROWN_WALL_BANNER, Material.GREEN_WALL_BANNER,
+                Material.RED_WALL_BANNER, Material.BLACK_WALL_BANNER);
+        if (VersionUtil.getMinorVersion() > 13) {
+            PROTECTABLES_WALL.addAll(EnumSet.of(Material.OAK_WALL_SIGN, Material.BIRCH_WALL_SIGN,
+                    Material.SPRUCE_WALL_SIGN, Material.JUNGLE_WALL_SIGN, Material.ACACIA_WALL_SIGN,
+                    Material.DARK_OAK_WALL_SIGN));
+        } else {
+            PROTECTABLES_WALL.add(Material.getMaterial("WALL_SIGN"));
+        }
+    }
 
     /**
      * Those evil levers and buttons have all different bits for directions. Gah!
@@ -99,17 +111,12 @@ public class WallMatcher implements ProtectionFinder.Matcher {
      */
     private Block tryMatchBlock(Block block, BlockFace matchingFace) {
         byte direction = block.getData();
+        BlockData blockData = block.getBlockData();
 
-        // Blocks such as wall signs
-        if (PROTECTABLES_WALL.contains(block.getType())) {
-            if (block.getType() == Material.WALL_SIGN) {
-                if (((Sign) block.getState().getData()).getAttachedFace().getOppositeFace() == matchingFace) {
-                    return block;
-                }
-            } else if (block.getType().name().contains("_WALL_BANNER")) {
-                if (((Banner) block.getState().getData()).getAttachedFace().getOppositeFace() == matchingFace) {
-                    return block;
-                }
+        // Blocks such as wall signs or banners
+        if (PROTECTABLES_WALL.contains(block.getType()) && blockData instanceof Directional) {
+            if (((Directional) block.getState().getBlockData()).getFacing() == matchingFace) {
+                return block;
             }
         }
 

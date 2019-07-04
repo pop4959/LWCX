@@ -11,7 +11,7 @@ The unofficial continuation of LWC, supporting newer versions of Minecraft. You 
   * Me_Goes_RAWR, Collaborator
 
 ### Support
-For reporting problems with the plugin, please make an issue here on GitHub. For anything else, feel free to join us on Discord. We have a casual server [here](https://discordapp.com/invite/UTBMyRZ), but for more serious discussion or support you should join the [M.O.S.S. Discord server](https://discord.gg/SBfB2Dd). Before asking for support, please make sure you have an updated version of the plugin first.
+For reporting problems with the plugin, please make an issue here on GitHub. For anything else, feel free to join us on the [M.O.S.S. Discord server](https://discord.gg/SBfB2Dd). Before asking for support, please make sure you have an updated version of the plugin first.
   
 ### Information
 LWC is the longest-lived single block protection plugin, that protects both the blocks themselves and their contents. Originally designed in 2010 for locking chests (hence the name "Lightweight Chests"), it can be configured to lock any block.
