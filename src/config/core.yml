@@ -34,6 +34,9 @@ core:
 
     # if true, LWC will only allow protections to be created inside of Towns via the Towny plugin
     townyBorders: false
+    
+    # if true, LWC will only allow members of a faction to register protections in claims via the Factions plugin
+    factionCheck: false
 
     # The permission node prefix that is used to match player groups when
     # no supported permission plugin is found, e.g group.vip matches the player's group as vip

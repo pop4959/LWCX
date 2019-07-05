@@ -88,6 +88,7 @@ import com.griefcraft.modules.modes.NoSpamModule;
 import com.griefcraft.modules.modes.PersistModule;
 import com.griefcraft.modules.modify.ModifyModule;
 import com.griefcraft.modules.owners.OwnersModule;
+import com.griefcraft.modules.pluginsupport.Factions;
 import com.griefcraft.modules.pluginsupport.Towny;
 import com.griefcraft.modules.pluginsupport.WorldGuard;
 import com.griefcraft.modules.redstone.RedstoneModule;
@@ -1774,6 +1775,10 @@ public class LWC {
 
         if (resolvePlugin("Vault") != null) {
             registerModule(new EconomyModule());
+        }
+
+        if (resolvePlugin("Factions") != null) {
+            registerModule(new Factions());
         }
     }
 
