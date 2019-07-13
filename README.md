@@ -1,4 +1,4 @@
-![Modern LWC](https://i.imgur.com/m7XcQUt.png)
+![Modern LWC](https://i.imgur.com/FMEuTL6.png)
 # Modern LWC
 
 The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from our [Spigot resource page](https://www.spigotmc.org/resources/modern-lwc-continuation-of-lwc.2162/) or development versions from our [build server](https://ci.zeusmainframe.ml/job/modern-lwc/job/dev-builds/).
@@ -16,4 +16,4 @@ For reporting problems with the plugin, please make an issue here on GitHub. For
 ### Information
 LWC is the longest-lived single block protection plugin, that protects both the blocks themselves and their contents. Originally designed in 2010 for locking chests (hence the name "Lightweight Chests"), it can be configured to lock any block.
 
-Please see our [wiki](https://github.com/Tsuser1/Modern-LWC/wiki) for important information about setting up and using the plugin.
+Please see our [wiki](https://github.com/pop4959/Modern-LWC/wiki) for important information about setting up and using the plugin.
