@@ -3,8 +3,8 @@ main: com.griefcraft.lwc.LWCPlugin
 version: ${project.version}-${git.commit.id.describe-short}
 api-version: 1.13
 author: Hidendra
-authors: [Tsuser1, pop4959, Me_Goes_RAWR]
-website: http://modernlwc.com
+authors: [pop4959, Me_Goes_RAWR]
+website: https://www.spigotmc.org/resources/modern-lwc-continuation-of-lwc.2162/
 description: >
              Inventory protection & management utilizing SQLite or MySQL as its backend
              Other blocks can also be protected individually, if configured.
