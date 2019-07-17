@@ -1,14 +1,13 @@
 ![Modern LWC](https://i.imgur.com/FMEuTL6.png)
 # Modern LWC
 
-The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from our [Spigot resource page](https://www.spigotmc.org/resources/modern-lwc-continuation-of-lwc.2162/) or development versions from our [build server](https://ci.zeusmainframe.ml/job/modern-lwc/job/dev-builds/).
+The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from the [Spigot resource page](https://www.spigotmc.org/resources/modern-lwc-continuation-of-lwc.2162/) or development versions from our [build server](https://ci.ender.zone/job/Modern%20LWC/).
 
-### Authors and Maintainers
-  * Hidendra, Original Author
-  * Tsuser1, Project Lead
-  * pop4959, Programming Lead
-  * theyapps, Collaborator
-  * Me_Goes_RAWR, Collaborator
+### Contributors
+  * Hidendra - Original LWC author
+  * pop4959 - Current maintainer
+  * [Contributors to LWC](https://github.com/Hidendra/LWC/graphs/contributors)
+  * [Contributors to Modern-LWC](https://github.com/pop4959/Modern-LWC/graphs/contributors)
 
 ### Support
 For reporting problems with the plugin, please make an issue here on GitHub. For anything else, feel free to join us on the [M.O.S.S. Discord server](https://discord.gg/SBfB2Dd). Before asking for support, please make sure you have an updated version of the plugin first.
