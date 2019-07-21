@@ -1,21 +1,21 @@
-Contributors:
-Hidendra - Main Coder, Me_Goes_RAWR - Added entity locking
-LWC with support for the new 1.8 doors, fence gates, and iron trapdoors. Banners have optional support. If you currently use LWC, please see this wiki page: https://github.com/Hidendra/LWC/wiki/Bukkit-1.8
-Official build: http://www.spigotmc.org/resources/lwc.2150/
+# LWC Extended
 
-Spigot: http://www.spigotmc.org/resources/lwc-unofficial-entity-locking.2162/
+The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from the [Spigot resource page](https://www.spigotmc.org/resources/lwc-extended.69551/) or development versions from our [build server](https://ci.ender.zone/job/Modern%20LWC/).
 
-LWC is the longest-lived single block protection plugin that protects both the block itself and contents of Chests, Furnaces, and Dispensers. It can also protect any other blocks, and by default will also protect Doors (Wooden + Iron), Signs and Trap Doors.
-THIS IS AN UNOFFICIAL BUILD.
-Entity Locking Info:
-- Entity locking is the same as block locking.
-- Players can lock Armor Stands, Item frames, Paintings, Hopper and Chest minecarts, etc.
-- Players cant steal items from Armor Stands or Item frames , unless they have permission to. (Same perm as the one that allows Mods or whoever to open chests, etc.)
-- Projectiles cant break protected entities.
-- Armor stands are still affected by gravity, So put something like Obsidian below it so other players cant move it down.
-- You can unlock Armor Stands, but you need to break it and re-lock it.
-- You need to UNLOCK the minecart to remove it.
-- Lock your favorite squid! (It does work.)
-- Mob locking. (ANY entity can be locked.)
-- Locking horses wont prevent people from riding them (So be careful!)
-- P.S.: Mob locking doesn't work very well....
+### Contributors
+  * Hidendra - Original LWC author
+  * pop4959 - Current LWCX maintainer
+  * Me_Goes_Rawr - Previous maintainer
+  * [Contributors to LWC](https://github.com/Hidendra/LWC/graphs/contributors)
+  * [Contributors to LWCX](https://github.com/pop4959/LWCX/graphs/contributors)
+
+### Support
+For reporting problems with the plugin, please make an issue here on GitHub. For anything else, feel free to join us on the [M.O.S.S. Discord server](https://discord.gg/PHpuzZS). Before asking for support, please make sure you have an updated version of the plugin first.
+  
+### Information
+LWC is the longest-lived single block protection plugin, that protects both the blocks themselves and their contents. Originally designed in 2010 for locking chests (hence the name "Lightweight Chests"), it can be configured to lock any block.
+
+Please see our [wiki](https://github.com/pop4959/LWCX/wiki) for important information about setting up and using the plugin.
+
+### Contributing
+Contributing to LWCX is encouranged, and very easy. Fork the repository, and build using maven. Simply make a pull request explaining your changes, and how they are a beneficial addition to the plugin. Travis will automatically build all pull requests to ensure that they build on OpenJDK 8.
