@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.griefcraft.lwc</groupId>
-    <artifactId>Modern-LWC</artifactId>
-    <name>Modern-LWC</name>
-    <version>2.1.5</version>
-    <description>The unofficial continuation of LWC with support for modern versions of Minecraft.</description>
+    <artifactId>LWCX</artifactId>
+    <name>LWCX</name>
+    <version>2.1.6</version>
+    <description>LWC Extended - An updated version of the LWC block protection plugin</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
