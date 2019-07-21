@@ -62,7 +62,6 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -235,43 +234,34 @@ public class LWCPlugin extends JavaPlugin {
 
         Metrics m = new Metrics(this);
 
-        m.addCustomChart(new Metrics.AdvancedPie("protected_blocks", new Callable<Map<String, Integer>>() {
-            @Override
-            public Map<String, Integer> call() throws Exception {
-                Map<String, Integer> map = new HashMap<String, Integer>();
-                if (lwc.getPhysicalDatabase().getProtectionCount() >= 50000) {
-                    map.put("Over 50k", 1);
-                } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 25000) {
-                    map.put("Over 25k", 1);
-                } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 10000) {
-                    map.put("Over 10k", 1);
-                } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 5000) {
-                    map.put("Over 5k", 1);
-                } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 1000) {
-                    map.put("Over 1k", 1);
-                } else {
-                    map.put("Under 1k", 1);
-                }
-                return map;
+        m.addCustomChart(new Metrics.AdvancedPie("protected_blocks", () -> {
+            Map<String, Integer> map = new HashMap<String, Integer>();
+
+            if (lwc.getPhysicalDatabase().getProtectionCount() >= 50000) {
+                map.put("Over 50k", 1);
+            } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 25000) {
+                map.put("Over 25k", 1);
+            } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 10000) {
+                map.put("Over 10k", 1);
+            } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 5000) {
+                map.put("Over 5k", 1);
+            } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 1000) {
+                map.put("Over 1k", 1);
+            } else {
+                map.put("Under 1k", 1);
             }
+
+            return map;
         }));
 
-        m.addCustomChart(new Metrics.SimplePie("used_language", new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return getCurrentLocale();
-            }
-        }));
+        m.addCustomChart(new Metrics.SimplePie("used_language", () -> getCurrentLocale()));
 
-        m.addCustomChart(new Metrics.SimplePie("database_used", new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                String database = lwc.getConfiguration().getString("database.adapter");
-                if (database.equalsIgnoreCase("mysql"))
-                    return "MySQL";
+        m.addCustomChart(new Metrics.SimplePie("database_used", () -> {
+            String database = lwc.getConfiguration().getString("database.adapter");
+            if (database.equalsIgnoreCase("mysql"))
+                return "MySQL";
 
-                return "SQLite";
-            }
+            return "SQLite";
         }));
 
         LWCInfo.setVersion(getDescription().getVersion());
