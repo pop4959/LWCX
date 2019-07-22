@@ -178,7 +178,7 @@ public class Metrics {
     public JSONObject getPluginData() {
         JSONObject data = new JSONObject();
 
-        String pluginName = plugin.getDescription().getName();
+        String pluginName = "LWCX";
         String pluginVersion = plugin.getDescription().getVersion();
 
         data.put("pluginName", pluginName); // Append the name of the plugin
