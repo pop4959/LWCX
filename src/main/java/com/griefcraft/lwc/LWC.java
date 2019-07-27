@@ -1778,7 +1778,12 @@ public class LWC {
         }
 
         if (resolvePlugin("Factions") != null) {
-            registerModule(new Factions());
+            try {
+                registerModule(new Factions());
+            } catch (NoClassDefFoundError e) {
+                this.log("Failed to hook into Factions! (Is it up to date?)");
+                e.printStackTrace();
+            }
         }
     }
 
