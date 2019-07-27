@@ -351,7 +351,7 @@ public class LWCPlugin extends JavaPlugin {
             return map;
         }));
 
-        m.addCustomChart(new Metrics.SimplePie("used_language", () -> getCurrentLocale()));
+        m.addCustomChart(new Metrics.SimplePie("used_language", this::getCurrentLocale));
 
         m.addCustomChart(new Metrics.SimplePie("database_used", () -> {
             String database = lwc.getConfiguration().getString("database.adapter");

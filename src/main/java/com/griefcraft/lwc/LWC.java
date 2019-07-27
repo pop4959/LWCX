@@ -1056,7 +1056,7 @@ public class LWC {
 
     @SuppressWarnings("deprecation")
     public static UUID convert(String uuid) {
-        if (Bukkit.getOfflinePlayer(uuid).isOnline() == true) {
+        if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
             return Bukkit.getPlayer(uuid).getUniqueId();
         } else {
             return Bukkit.getOfflinePlayer(uuid).getUniqueId();

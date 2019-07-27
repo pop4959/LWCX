@@ -40,13 +40,11 @@ import java.util.List;
 
 public class VaultPermissions extends SuperPermsPermissions {
 
-    private String groupPrefix;
-
     @Override
     public List<String> getGroups(Player player) {
         RegisteredServiceProvider<Permission> serviceProvider = Bukkit.getServer().getServicesManager()
                 .getRegistration(Permission.class);
-        groupPrefix = LWC.getInstance().getConfiguration().getString("core.groupPrefix", "group.");
+        String groupPrefix = LWC.getInstance().getConfiguration().getString("core.groupPrefix", "group.");
         if (serviceProvider == null) {
             return super.getGroups(player);
         }
