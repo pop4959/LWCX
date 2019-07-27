@@ -34,40 +34,37 @@ public class LocaleUtil {
      * Convert a ISO 639-1 language code into its English equivalent name
      *
      * @param iso639
-     * @return
+     * @return the correct language name
      */
     public static String iso639ToEnglish(String iso639) {
         String cmp = iso639.toLowerCase();
 
-        if (cmp.equals("cz")) {
-            return "Czech";
-        } else if (cmp.equals("da")) {
-            return "Danish";
-        } else if (cmp.equals("de")) {
-            return "German";
-        } else if (cmp.equals("en")) {
-            return "English";
-        } else if (cmp.equals("es")) {
-            return "Spanish";
-        } else if (cmp.equals("fr")) {
-            return "French";
-        } else if (cmp.equals("hu")) {
-            return "Hungarian";
-        } else if (cmp.equals("it")) {
-            return "Italian";
-        } else if (cmp.equals("nl")) {
-            return "Dutch";
-        } else if (cmp.equals("pl")) {
-            return "Polish";
-        } else if (cmp.equals("ru")) {
-            return "Russian";
-        } else if (cmp.equals("sv")) {
-            return "Swedish";
+        switch (cmp) {
+            case "cz":
+                return "Czech";
+            case "da":
+                return "Danish";
+            case "de":
+                return "German";
+            case "es":
+                return "Spanish";
+            case "fr":
+                return "French";
+            case "hu":
+                return "Hungarian";
+            case "it":
+                return "Italian";
+            case "nl":
+                return "Dutch";
+            case "pl":
+                return "Polish";
+            case "ru":
+                return "Russian";
+            case "sv":
+                return "Swedish";
+            default:
+                return "English";
         }
-
-        // nothing found
-        // default to english so that it can't be abused
-        return "English";
     }
 
 }
