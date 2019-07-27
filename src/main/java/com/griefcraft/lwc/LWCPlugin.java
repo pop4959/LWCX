@@ -36,6 +36,7 @@ import com.griefcraft.listeners.LWCPlayerListener;
 import com.griefcraft.listeners.LWCServerListener;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.sql.Database;
+import com.griefcraft.util.Completions;
 import com.griefcraft.util.Metrics;
 import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.Updater;
@@ -54,8 +55,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -193,6 +196,100 @@ public class LWCPlugin extends JavaPlugin {
         lwc.sendLocale(sender, "lwc.invalidcommand");
         return true;
 
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        String currentArg = args[args.length - 1];
+        switch (label) {
+            case "lwc":
+                if (args.length >= 1) {
+                    switch (args[0].toLowerCase()) {
+                        case "create":
+                            if (args.length == 2)
+                                return Completions.protectionTypes(currentArg);
+                            return Completions.cmodify(currentArg);
+                        case "modify":
+                            return Completions.cmodify(currentArg);
+                        case "remove":
+                            return Completions.remove(currentArg);
+                        case "mode":
+                            if (args.length == 2)
+                                return Completions.modes(currentArg);
+                            else if (args.length == 3 && "droptransfer".equals(args[1].toLowerCase()))
+                                return Completions.droptransfer(currentArg);
+                            break;
+                        case "flag":
+                            if (args.length == 2)
+                                return Completions.flags(currentArg);
+                            else if (args.length == 3)
+                                return Completions.toggles(currentArg);
+                            break;
+                        case "admin":
+                            if (args.length == 2)
+                                return Completions.admin(currentArg);
+                            else if (args.length > 2)
+                                return onTabCompleteAdmin(Arrays.copyOfRange(args, 1, args.length));
+                            break;
+                        default:
+                            if (args.length == 1)
+                                return Completions.lwc(currentArg);
+                            break;
+                    }
+                }
+                break;
+            case "cadmin":
+                if (args.length == 1)
+                    return Completions.admin(currentArg);
+                return onTabCompleteAdmin(args);
+            case "cmodify":
+                return Completions.cmodify(currentArg);
+            case "cdroptransfer":
+                if (args.length == 1)
+                    return Completions.droptransfer(currentArg);
+                break;
+            case "credstone":
+            case "cmagnet":
+            case "cexempt":
+            case "cautoclose":
+            case "callowexplosions":
+            case "chopper":
+            case "ctnt":
+                if (args.length == 1)
+                    return Completions.toggles(currentArg);
+                break;
+            default:
+                break;
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> onTabCompleteAdmin(String[] args) {
+        String currentArg = args[args.length - 1];
+        if (args.length >= 1) {
+            switch (args[0].toLowerCase()) {
+                case "view":
+                    if (args.length == 2)
+                        return Completions.integers(currentArg);
+                    break;
+                case "find":
+                case "forceowner":
+                    if (args.length == 2)
+                        return Completions.players(currentArg);
+                    else if (args.length == 3)
+                        return Completions.integers(currentArg);
+                    break;
+                case "remove":
+                    if (args.length == 2)
+                        return Completions.integers(currentArg);
+                    break;
+                case "purge":
+                    return Completions.players(currentArg);
+                default:
+                    break;
+            }
+        }
+        return Collections.emptyList();
     }
 
     @Override
