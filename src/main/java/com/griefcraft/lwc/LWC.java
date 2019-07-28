@@ -1056,7 +1056,7 @@ public class LWC {
 
     @SuppressWarnings("deprecation")
     public static UUID convert(String uuid) {
-        if (Bukkit.getOfflinePlayer(uuid).isOnline() == true) {
+        if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
             return Bukkit.getPlayer(uuid).getUniqueId();
         } else {
             return Bukkit.getOfflinePlayer(uuid).getUniqueId();
@@ -1778,7 +1778,12 @@ public class LWC {
         }
 
         if (resolvePlugin("Factions") != null) {
-            registerModule(new Factions());
+            try {
+                registerModule(new Factions());
+            } catch (NoClassDefFoundError e) {
+                this.log("Failed to hook into Factions! (Is it up to date?)");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1855,7 +1860,7 @@ public class LWC {
 
             if (protectionType != null) {
 
-                if (!sender.hasPermission("lwc.create." + arguments[0]) || !sender.hasPermission("lwc.create") || !sender.hasPermission("lwc.protect")) {
+                if (!sender.hasPermission("lwc.create." + arguments[0]) && !sender.hasPermission("lwc.create") && !sender.hasPermission("lwc.protect")) {
                     return;
                 }
 
