@@ -30,6 +30,10 @@ public class Completions {
         return filter(ADMIN, term);
     }
 
+    public static List<String> protectionTypes() {
+        return PROTECTION_TYPES;
+    }
+
     public static List<String> protectionTypes(String term) {
         return filter(PROTECTION_TYPES, term);
     }
@@ -62,9 +66,12 @@ public class Completions {
         return filter(MODES, term);
     }
 
-    public static List<String> cmodify(String term) {
+    public static List<String> cmodify(String term, boolean includeTypes) {
         List<String> players = players();
         List<String> suggestions = new ArrayList<>(players);
+        if (includeTypes) {
+            suggestions.addAll(PROTECTION_TYPES);
+        }
         if (term.isEmpty()) {
             suggestions.addAll(modifications);
         } else {

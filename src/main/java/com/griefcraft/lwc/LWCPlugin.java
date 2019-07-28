@@ -208,9 +208,13 @@ public class LWCPlugin extends JavaPlugin {
                         case "create":
                             if (args.length == 2)
                                 return Completions.protectionTypes(currentArg);
-                            return Completions.cmodify(currentArg);
+                            else if (args.length > 2 && ("public".equals(args[1].toLowerCase()) || "password".equals(args[1].toLowerCase())))
+                                break;
+                            return Completions.cmodify(currentArg, false);
                         case "modify":
-                            return Completions.cmodify(currentArg);
+                            if (args.length >= 2 && Completions.protectionTypes().contains(args[1].toLowerCase()))
+                                break;
+                            return Completions.cmodify(currentArg, args.length == 2);
                         case "remove":
                             return Completions.remove(currentArg);
                         case "mode":
@@ -243,7 +247,9 @@ public class LWCPlugin extends JavaPlugin {
                     return Completions.admin(currentArg);
                 return onTabCompleteAdmin(args);
             case "cmodify":
-                return Completions.cmodify(currentArg);
+                if (args.length >= 1 && Completions.protectionTypes().contains(args[0].toLowerCase()))
+                    break;
+                return Completions.cmodify(currentArg, args.length == 1);
             case "cdroptransfer":
                 if (args.length == 1)
                     return Completions.droptransfer(currentArg);
