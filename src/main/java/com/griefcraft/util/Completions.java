@@ -81,7 +81,7 @@ public class Completions {
     }
 
     private static List<String> filter(List<String> list, String term) {
-        return list.stream().filter(e -> e.startsWith(term)).collect(Collectors.toList());
+        return list.stream().filter(e -> e.toLowerCase().startsWith(term.toLowerCase())).collect(Collectors.toList());
     }
 
 }
