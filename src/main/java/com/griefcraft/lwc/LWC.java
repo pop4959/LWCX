@@ -1860,7 +1860,7 @@ public class LWC {
 
             if (protectionType != null) {
 
-                if (!sender.hasPermission("lwc.create." + arguments[0]) || !sender.hasPermission("lwc.create") || !sender.hasPermission("lwc.protect")) {
+                if (!sender.hasPermission("lwc.create." + arguments[0]) && !sender.hasPermission("lwc.create") && !sender.hasPermission("lwc.protect")) {
                     return;
                 }
 
