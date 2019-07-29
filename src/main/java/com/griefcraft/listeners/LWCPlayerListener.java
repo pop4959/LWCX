@@ -802,9 +802,6 @@ public class LWCPlayerListener implements Listener {
                 return;
             }
 
-            // Item their cursor has
-            ItemStack cursor = event.getCursor();
-
             if (item == null || item.getType() == null || item.getType() == Material.AIR) {
                 return;
             }
