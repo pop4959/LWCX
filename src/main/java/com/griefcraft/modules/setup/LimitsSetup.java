@@ -85,7 +85,6 @@ public class LimitsSetup extends JavaModule {
                 // if they're a player it is simple
                 if (!isGroup) {
                     List<LimitsV2.Limit> found = limits.getPlayerLimits().get(name.toLowerCase());
-                    @SuppressWarnings("deprecation")
                     Player target = lwc.getPlugin().getServer().getPlayer(name);
 
                     if (found == null) {

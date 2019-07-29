@@ -751,9 +751,7 @@ public class PhysDB extends Database {
 
             try {
                 object = jsonParser.parse(data);
-            } catch (Exception e) {
-                return protection;
-            } catch (Error e) {
+            } catch (Exception | Error e) {
                 return protection;
             }
 
@@ -1219,10 +1217,14 @@ public class PhysDB extends Database {
             // this transaction is viewable and modifiable during
             // POST_REGISTRATION
             Protection protection = loadProtection(world, x, y, z, true);
+            if (protection == null) {
+                return null;
+            }
+
             protection.removeCache();
 
             // if history logging is enabled, create it
-            if (LWC.getInstance().isHistoryEnabled() && protection != null) {
+            if (LWC.getInstance().isHistoryEnabled()) {
                 History transaction = protection.createHistoryObject();
 
                 transaction.setPlayer(player);
@@ -1237,10 +1239,8 @@ public class PhysDB extends Database {
             }
 
             // Cache it
-            if (protection != null) {
-                cache.addProtection(protection);
-                protectionCount++;
-            }
+            cache.addProtection(protection);
+            protectionCount++;
 
             // return the newly created protection
             return protection;
@@ -1915,6 +1915,8 @@ public class PhysDB extends Database {
                     case 1:
                         limits.set("players." + entity + ".type", "default");
                         limits.set("players." + entity + ".limit", amount);
+                        break;
+                    default:
                         break;
                 }
             }

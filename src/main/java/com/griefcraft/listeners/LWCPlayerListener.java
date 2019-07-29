@@ -777,8 +777,6 @@ public class LWCPlayerListener implements Listener {
                 return;
             }
         } catch (Exception e) {
-            Location ploc = player.getLocation();
-            String holderName = holder.getClass().getSimpleName();
             e.printStackTrace();
             return;
         }
@@ -803,9 +801,6 @@ public class LWCPlayerListener implements Listener {
             } catch (ArrayIndexOutOfBoundsException e) {
                 return;
             }
-
-            // Item their cursor has
-            ItemStack cursor = event.getCursor();
 
             if (item == null || item.getType() == null || item.getType() == Material.AIR) {
                 return;

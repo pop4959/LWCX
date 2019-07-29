@@ -304,7 +304,6 @@ public class LimitsV2 extends JavaModule {
             }
         }
 
-        @SuppressWarnings("deprecation")
         Player player = lwc.getPlugin().getServer().getPlayer(playerName);
 
         if (player == null) {
