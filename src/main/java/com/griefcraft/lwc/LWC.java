@@ -594,7 +594,7 @@ public class LWC {
             Protection protection;
             Block adjacentBlock = block.getRelative(face);
 
-            if (!ignoreList.contains(adjacentBlock.getLocation())
+            if (!ignoreList.contains(adjacentBlock.getLocation().getBlock())
                     && (protection = findProtection(adjacentBlock.getLocation())) != null) {
                 found.add(protection);
             }
@@ -664,15 +664,13 @@ public class LWC {
 
         // support for old protection dbs that do not contain the block id
         BlockCache blockCache = BlockCache.getInstance();
-        if (block != null
-                && (protection.getBlockId() <= 0 && blockCache.getBlockId(block) != protection.getBlockId())) {
+        if (protection.getBlockId() <= 0 && blockCache.getBlockId(block) != protection.getBlockId()) {
             protection.setBlockId(blockCache.getBlockId(block));
             protection.save();
         }
 
         // multi-world, update old protections
-        if (block != null
-                && (protection.getWorld() == null || !block.getWorld().getName().equals(protection.getWorld()))) {
+        if (protection.getWorld() == null || !block.getWorld().getName().equals(protection.getWorld())) {
             protection.setWorld(block.getWorld().getName());
             protection.save();
         }
@@ -1058,9 +1056,9 @@ public class LWC {
     public static UUID convert(String uuid) {
         if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
             return Bukkit.getPlayer(uuid).getUniqueId();
-        } else {
-            return Bukkit.getOfflinePlayer(uuid).getUniqueId();
         }
+
+        return Bukkit.getOfflinePlayer(uuid).getUniqueId();
     }
 
     /**
@@ -1343,9 +1341,9 @@ public class LWC {
             } catch (Exception e) {
             }
             return found;
-        } else {
-            log("Block is null");
         }
+
+        log("Block is null");
         return null;
     }
 
@@ -2032,7 +2030,6 @@ public class LWC {
      * @param player the player to check
      * @return true if the player is NOT in persistent mode
      */
-    @SuppressWarnings("deprecation")
     public boolean notInPersistentMode(String player) {
         return !wrapPlayer(Bukkit.getServer().getPlayer(player)).hasMode("persist");
     }
@@ -2146,16 +2143,14 @@ public class LWC {
 
         // support for old protection dbs that do not contain the block id
         BlockCache blockCache = BlockCache.getInstance();
-        if (entity != null
-                && (protection.getBlockId() <= 0
-                && blockCache.getBlockId(EntityBlock.ENTITY_BLOCK_NAME) != protection.getBlockId())) {
+        if (protection.getBlockId() <= 0
+                && blockCache.getBlockId(EntityBlock.ENTITY_BLOCK_NAME) != protection.getBlockId()) {
             protection.setBlockId(blockCache.getBlockId(EntityBlock.ENTITY_BLOCK_NAME));
             protection.save();
         }
 
         // multi-world, update old protections
-        if (entity != null
-                && (protection.getWorld() == null || !entity.getWorld().getName().equals(protection.getWorld()))) {
+        if (protection.getWorld() == null || !entity.getWorld().getName().equals(protection.getWorld())) {
             protection.setWorld(entity.getWorld().getName());
             protection.save();
         }
