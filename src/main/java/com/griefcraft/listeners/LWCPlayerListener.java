@@ -777,8 +777,6 @@ public class LWCPlayerListener implements Listener {
                 return;
             }
         } catch (Exception e) {
-            Location ploc = player.getLocation();
-            String holderName = holder.getClass().getSimpleName();
             e.printStackTrace();
             return;
         }
