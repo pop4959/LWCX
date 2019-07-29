@@ -345,7 +345,6 @@ public class LWCBlockListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (!LWC.ENABLED) {
