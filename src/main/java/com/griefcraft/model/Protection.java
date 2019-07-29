@@ -387,9 +387,9 @@ public class Protection {
 
         if (isRealOwner(player)) {
             return true;
-        } else {
-            return lwc.isAdmin(player);
         }
+
+        return lwc.isAdmin(player);
     }
 
     /**
@@ -405,9 +405,10 @@ public class Protection {
 
         if (UUIDRegistry.isValidUUID(owner)) {
             return UUID.fromString(owner).equals(player.getUniqueId());
-        } else {
-            return owner.equalsIgnoreCase(player.getName());
         }
+
+        return owner.equalsIgnoreCase(player.getName());
+
     }
 
     /**
@@ -941,7 +942,6 @@ public class Protection {
     /**
      * @return the Bukkit Player object of the owner
      */
-    @SuppressWarnings("deprecation")
     public Player getBukkitOwner() {
         UUID uuid = UUIDRegistry.getUUID(owner);
 
