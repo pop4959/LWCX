@@ -1384,6 +1384,9 @@ public class PhysDB extends Database {
                     temp.add(history);
                 }
             }
+
+            set.close();
+
         } catch (SQLException e) {
             printException(e);
         }
