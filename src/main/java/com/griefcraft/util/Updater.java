@@ -47,7 +47,7 @@ public class Updater {
                     lwc.log("[LWCX] New update avaible:");
                     lwc.log("New version: " + updates[0]);
                     lwc.log(
-                        "Your version: " + LWC.getInstance().getPlugin().getDescription().getVersion());
+                        "Your version: " + lwc.getPlugin().getDescription().getVersion());
                     lwc.log("What's new: " + updates[1]);
                 }
             });
