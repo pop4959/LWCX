@@ -414,7 +414,7 @@ public class PhysDB extends Database {
         doUpdate400_4();
         doUpdate400_5();
         doUpdate400_6();
-        doUpdateModernLWC();
+        doUpdateLWCX();
         doUpdateAquatic();
         doUpdateVillageAndPillage();
 
@@ -2169,9 +2169,9 @@ public class PhysDB extends Database {
     }
 
     /**
-     * Update the database for the "Update Aquatic", otherwise known as MineCraft 1.13! (from ModernLWC 2.0.0 - 2.0.9)
+     * Update the database for the "Update Aquatic", otherwise known as MineCraft 1.13! (from LWCX 2.0.0 - 2.0.9)
      */
-    private void doUpdateModernLWC() {
+    private void doUpdateLWCX() {
         Statement statement = null;
         BlockCache blockCache = BlockCache.getInstance();
         try {
@@ -2242,7 +2242,7 @@ public class PhysDB extends Database {
     }
 
     /**
-     * Update the database for the "Update Aquatic", otherwise known as MineCraft 1.13! (from ModernLWC 1.9.4 & prior)
+     * Update the database for the "Update Aquatic", otherwise known as MineCraft 1.13! (from LWCX 1.9.4 & prior)
      */
     private void doUpdateAquatic() {
         Statement statement = null;
