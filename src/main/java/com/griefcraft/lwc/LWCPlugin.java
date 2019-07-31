@@ -316,7 +316,7 @@ public class LWCPlugin extends JavaPlugin {
         // make sure this is a safe version
         //Set<String> unsupportedVersions = new HashSet<>(Arrays.asList("1.7"));
         //Matcher matcher = Pattern.compile("\\d[.]\\d+").matcher(Bukkit.getVersion());
-        if (Bukkit.getVersion.contains("1.7")) {
+        if (Bukkit.getVersion().contains("1.7")) {
             this.log("  _       __          __   _____ ");
             this.log(" | |      \\ \\        / /  / ____|");
             this.log(" | |       \\ \\  /\\  / /  | |     ");
