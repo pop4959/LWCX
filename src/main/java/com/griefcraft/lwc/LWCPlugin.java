@@ -57,17 +57,13 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.jar.JarFile;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LWCPlugin extends JavaPlugin {
 
@@ -318,9 +314,9 @@ public class LWCPlugin extends JavaPlugin {
         preload();
 
         // make sure this is a safe version
-        Set<String> unsupportedVersions = new HashSet<>(Arrays.asList("1.7"));
-        Matcher matcher = Pattern.compile("\\d[.]\\d+").matcher(Bukkit.getVersion());
-        if (matcher.find() && unsupportedVersions.contains(matcher.group())) {
+        //Set<String> unsupportedVersions = new HashSet<>(Arrays.asList("1.7"));
+        //Matcher matcher = Pattern.compile("\\d[.]\\d+").matcher(Bukkit.getVersion());
+        if (Bukkit.getVersion.contains("1.7")) {
             this.log("  _       __          __   _____ ");
             this.log(" | |      \\ \\        / /  / ____|");
             this.log(" | |       \\ \\  /\\  / /  | |     ");
@@ -328,7 +324,7 @@ public class LWCPlugin extends JavaPlugin {
             this.log(" | |____     \\  /\\  /    | |____ ");
             this.log(" |______|     \\/  \\/      \\_____|");
             this.log("");
-            this.log("This version of LWCX is not compatible with MineCraft " + matcher.group());
+            this.log("This version of LWCX is not compatible with MineCraft 1.7");
             this.log("LWCX 2.0.0 and above can only be used on servers running MineCraft 1.8+");
             this.log("Please download an older version of the plugin at " + this.getDescription().getWebsite());
             this.getServer().getPluginManager().disablePlugin(this);
