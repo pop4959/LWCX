@@ -1693,6 +1693,9 @@ public class LWC {
         // precache protections
         physicalDatabase.precache();
 
+        // Initialize the block cache
+        BlockCache.getInstance().loadBlocks();
+
         // We are now done loading!
         moduleLoader.loadAll();
 

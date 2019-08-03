@@ -28,6 +28,7 @@
 
 package com.griefcraft.migration;
 
+import com.griefcraft.model.BlockID;
 import com.griefcraft.model.History;
 import com.griefcraft.model.Protection;
 import com.griefcraft.sql.PhysDB;
@@ -51,6 +52,7 @@ public class DatabaseMigrator {
             int startProtections = toDatabase.getProtectionCount();
             int protectionCount = fromDatabase.getProtectionCount();
             int historyCount = fromDatabase.getHistoryCount();
+            int blockCount = fromDatabase.getBlockCount();
             int expectedProtections = protectionCount + startProtections;
 
             if (protectionCount > 0) {
@@ -75,6 +77,14 @@ public class DatabaseMigrator {
 
                     // sync the history object with the active database (ala MySQL)
                     history.sync();
+                }
+            }
+
+            if (blockCount > 0) {
+                List<BlockID> blocks = fromDatabase.loadBlocks();
+
+                for (BlockID block : blocks) {
+                    block.saveNow();
                 }
             }
 

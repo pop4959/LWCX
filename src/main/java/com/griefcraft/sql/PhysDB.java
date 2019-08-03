@@ -33,6 +33,7 @@ import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.LRUCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
+import com.griefcraft.model.BlockID;
 import com.griefcraft.model.Flag;
 import com.griefcraft.model.History;
 import com.griefcraft.model.Permission;
@@ -165,6 +166,13 @@ public class PhysDB extends Database {
      */
     public int getHistoryCount() {
         return Integer.decode(fetch("SELECT COUNT(*) AS count FROM " + prefix + "history", "count").toString());
+    }
+
+    /**
+     * @return the number of history items stored
+     */
+    public int getBlockCount() {
+        return Integer.decode(fetch("SELECT COUNT(*) AS count FROM " + prefix + "blocks", "count").toString());
     }
 
     /**
@@ -417,9 +425,6 @@ public class PhysDB extends Database {
         doUpdateLWCX();
         doUpdateAquatic();
         doUpdateVillageAndPillage();
-
-        // Initialize the block cache
-        BlockCache.getInstance().loadBlocks();
 
         // Load the database version
         loadDatabaseVersion();
@@ -1727,6 +1732,68 @@ public class PhysDB extends Database {
         }
 
         return temp;
+    }
+
+    /**
+     * Resolve 1 block ID object from the result set but do not close it
+     *
+     * @return
+     */
+    private BlockID resolveBlock(BlockID blockId, ResultSet set) throws SQLException {
+        if (blockId == null) {
+            return null;
+        }
+
+        int id = set.getInt("id");
+        String name = set.getString("name");
+
+        blockId.setId(id);
+        blockId.setName(name);
+
+        return blockId;
+    }
+
+    /**
+     * Load all block mappings
+     *
+     * @return
+     */
+    public List<BlockID> loadBlocks() {
+        List<BlockID> blockIds = new ArrayList<>();
+
+        try {
+            PreparedStatement statement = prepare("SELECT * FROM " + prefix + "blocks ORDER BY id ASC");
+            ResultSet set = statement.executeQuery();
+            while (set.next()) {
+                BlockID blockId = resolveBlock(new BlockID(), set);
+                if (blockId != null) {
+                    blockIds.add(blockId);
+                }
+            }
+            set.close();
+        } catch (SQLException e) {
+            printException(e);
+        }
+
+        return blockIds;
+    }
+
+    /**
+     * Save a block mapping to the database
+     *
+     * @param block
+     */
+    public void saveBlock(BlockID block) {
+        try {
+            PreparedStatement statement = prepare("REPLACE INTO " + prefix + "blocks (id, name) VALUES (?, ?)");
+
+            statement.setInt(1, block.getId());
+            statement.setString(2, block.getName());
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            printException(e);
+        }
     }
 
     /**
