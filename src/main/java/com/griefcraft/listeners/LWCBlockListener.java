@@ -415,9 +415,13 @@ public class LWCBlockListener implements Listener {
 
         String autoRegisterType = lwc.resolveProtectionConfiguration(block, "autoRegister");
 
+        // is the user allowed to auto protect
+        if (!lwc.hasPermission(player, "lwc.autoprotect")) {
+            return;
+        }
+
         // is it auto protectable?
-        if ((!lwc.hasPermission(player, "lwc.autoprotect") && !autoRegisterType.equalsIgnoreCase("private")
-                && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation")) || autoRegisterType.equalsIgnoreCase("false")) {
+        if ((!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation")) || autoRegisterType.equalsIgnoreCase("false")) {
             return;
         }
 
