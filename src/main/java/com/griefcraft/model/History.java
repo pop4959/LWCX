@@ -339,8 +339,6 @@ public class History {
             return;
         }
 
-        LWC.getInstance();
-
         // find the protection the history object is attached to
         Protection protection = getProtection();
 
