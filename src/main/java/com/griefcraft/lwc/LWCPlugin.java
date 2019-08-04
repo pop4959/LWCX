@@ -328,8 +328,8 @@ public class LWCPlugin extends JavaPlugin {
             this.log(" | |____     \\  /\\  /    | |____ ");
             this.log(" |______|     \\/  \\/      \\_____|");
             this.log("");
-            this.log("This version of ModernLWC is not compatible with MineCraft " + matcher.group());
-            this.log("ModernLWC 2.0.0 and above can only be used on servers running MineCraft 1.13+");
+            this.log("This version of LWCX is not compatible with MineCraft " + matcher.group());
+            this.log("LWCX 2.0.0 and above can only be used on servers running MineCraft 1.13+");
             this.log("Please download an older version of the plugin at " + this.getDescription().getWebsite());
             this.getServer().getPluginManager().disablePlugin(this);
             return;

@@ -41,25 +41,22 @@ public class Updater {
     public void init() {
         final LWC lwc = LWC.getInstance();
         if (lwc.getConfiguration().getBoolean("core.updateNotifier", true)) {
-            lwc.getPlugin().getServer().getScheduler().scheduleAsyncDelayedTask(lwc.getPlugin(), new Runnable() {
-                public void run() {
-                    Object[] updates = Updater.getLastUpdate();
-                    if (updates.length == 2) {
-                        lwc.log("[ModernLWC] New update avaible:");
-                        lwc.log("New version: " + updates[0]);
-                        lwc.log(
-                                "Your version: " + LWC.getInstance().getPlugin().getDescription().getVersion());
-                        lwc.log("What's new: " + updates[1]);
-                    }
+            lwc.getPlugin().getServer().getScheduler().scheduleAsyncDelayedTask(lwc.getPlugin(), () -> {
+                Object[] updates = Updater.getLastUpdate();
+                if (updates.length == 2) {
+                    lwc.log("[LWCX] New update avaible:");
+                    lwc.log("New version: " + updates[0]);
+                    lwc.log(
+                        "Your version: " + lwc.getPlugin().getDescription().getVersion());
+                    lwc.log("What's new: " + updates[1]);
                 }
-
             });
         }
     }
 
-    final static String VERSION_URL = "https://api.spiget.org/v2/resources/2162/versions?size=" + Integer.MAX_VALUE
+    final static String VERSION_URL = "http://api.spiget.org/v2/resources/69551/versions?size=" + Integer.MAX_VALUE
             + "&spiget__ua=SpigetDocs";
-    final static String DESCRIPTION_URL = "https://api.spiget.org/v2/resources/2162/updates?size=" + Integer.MAX_VALUE
+    final static String DESCRIPTION_URL = "http://api.spiget.org/v2/resources/69551/updates?size=" + Integer.MAX_VALUE
             + "&spiget__ua=SpigetDocs";
 
     public static Object[] getLastUpdate() {

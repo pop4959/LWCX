@@ -88,7 +88,7 @@ public class DoorsModule extends JavaModule {
 
     @Override
     public void onProtectionInteract(LWCProtectionInteractEvent event) {
-        if (event.getResult() == Result.CANCEL || !isEnabled()) {
+        if (event.getResult() == Result.CANCEL) {
             return;
         }
 
@@ -100,6 +100,11 @@ public class DoorsModule extends JavaModule {
         Protection protection = event.getProtection();
         Block block = event.getEvent().getClickedBlock(); // The block they actually clicked :)
         Player player = event.getPlayer();
+
+        // Check if a block was clicked
+        if (block == null) {
+            return;
+        }
 
         // Check if the block is even something that should be opened
         if (!isValid(block.getType())) {
@@ -145,15 +150,13 @@ public class DoorsModule extends JavaModule {
             // Create the task
             // If we are set to close the door after a set period, let's create
             // a sync task for it
-            lwc.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(lwc.getPlugin(), new Runnable() {
-                public void run() {
+            lwc.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(lwc.getPlugin(), () -> {
 
-                    // Essentially all we need to do is reset the door
-                    // states
-                    // But DO NOT open the door if it's closed !
-                    changeDoorStates(false, finalBlock, finalDoubleDoorBlock);
+                // Essentially all we need to do is reset the door
+                // states
+                // But DO NOT open the door if it's closed !
+                changeDoorStates(false, finalBlock, finalDoubleDoorBlock);
 
-                }
             }, wait);
         }
 
@@ -176,7 +179,7 @@ public class DoorsModule extends JavaModule {
             }
 
             // ensure this is an openable door
-            Openable doorBlockData = null;
+            Openable doorBlockData;
             try {
                 doorBlockData = (Openable) door.getBlockData();
             } catch (ClassCastException e) {
@@ -276,8 +279,10 @@ public class DoorsModule extends JavaModule {
      * @return
      */
     private boolean isValid(Material material) {
-        return DoorMatcher.PROTECTABLES_DOORS.contains(material) || DoorMatcher.FENCE_GATES.contains(material) ||
-                DoorMatcher.TRAP_DOORS.contains(material);
+        return isEnabled() ? DoorMatcher.PROTECTABLES_DOORS.contains(material) ||
+                DoorMatcher.FENCE_GATES.contains(material) || DoorMatcher.TRAP_DOORS.contains(material) :
+                DoorMatcher.WOODEN_DOORS.contains(material) || DoorMatcher.WOODEN_FENCE_GATES.contains(material) ||
+                        DoorMatcher.WOODEN_TRAP_DOORS.contains(material);
     }
 
     /**
