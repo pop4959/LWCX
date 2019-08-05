@@ -416,7 +416,7 @@ public class LWCBlockListener implements Listener {
         String autoRegisterType = lwc.resolveProtectionConfiguration(block, "autoRegister");
 
         // is the user allowed to auto protect
-        if (!lwc.hasPermission(player, "lwc.autoprotect")) {
+        if (!lwc.hasPermission(player, "lwc.autoprotect", "lwc.protect")) {
             return;
         }
 
