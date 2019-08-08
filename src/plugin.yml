@@ -24,6 +24,7 @@ commands:
   cadmin:
     description: Administrate LWC
     usage: /<command>
+    permission: lwc.admin
   cpublic:
     description: Create a protection that is accessible by anyone but protectable by no one.
     usage: /<command>
@@ -78,6 +79,7 @@ commands:
   cexempt:
     description: Toggle protection exemption on an existing protection; disallows it from being removed by -remove, e.g /lwc admin expire -remove 2 weeks
     usage: /<command>
+    permission: lwc.admin
   cautoclose:
     description: Flag a door to automatically close after 3 seconds (configurable.)
     usage: /<command>
