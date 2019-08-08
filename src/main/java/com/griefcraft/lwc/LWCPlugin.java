@@ -165,6 +165,9 @@ public class LWCPlugin extends JavaPlugin {
             } else if (commandName.equals("cnospam")) {
                 aliasCommand = "mode";
                 aliasArgs = ("nospam " + argString).split(" ");
+            } else if (commandName.equals("cnolock")) {
+                aliasCommand = "mode";
+                aliasArgs = ("nolock " + argString).split(" ");
             }
 
             if (aliasCommand != null) {

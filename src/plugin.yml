@@ -69,6 +69,9 @@ commands:
   cpersist:
     description: Toggle command persistence which allows you to use commands without retyping the command (e.g /cprivate)
     usage: /<command>
+  cnolock:
+    description: Toggle the ability to create protections
+    usage: /<command>
   cnospam:
     description: Toggle the ability to hide protection creation messages
     usage: /<command>
@@ -166,6 +169,7 @@ permissions:
           lwc.mode.persist: true
           lwc.mode.droptransfer: true
           lwc.mode.nospam: true
+          lwc.mode.nolock: true
   lwc.mode.persist:
       description: Allows you to use the persist flag, which allows you to use commands repeatably.
   lwc.mode.droptransfer:

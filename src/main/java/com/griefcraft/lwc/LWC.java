@@ -84,6 +84,7 @@ import com.griefcraft.modules.limits.LimitsModule;
 import com.griefcraft.modules.limits.LimitsV2;
 import com.griefcraft.modules.modes.BaseModeModule;
 import com.griefcraft.modules.modes.DropTransferModule;
+import com.griefcraft.modules.modes.NoLockModule;
 import com.griefcraft.modules.modes.NoSpamModule;
 import com.griefcraft.modules.modes.PersistModule;
 import com.griefcraft.modules.modify.ModifyModule;
@@ -1764,6 +1765,7 @@ public class LWC {
         registerModule(new PersistModule());
         registerModule(new DropTransferModule());
         registerModule(new NoSpamModule());
+        registerModule(new NoLockModule());
 
         // non-core modules but are included with LWC anyway
         if (resolvePlugin("WorldGuard") != null) {
