@@ -48,6 +48,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -664,7 +665,7 @@ public class LimitsV2 extends JavaModule {
             for (String player : configuration.getKeys("players")) {
                 playerLimits.put(player.toLowerCase(), findLimits("players." + player));
             }
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
         }
 
         // add all of the group limits
@@ -672,7 +673,7 @@ public class LimitsV2 extends JavaModule {
             for (String group : configuration.getKeys("groups")) {
                 groupLimits.put(group.toLowerCase(), findLimits("groups." + group));
             }
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
         }
     }
 
@@ -703,25 +704,35 @@ public class LimitsV2 extends JavaModule {
             } else if (key.equalsIgnoreCase("sign")) {
                 limits.add(new SignLimit(limit));
             } else if (!key.equalsIgnoreCase("default") && !key.equalsIgnoreCase("sign")) {
-                // attempt to resolve it as a block id
-                int blockId = -1;
+                List<Material> materials = new ArrayList<>();
                 try {
-                    blockId = Integer.parseInt(key);
+                    // attempt to resolve it as a block id
+                    int blockId = Integer.parseInt(key);
+                    // resolve the material
+                    BlockCache blockCache = BlockCache.getInstance();
+                    if (blockId >= 0) {
+                        materials.add(blockCache.getBlockType(blockId));
+                    }
                 } catch (NumberFormatException e) {
+                    // it is not a known block id, so try to resolve it as material(s)
+                    Material material = Material.getMaterial(key.toUpperCase());
+                    if (material != null) {
+                        materials.add(material);
+                    } else {
+                        // try to match any material for the node using regex
+                        String keyPattern = key.toUpperCase().replace("*", ".*");
+                        for (Material m : Material.values()) {
+                            if (m.toString().matches(keyPattern)) {
+                                materials.add(m);
+                            }
+                        }
+                    }
                 }
-
-                // resolve the material
-                Material material;
-
-                BlockCache blockCache = BlockCache.getInstance();
-                if (blockId >= 0) {
-                    material = blockCache.getBlockType(blockId);
-                } else {
-                    material = Material.getMaterial(key.toUpperCase());
-                }
-
-                if (material != null) {
-                    limits.add(new BlockLimit(material, limit));
+                // add each valid material to the limits
+                for (Material m : materials) {
+                    if (m != null) {
+                        limits.add(new BlockLimit(m, limit));
+                    }
                 }
             } else if (EntityType.valueOf(key.toUpperCase()) != null) {
                 limits.add(new EntityLimit(EntityType.valueOf(key.toUpperCase()), limit));
