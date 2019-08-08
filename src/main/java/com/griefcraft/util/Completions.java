@@ -17,7 +17,7 @@ public class Completions {
     private static final List<String> FLAGS = Arrays.asList("redstone", "magnet", "exemption", "autoclose", "allowexplosions", "hopper");
     private static final List<String> DROPTRANSFER = Arrays.asList("select", "on", "off", "status");
     private static final List<String> REMOVE = Arrays.asList("protection", "modes");
-    private static final List<String> MODES = Arrays.asList("persist", "nospam", "droptransfer");
+    private static final List<String> MODES = Arrays.asList("persist", "nospam", "nolock", "droptransfer");
     private static final List<String> INTEGERS = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 
     private static List<String> modifications = Arrays.asList("-", "@");
