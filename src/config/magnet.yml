@@ -9,6 +9,10 @@ magnet:
     # It is HIGHLY UNRECOMMENDED to use a very high value
     perSweep: 10
 
+    # The maximum pickup delay of items that may be
+    # sucked into a container
+    maxPickupDelay: 40
+
     # A blacklist of items that will NOT be picked up
     # Item names usually work, but be careful
     blacklist:

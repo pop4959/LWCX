@@ -78,6 +78,11 @@ public class MagnetModule extends JavaModule {
     private int perSweep;
 
     /**
+     * Maximum pickup delay of items to suck up
+     */
+    private int maxPickupDelay;
+
+    /**
      * The current entity queue
      */
     private final Queue<MagnetNode> items = new LinkedList<>();
@@ -108,6 +113,11 @@ public class MagnetModule extends JavaModule {
 
                         Item item = (Item) entity;
                         ItemStack stack = item.getItemStack();
+
+                        // check if the pickup delay is ok
+                        if (item.getPickupDelay() > maxPickupDelay) {
+                            continue;
+                        }
 
                         // check if it is in the blacklist
                         if (itemBlacklist.contains(stack.getType())) {
@@ -257,6 +267,7 @@ public class MagnetModule extends JavaModule {
         itemBlacklist = new ArrayList<Material>();
         radius = configuration.getInt("magnet.radius", 3);
         perSweep = configuration.getInt("magnet.perSweep", 20);
+        maxPickupDelay = configuration.getInt("magnet.maxPickupDelay", 40);
 
         if (!enabled) {
             return;
