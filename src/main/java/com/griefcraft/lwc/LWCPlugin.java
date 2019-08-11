@@ -492,6 +492,14 @@ public class LWCPlugin extends JavaPlugin {
     }
 
     /**
+     * Unregister all events used by LWC and load again.
+     */
+    protected void loadEvents() {
+        org.bukkit.event.HandlerList.unregisterAll(this);
+        registerEvents();
+    }
+
+    /**
      * @return the current locale in use
      */
     public String getCurrentLocale() {
