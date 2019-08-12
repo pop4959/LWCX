@@ -383,7 +383,7 @@ public class LimitsV2 extends JavaModule {
                 if (limit instanceof BlockLimit) {
                     material = ((BlockLimit) limit).getMaterial();
                 } else if (limit instanceof SignLimit) {
-                    material = Material.OAK_SIGN;
+                    material = Material.getMaterial("SIGN");
                 } else if (limit instanceof ShulkerBoxLimit) {
                     material = Material.SHULKER_BOX;
                 } else if (limit instanceof EntityLimit) {
