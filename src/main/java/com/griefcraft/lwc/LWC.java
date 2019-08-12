@@ -1991,6 +1991,7 @@ public class LWC {
      */
     public void reload() {
         plugin.loadLocales();
+        plugin.loadEvents();
         protectionConfigurationCache.clear();
         Configuration.reload();
         moduleLoader.dispatchEvent(new LWCReloadEvent());
