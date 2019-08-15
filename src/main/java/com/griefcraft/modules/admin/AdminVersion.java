@@ -61,7 +61,7 @@ public class AdminVersion extends JavaModule {
         // force a reload of the latest versions
         String pluginColor = Colors.Dark_Green;
 
-        lwc.sendLocale(sender, "protection.admin.version.finalize", "plugin_color", pluginColor, "plugin_version", lwc.getPlugin().getDescription().getVersion().toString(), "latest_plugin", getVersion());
+        lwc.sendLocale(sender, "protection.admin.version.finalize", "plugin_website", lwc.getPlugin().getDescription().getWebsite(), "plugin_color", pluginColor, "plugin_version", lwc.getPlugin().getDescription().getVersion(), "latest_plugin", getVersion());
     }
 
     public static String getVersion() {
