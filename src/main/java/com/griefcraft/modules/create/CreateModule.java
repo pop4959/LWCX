@@ -165,7 +165,7 @@ public class CreateModule extends JavaModule {
 
             lwc.sendLocale(player, "protection.interact.create.finalize");
             lwc.sendLocale(player, "protection.interact.create.password");
-        } else if (protectionType.equals("private") || protectionType.equals("donation")) {
+        } else if (protectionType.equals("private") || protectionType.equals("donation") || protectionType.equals("display")) {
             String[] rights = protectionData.split(" ");
             if (block instanceof EntityBlock) {
                 protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_ID,
