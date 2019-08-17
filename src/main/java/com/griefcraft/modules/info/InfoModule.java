@@ -63,7 +63,7 @@ public class InfoModule extends JavaModule {
         lwc.sendLocale(player, "lwc.info", "owner", protection.getFormattedOwnerPlayerName(), "type", type);
 
         if (event.canAdmin()) {
-            if (protection.getType() == Protection.Type.PRIVATE || protection.getType() == Protection.Type.DONATION) {
+            if (protection.getType() == Protection.Type.PRIVATE || protection.getType() == Protection.Type.DONATION || protection.getType() == Protection.Type.DISPLAY) {
                 lwc.sendLocale(player, "lwc.acl", "size", protection.getPermissions().size());
                 int index = 0;
                 for (Permission permission : protection.getPermissions()) {

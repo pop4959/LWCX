@@ -48,6 +48,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -100,6 +101,16 @@ public class LimitsV2 extends JavaModule {
      * Set of materials for the various sign blocks used in the sign limit
      */
     private static final Set<Material> SIGNS;
+
+    /**
+     * Set of materials for the various shulker boxes used in the shulker box limit
+     */
+    private static final Set<Material> SHULKER_BOXES = EnumSet.of(Material.SHULKER_BOX, Material.WHITE_SHULKER_BOX,
+            Material.LIGHT_GRAY_SHULKER_BOX, Material.GRAY_SHULKER_BOX, Material.BLACK_SHULKER_BOX,
+            Material.BROWN_SHULKER_BOX, Material.RED_SHULKER_BOX, Material.ORANGE_SHULKER_BOX,
+            Material.YELLOW_SHULKER_BOX, Material.LIME_SHULKER_BOX, Material.GREEN_SHULKER_BOX,
+            Material.CYAN_SHULKER_BOX, Material.LIGHT_BLUE_SHULKER_BOX, Material.BLUE_SHULKER_BOX,
+            Material.PURPLE_SHULKER_BOX, Material.MAGENTA_SHULKER_BOX, Material.PINK_SHULKER_BOX);
 
     static {
         if (VersionUtil.getMinorVersion() > 13) {
@@ -240,6 +251,25 @@ public class LimitsV2 extends JavaModule {
 
     }
 
+    public final class ShulkerBoxLimit extends Limit {
+
+        public ShulkerBoxLimit(int limit) {
+            super(limit);
+        }
+
+        @Override
+        public int getProtectionCount(Player player, Material material) {
+            LWC lwc = LWC.getInstance();
+            BlockCache blockCache = BlockCache.getInstance();
+            int boxCount = 0;
+            for (Material box : SHULKER_BOXES) {
+                boxCount += lwc.getPhysicalDatabase().getProtectionCount(player.getName(), blockCache.getBlockId(box));
+            }
+            return boxCount;
+        }
+
+    }
+
     public LimitsV2() {
         enabled = LWC.getInstance().getConfiguration().getBoolean("optional.useProtectionLimits", true);
 
@@ -353,7 +383,9 @@ public class LimitsV2 extends JavaModule {
                 if (limit instanceof BlockLimit) {
                     material = ((BlockLimit) limit).getMaterial();
                 } else if (limit instanceof SignLimit) {
-                    material = Material.OAK_SIGN;
+                    material = Material.getMaterial("SIGN");
+                } else if (limit instanceof ShulkerBoxLimit) {
+                    material = Material.SHULKER_BOX;
                 } else if (limit instanceof EntityLimit) {
                     material = Material.AIR;
                 }
@@ -380,6 +412,11 @@ public class LimitsV2 extends JavaModule {
                         ? (Integer.toString(limit.getProtectionCount(target, null)) + "/")
                         : "";
                 sender.sendMessage("Sign: " + colour + currentProtected + stringLimit);
+            } else if (limit instanceof ShulkerBoxLimit) {
+                String currentProtected = target != null
+                        ? (Integer.toString(limit.getProtectionCount(target, null)) + "/")
+                        : "";
+                sender.sendMessage("Shulker Box: " + colour + currentProtected + stringLimit);
             } else if (limit instanceof EntityLimit) {
                 String currentProtected = target != null
                         ? (Integer.toString(limit.getProtectionCount(target, Material.AIR)) + "/")
@@ -459,7 +496,9 @@ public class LimitsV2 extends JavaModule {
                 limits.add(new DefaultLimit(count));
             } else if (matchName.equals("sign")) {
                 limits.add(new SignLimit(count));
-            } else if (!matchName.equals("*") && !matchName.equals("sign")) {
+            } else if (matchName.equals("shulker_box")) {
+                limits.add(new ShulkerBoxLimit(count));
+            } else if (!matchName.equals("*") && !matchName.equals("sign") && !matchName.equals("shulker_box")) {
                 Material material = materialCache.get(matchName);
 
                 if (material == null) {
@@ -630,6 +669,10 @@ public class LimitsV2 extends JavaModule {
                 if (SIGNS.contains(material)) {
                     return limit;
                 }
+            } else if (limit instanceof ShulkerBoxLimit) {
+                if (SHULKER_BOXES.contains(material)) {
+                    return limit;
+                }
             } else if (limit instanceof BlockLimit) {
                 BlockLimit blockLimit = (BlockLimit) limit;
 
@@ -664,7 +707,7 @@ public class LimitsV2 extends JavaModule {
             for (String player : configuration.getKeys("players")) {
                 playerLimits.put(player.toLowerCase(), findLimits("players." + player));
             }
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
         }
 
         // add all of the group limits
@@ -672,7 +715,7 @@ public class LimitsV2 extends JavaModule {
             for (String group : configuration.getKeys("groups")) {
                 groupLimits.put(group.toLowerCase(), findLimits("groups." + group));
             }
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
         }
     }
 
@@ -702,26 +745,38 @@ public class LimitsV2 extends JavaModule {
                 limits.add(new DefaultLimit(limit));
             } else if (key.equalsIgnoreCase("sign")) {
                 limits.add(new SignLimit(limit));
-            } else if (!key.equalsIgnoreCase("default") && !key.equalsIgnoreCase("sign")) {
-                // attempt to resolve it as a block id
-                int blockId = -1;
+            } else if (key.equalsIgnoreCase("shulker_box")) {
+                limits.add(new ShulkerBoxLimit(limit));
+            } else if (!key.equalsIgnoreCase("default") && !key.equalsIgnoreCase("sign") && !key.equalsIgnoreCase("shulker_box")) {
+                List<Material> materials = new ArrayList<>();
                 try {
-                    blockId = Integer.parseInt(key);
+                    // attempt to resolve it as a block id
+                    int blockId = Integer.parseInt(key);
+                    // resolve the material
+                    BlockCache blockCache = BlockCache.getInstance();
+                    if (blockId >= 0) {
+                        materials.add(blockCache.getBlockType(blockId));
+                    }
                 } catch (NumberFormatException e) {
+                    // it is not a known block id, so try to resolve it as material(s)
+                    Material material = Material.getMaterial(key.toUpperCase());
+                    if (material != null) {
+                        materials.add(material);
+                    } else {
+                        // try to match any material for the node using regex
+                        String keyPattern = key.toUpperCase().replace("*", ".*");
+                        for (Material m : Material.values()) {
+                            if (m.toString().matches(keyPattern)) {
+                                materials.add(m);
+                            }
+                        }
+                    }
                 }
-
-                // resolve the material
-                Material material;
-
-                BlockCache blockCache = BlockCache.getInstance();
-                if (blockId >= 0) {
-                    material = blockCache.getBlockType(blockId);
-                } else {
-                    material = Material.getMaterial(key.toUpperCase());
-                }
-
-                if (material != null) {
-                    limits.add(new BlockLimit(material, limit));
+                // add each valid material to the limits
+                for (Material m : materials) {
+                    if (m != null) {
+                        limits.add(new BlockLimit(m, limit));
+                    }
                 }
             } else if (EntityType.valueOf(key.toUpperCase()) != null) {
                 limits.add(new EntityLimit(EntityType.valueOf(key.toUpperCase()), limit));

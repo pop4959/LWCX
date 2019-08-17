@@ -70,6 +70,7 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -781,7 +782,20 @@ public class LWCPlayerListener implements Listener {
             return;
         }
 
-        if (event.getAction() != InventoryAction.COLLECT_TO_CURSOR) {
+        // Attempt to load the protection at that location
+        Protection protection = lwc.findProtection(location);
+
+        // If no protection was found we can safely ignore it
+        if (protection == null) {
+            return;
+        }
+
+        // If it's not a donation or display chest, ignore it
+        if (protection.getType() != Protection.Type.DONATION && protection.getType() != Protection.Type.DISPLAY) {
+            return;
+        }
+
+        if (protection.getType() == Protection.Type.DONATION && event.getAction() != InventoryAction.COLLECT_TO_CURSOR) {
             // If it's not a container, we don't want it
             if (event.getSlotType() != InventoryType.SlotType.CONTAINER) {
                 return;
@@ -815,6 +829,51 @@ public class LWCPlayerListener implements Listener {
             }
         }
 
+        // Can they admin it? (remove items/etc)
+        boolean canAdmin = lwc.canAdminProtection(player, protection);
+
+        // nope.avi
+        if (!canAdmin) {
+            event.setCancelled(true);
+        }
+    }
+
+    // Mostly a copy of the inventory click event, but intended to disable dragging in display chests
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryDrag(InventoryDragEvent event) {
+        LWC lwc = LWC.getInstance();
+
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
+
+        // Player interacting with the inventory
+        Player player = (Player) event.getWhoClicked();
+
+        // Location of the container
+        Location location;
+        InventoryHolder holder = null;
+
+        try {
+            holder = event.getInventory().getHolder();
+        } catch (AbstractMethodError e) {
+            e.printStackTrace();
+            return;
+        }
+
+        try {
+            if (holder instanceof BlockState) {
+                location = ((BlockState) holder).getLocation();
+            } else if (holder instanceof DoubleChest) {
+                location = ((DoubleChest) holder).getLocation();
+            } else {
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
         // Attempt to load the protection at that location
         Protection protection = lwc.findProtection(location);
 
@@ -823,8 +882,8 @@ public class LWCPlayerListener implements Listener {
             return;
         }
 
-        // If it's not a donation chest, ignore if
-        if (protection.getType() != Protection.Type.DONATION) {
+        // If it's not a display chest, ignore it
+        if (protection.getType() != Protection.Type.DISPLAY) {
             return;
         }
 

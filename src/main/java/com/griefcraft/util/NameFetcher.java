@@ -31,6 +31,7 @@ public class NameFetcher implements Callable<Map<UUID, String>> {
         Map<UUID, String> uuidStringMap = new HashMap<>();
         for (UUID uuid : uuids) {
             HttpURLConnection connection = (HttpURLConnection) new URL(PROFILE_URL + uuid.toString().replace("-", "")).openConnection();
+            connection.setConnectTimeout(10000);
             JSONObject response = (JSONObject) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
             String name = (String) response.get("name");
             if (name == null) {

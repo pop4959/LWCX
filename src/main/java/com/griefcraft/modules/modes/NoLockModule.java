@@ -26,24 +26,32 @@
  * either expressed or implied, of anybody else.
  */
 
-package com.griefcraft.modules.admin;
+package com.griefcraft.modules.modes;
 
 import com.griefcraft.lwc.LWC;
+import com.griefcraft.model.LWCPlayer;
+import com.griefcraft.model.Mode;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCCommandEvent;
-import com.griefcraft.util.Colors;
-import com.griefcraft.util.Updater;
+import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import org.bukkit.command.CommandSender;
 
-public class AdminVersion extends JavaModule {
+public class NoLockModule extends JavaModule {
+
+    private LWC lwc;
+
+    @Override
+    public void load(LWC lwc) {
+        this.lwc = lwc;
+    }
 
     @Override
     public void onCommand(LWCCommandEvent event) {
-        if (event.isCancelled()) {
+        if (!event.hasFlag("p", "mode")) {
             return;
         }
 
-        if (!event.hasFlag("a", "admin")) {
+        if (event.isCancelled()) {
             return;
         }
 
@@ -51,25 +59,34 @@ public class AdminVersion extends JavaModule {
         CommandSender sender = event.getSender();
         String[] args = event.getArgs();
 
-        if (!args[0].equals("version")) {
+        LWCPlayer player = lwc.wrapPlayer(sender);
+        String mode = args[0].toLowerCase();
+
+        if (!mode.equals("nolock")) {
             return;
         }
 
-        // we have the right command
-        event.setCancelled(true);
+        if (!player.hasMode(mode)) {
+            Mode temp = new Mode();
+            temp.setName(mode);
+            temp.setPlayer(player.getBukkitPlayer());
 
-        // force a reload of the latest versions
-        String pluginColor = Colors.Dark_Green;
-
-        lwc.sendLocale(sender, "protection.admin.version.finalize", "plugin_website", lwc.getPlugin().getDescription().getWebsite(), "plugin_color", pluginColor, "plugin_version", lwc.getPlugin().getDescription().getVersion(), "latest_plugin", getVersion());
-    }
-
-    public static String getVersion() {
-        String version = "";
-        Object[] updates = Updater.getLastUpdate();
-        if (updates.length == 2) {
-            version = (String) updates[0];
+            player.enableMode(temp);
+            lwc.sendLocale(player, "protection.modes.nolock.finalize");
+        } else {
+            player.disableMode(player.getMode(mode));
+            lwc.sendLocale(player, "protection.modes.nolock.off");
         }
-        return version;
+
+        event.setCancelled(true);
     }
+
+    public void onRegisterProtection(LWCProtectionRegisterEvent event) {
+        LWCPlayer player = lwc.wrapPlayer(event.getPlayer());
+
+        if (player.hasMode("nolock")) {
+            event.setCancelled(true);
+        }
+    }
+
 }

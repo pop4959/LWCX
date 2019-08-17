@@ -24,6 +24,7 @@ commands:
   cadmin:
     description: Administrate LWC
     usage: /<command>
+    permission: lwc.admin
   cpublic:
     description: Create a protection that is accessible by anyone but protectable by no one.
     usage: /<command>
@@ -35,6 +36,9 @@ commands:
     usage: /<command> <Users/Groups>
   cdonation:
     description: Creates a chest that can be deposited into, but only removed by player with access.
+    usage: /<command>
+  cdisplay:
+    description: Creates a chest that can be looked into, but only removed by player with access.
     usage: /<command>
   cmodify:
     description: Modify an existing private protection.
@@ -69,12 +73,16 @@ commands:
   cpersist:
     description: Toggle command persistence which allows you to use commands without retyping the command (e.g /cprivate)
     usage: /<command>
+  cnolock:
+    description: Toggle the ability to create protections
+    usage: /<command>
   cnospam:
     description: Toggle the ability to hide protection creation messages
     usage: /<command>
   cexempt:
     description: Toggle protection exemption on an existing protection; disallows it from being removed by -remove, e.g /lwc admin expire -remove 2 weeks
     usage: /<command>
+    permission: lwc.admin
   cautoclose:
     description: Flag a door to automatically close after 3 seconds (configurable.)
     usage: /<command>
@@ -124,12 +132,17 @@ permissions:
           lwc.create.password: true
           lwc.create.private: true
           lwc.create.donation: true
+          lwc.create.display: true
   lwc.create.public:
       description: Allows you to create a public protection.
   lwc.create.password:
       description: Allows you to create a password protection.
   lwc.create.private:
       description: Allows you to create a private protection.
+  lwc.create.donation:
+    description: Allows you to create a donation protection.
+  lwc.create.display:
+    description: Allows you to create a display protection.
 
   lwc.modify:
       description: Allows you to modify protections you own.
@@ -166,6 +179,7 @@ permissions:
           lwc.mode.persist: true
           lwc.mode.droptransfer: true
           lwc.mode.nospam: true
+          lwc.mode.nolock: true
   lwc.mode.persist:
       description: Allows you to use the persist flag, which allows you to use commands repeatably.
   lwc.mode.droptransfer:

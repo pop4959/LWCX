@@ -112,6 +112,9 @@ public class LWCPlugin extends JavaPlugin {
             } else if (commandName.equals("cdonation")) {
                 aliasCommand = "create";
                 aliasArgs = ("donation " + argString).split(" ");
+            } else if (commandName.equals("cdisplay")) {
+                aliasCommand = "create";
+                aliasArgs = ("display " + argString).split(" ");
             } else if (commandName.equals("cmodify")) {
                 aliasCommand = "modify";
                 aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
@@ -165,6 +168,9 @@ public class LWCPlugin extends JavaPlugin {
             } else if (commandName.equals("cnospam")) {
                 aliasCommand = "mode";
                 aliasArgs = ("nospam " + argString).split(" ");
+            } else if (commandName.equals("cnolock")) {
+                aliasCommand = "mode";
+                aliasArgs = ("nolock " + argString).split(" ");
             }
 
             if (aliasCommand != null) {
@@ -486,6 +492,14 @@ public class LWCPlugin extends JavaPlugin {
         if (VersionUtil.getMinorVersion() > 13) {
             pluginManager.registerEvents(new LWC114Listener(), this);
         }
+    }
+
+    /**
+     * Unregister all events used by LWC and load again.
+     */
+    protected void loadEvents() {
+        org.bukkit.event.HandlerList.unregisterAll(this);
+        registerEvents();
     }
 
     /**

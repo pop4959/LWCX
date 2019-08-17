@@ -102,7 +102,12 @@ public class Protection {
         /**
          * Allows players to deposit items into
          */
-        DONATION;
+        DONATION,
+
+        /**
+         * Allows players to look into but not take
+         */
+        DISPLAY;
 
         /**
          * Match a protection type using its string form

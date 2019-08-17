@@ -84,6 +84,7 @@ import com.griefcraft.modules.limits.LimitsModule;
 import com.griefcraft.modules.limits.LimitsV2;
 import com.griefcraft.modules.modes.BaseModeModule;
 import com.griefcraft.modules.modes.DropTransferModule;
+import com.griefcraft.modules.modes.NoLockModule;
 import com.griefcraft.modules.modes.NoSpamModule;
 import com.griefcraft.modules.modes.PersistModule;
 import com.griefcraft.modules.modify.ModifyModule;
@@ -433,6 +434,7 @@ public class LWC {
 
             case PRIVATE:
             case DONATION:
+            case DISPLAY:
                 if (protection.isOwner(player)) {
                     return true;
                 }
@@ -727,7 +729,7 @@ public class LWC {
             if (type == Protection.Type.PASSWORD) {
                 sendLocaleToActionBar(player, "protection.general.locked.password", "block", materialToString(block), "owner",
                         protection.getOwner());
-            } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION) {
+            } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION || type == Protection.Type.DISPLAY) {
                 sendLocaleToActionBar(player, "protection.general.locked.private", "block", materialToString(block), "owner",
                         protection.getOwner());
             }
@@ -771,6 +773,7 @@ public class LWC {
         switch (protection.getType()) {
             case PUBLIC:
             case DONATION:
+            case DISPLAY:
                 return true;
 
             case PASSWORD:
@@ -1764,6 +1767,7 @@ public class LWC {
         registerModule(new PersistModule());
         registerModule(new DropTransferModule());
         registerModule(new NoSpamModule());
+        registerModule(new NoLockModule());
 
         // non-core modules but are included with LWC anyway
         if (resolvePlugin("WorldGuard") != null) {
@@ -1989,6 +1993,7 @@ public class LWC {
      */
     public void reload() {
         plugin.loadLocales();
+        plugin.loadEvents();
         protectionConfigurationCache.clear();
         Configuration.reload();
         moduleLoader.dispatchEvent(new LWCReloadEvent());

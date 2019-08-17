@@ -369,7 +369,7 @@ public class LWCBlockListener implements Listener {
             for (Protection protection : lwc.findAdjacentProtectionsOnAllSides(block)) {
                 if (protection != null) {
                     if (!lwc.canAccessProtection(player, protection)
-                            || (protection.getType() == Protection.Type.DONATION
+                            || ((protection.getType() == Protection.Type.DONATION || protection.getType() == Protection.Type.DISPLAY)
                             && !lwc.canAdminProtection(player, protection))) {
                         // they can't access the protection ..
                         event.setCancelled(true);
@@ -421,7 +421,7 @@ public class LWCBlockListener implements Listener {
         }
 
         // is it auto protectable?
-        if ((!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation")) || autoRegisterType.equalsIgnoreCase("false")) {
+        if ((!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation") && !autoRegisterType.equalsIgnoreCase("display")) || autoRegisterType.equalsIgnoreCase("false")) {
             return;
         }
 
