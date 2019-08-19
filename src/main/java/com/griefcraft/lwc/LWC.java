@@ -114,6 +114,7 @@ import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -974,17 +975,24 @@ public class LWC {
      * @param args
      */
     public void sendLocale(CommandSender sender, String key, Object... args) {
-        String[] message; // The message to send to the player
-        message = getLocaleMessage(sender, key, args);
+        // The message to send to the player
+        String[] message = getLocaleMessage(sender, key, args);
+
+        String[] prefix = getLocaleMessage(sender, "prefix");
 
         if (message == null) {
             return;
         }
 
         // Send the message!
-        // sender.sendMessage(message);
+        // sender.sendMessage(prefix + message);
+        // prefix[0]: Only use the first
         for (String line : message) {
-            sender.sendMessage(line);
+            if (ArrayUtils.isEmpty(prefix)) {
+                sender.sendMessage(line);
+            } else {
+                sender.sendMessage(prefix[0] + line);
+            }
         }
     }
 
