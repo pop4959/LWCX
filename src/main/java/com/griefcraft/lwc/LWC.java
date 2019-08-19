@@ -921,19 +921,22 @@ public class LWC {
     }
 
     /**
-     * Send a locale to a player or console
+     * Check the data of locale
+     * Returns null if invalid
      *
-     * @param sender
-     * @param key
-     * @param args
+     * @param sender CommandSender
+     * @param key key of locale
+     * @param args Character to be rewritten
+     *              Example: %block% --> Chest
+     * @return message or null
      */
-    public void sendLocale(CommandSender sender, String key, Object... args) {
+    private String[] getLocaleMessage(CommandSender sender, String key, Object... args) {
         String[] message; // The message to send to the player
         MessageParser parser = plugin.getMessageParser();
         String parsed = parser.parseMessage(key, args);
 
         if (parsed == null) {
-            return; // Nothing to send
+             return null; // Nothing to send
         }
 
         // message = parsed.split("\\n");
@@ -946,17 +949,35 @@ public class LWC {
 
             // did they cancel it?
             if (evt.isCancelled()) {
-                return;
+                return null;
             }
         }
 
         if (message == null) {
             sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
                     + Colors.White + "\"");
-            return;
+            return null;
         }
 
         if (message.length > 0 && message[0].equalsIgnoreCase("null")) {
+            return null;
+        }
+
+        return message;
+    }
+
+    /**
+     * Send a locale to a player or console
+     *
+     * @param sender
+     * @param key
+     * @param args
+     */
+    public void sendLocale(CommandSender sender, String key, Object... args) {
+        String[] message; // The message to send to the player
+        message = getLocaleMessage(sender, key, args);
+
+        if (message == null) {
             return;
         }
 
@@ -976,34 +997,9 @@ public class LWC {
      */
     public void sendLocaleToActionBar(CommandSender sender, String key, Object... args) {
         String[] message; // The message to send to the player
-        MessageParser parser = plugin.getMessageParser();
-        String parsed = parser.parseMessage(key, args);
-
-        if (parsed == null) {
-            return; // Nothing to send
-        }
-
-        // message = parsed.split("\\n");
-        message = StringUtils.split(parsed, '\n');
-
-        // broadcast an event if they are a player
-        if (sender instanceof Player) {
-            LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
-            moduleLoader.dispatchEvent(evt);
-
-            // did they cancel it?
-            if (evt.isCancelled()) {
-                return;
-            }
-        }
+        message = getLocaleMessage(sender, key, args);
 
         if (message == null) {
-            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
-                    + Colors.White + "\"");
-            return;
-        }
-
-        if (message.length > 0 && message[0].equalsIgnoreCase("null")) {
             return;
         }
 
