@@ -114,6 +114,7 @@ import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -921,6 +922,41 @@ public class LWC {
     }
 
     /**
+     * Check the data of locale
+     * Returns null if invalid
+     *
+     * @param sender CommandSender
+     * @param key key of locale
+     * @param args Character to be rewritten
+     *              Example: %block% --> Chest
+     * @return message or null
+     */
+    private String[] getLocaleMessage(CommandSender sender, String key, Object... args) {
+        String[] message; // The message to send to the player
+        MessageParser parser = plugin.getMessageParser();
+        String parsed = parser.parseMessage(key, args);
+
+        if (parsed == null) {
+             return null; // Nothing to send
+        }
+
+        // message = parsed.split("\\n");
+        message = StringUtils.split(parsed, '\n');
+
+        if (message == null) {
+            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
+                    + Colors.White + "\"");
+            return null;
+        }
+
+        if (message.length > 0 && message[0].equalsIgnoreCase("null")) {
+            return null;
+        }
+
+        return message;
+    }
+
+    /**
      * Send a locale to a player or console
      *
      * @param sender
@@ -928,19 +964,17 @@ public class LWC {
      * @param args
      */
     public void sendLocale(CommandSender sender, String key, Object... args) {
-        String[] message; // The message to send to the player
-        MessageParser parser = plugin.getMessageParser();
-        String parsed = parser.parseMessage(key, args);
+        // The message to send to the player
+        String[] message = getLocaleMessage(sender, key, args);
 
-        if (parsed == null) {
-            return; // Nothing to send
+        String[] prefix = getLocaleMessage(sender, "prefix");
+
+        if (message == null) {
+            return;
         }
 
-        // message = parsed.split("\\n");
-        message = StringUtils.split(parsed, '\n');
-
         // broadcast an event if they are a player
-        if (sender instanceof Player) {
+        if (sender instanceof Player && !key.equals("prefix")) {
             LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
             moduleLoader.dispatchEvent(evt);
 
@@ -950,20 +984,15 @@ public class LWC {
             }
         }
 
-        if (message == null) {
-            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
-                    + Colors.White + "\"");
-            return;
-        }
-
-        if (message.length > 0 && message[0].equalsIgnoreCase("null")) {
-            return;
-        }
-
         // Send the message!
-        // sender.sendMessage(message);
+        // sender.sendMessage(prefix + message);
+        // prefix[0]: Only use the first
         for (String line : message) {
-            sender.sendMessage(line);
+            if (ArrayUtils.isEmpty(prefix)) {
+                sender.sendMessage(line);
+            } else {
+                sender.sendMessage(prefix[0] + line);
+            }
         }
     }
 
@@ -975,19 +1004,17 @@ public class LWC {
      * @param args
      */
     public void sendLocaleToActionBar(CommandSender sender, String key, Object... args) {
-        String[] message; // The message to send to the player
-        MessageParser parser = plugin.getMessageParser();
-        String parsed = parser.parseMessage(key, args);
+        // The message to send to the player
+        String[] message = getLocaleMessage(sender, key, args);
 
-        if (parsed == null) {
-            return; // Nothing to send
+        String[] prefix = getLocaleMessage(sender, "prefix");
+
+        if (message == null) {
+            return;
         }
 
-        // message = parsed.split("\\n");
-        message = StringUtils.split(parsed, '\n');
-
         // broadcast an event if they are a player
-        if (sender instanceof Player) {
+        if (sender instanceof Player && !key.equals("prefix")) {
             LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
             moduleLoader.dispatchEvent(evt);
 
@@ -997,28 +1024,33 @@ public class LWC {
             }
         }
 
-        if (message == null) {
-            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
-                    + Colors.White + "\"");
-            return;
-        }
-
-        if (message.length > 0 && message[0].equalsIgnoreCase("null")) {
-            return;
-        }
-
         // Send the message!
         // sender.sendMessage(message);
         for (String line : message) {
             if (configuration.getBoolean("optional.useActionBar", false) && sender instanceof Player) {
                 // Attempt to use the Spigot-API action bar if enabled, but use the normal chat message as a fallback.
                 try {
-                    ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(line));
+                    // prefix[0]: Only use the first
+                    if (ArrayUtils.isEmpty(prefix)) {
+                        ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(line));
+                    } else {
+                        ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(prefix[0] + line));
+                    }
                 } catch (NoSuchMethodError e) {
-                    sender.sendMessage(line);
+                    // prefix[0]: Only use the first
+                    if (ArrayUtils.isEmpty(prefix)) {
+                        sender.sendMessage(line);
+                    } else {
+                        sender.sendMessage(prefix[0] + line);
+                    }
                 }
             } else {
-                sender.sendMessage(line);
+                // prefix[0]: Only use the first
+                if (ArrayUtils.isEmpty(prefix)) {
+                    sender.sendMessage(line);
+                } else {
+                    sender.sendMessage(prefix[0] + line);
+                }
             }
         }
     }
