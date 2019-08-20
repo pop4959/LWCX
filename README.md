@@ -1,6 +1,6 @@
 # LWC Extended
 
-The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from the [Spigot resource page](https://www.spigotmc.org/resources/lwc-extended.69551/) or development versions from our [build server](https://ci.ender.zone/job/Modern%20LWC/).
+The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from the [Spigot resource page](https://www.spigotmc.org/resources/lwc-extended.69551/) or development versions from our [build server](https://ci.ender.zone/job/LWCX/).
 
 ### Contributors
   * Hidendra - Original LWC author
@@ -18,4 +18,4 @@ LWC is the longest-lived single block protection plugin, that protects both the 
 Please see our [wiki](https://github.com/pop4959/LWCX/wiki) for important information about setting up and using the plugin.
 
 ### Contributing
-Contributing to LWCX is encouranged, and very easy. Fork the repository, and build using maven. Simply make a pull request explaining your changes, and how they are a beneficial addition to the plugin. Travis will automatically build all pull requests to ensure that they build on OpenJDK 8.
+Contributing to LWCX is encouraged, and very easy. Fork the repository, and build using maven. Simply make a pull request explaining your changes, and how they are a beneficial addition to the plugin. Travis will automatically build all pull requests to ensure that they build on OpenJDK 8.
