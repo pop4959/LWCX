@@ -1445,20 +1445,30 @@ public class LWC {
 
         String materialName = normalizeMaterialName(material);
 
-        // add the name & the block id
-        names.add(materialName);
+        // add the the names with the block data byte
         names.add(materialName + ":" + state.getRawData());
+        names.add(material.toString() + ":" + state.getRawData());
+        names.add(material.toString().toLowerCase() + ":" + state.getRawData());
 
-        // add both upper and lower material name
+        // add the names without the block data
+        names.add(materialName);
         names.add(material.toString());
         names.add(material.toString().toLowerCase());
 
-        // Add the wildcards last so it can be overriden
-        names.add("*");
-
         if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
-            names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
+            int i = materialName.indexOf("_") + 1;
+            while (i > 0) {
+                names.add("*_" + materialName.substring(i) + ":" + state.getRawData());
+                names.add("*_" + materialName.substring(i).toLowerCase() + ":" + state.getRawData());
+                names.add("*_" + materialName.substring(i));
+                names.add("*_" + materialName.substring(i).toLowerCase());
+                i = materialName.indexOf("_", i) + 1;
+            }
         }
+
+        // Add the wildcards last so it can be overriden
+        names.add("*:" + state.getRawData());
+        names.add("*");
 
         String value = configuration.getString("protections." + node);
 
@@ -1467,6 +1477,7 @@ public class LWC {
 
             if (temp != null && !temp.isEmpty()) {
                 value = temp;
+                break;
             }
         }
 
@@ -1612,20 +1623,30 @@ public class LWC {
 
         String materialName = normalizeMaterialName(material);
 
-        // add the name & the block id
-        names.add(materialName);
+        // add the the names with the block data byte
         names.add(materialName + ":" + block.getData());
+        names.add(material.toString() + ":" + block.getData());
+        names.add(material.toString().toLowerCase() + ":" + block.getData());
 
-        // add both upper and lower material name
+        // add the names without the block data
+        names.add(materialName);
         names.add(material.toString());
         names.add(material.toString().toLowerCase());
 
-        // Add the wildcards last so it can be overriden
-        names.add("*");
-
         if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
-            names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
+            int i = materialName.indexOf("_") + 1;
+            while (i > 0) {
+                names.add("*_" + materialName.substring(i) + ":" + block.getData());
+                names.add("*_" + materialName.substring(i).toLowerCase() + ":" + block.getData());
+                names.add("*_" + materialName.substring(i));
+                names.add("*_" + materialName.substring(i).toLowerCase());
+                i = materialName.indexOf("_", i) + 1;
+            }
         }
+
+        // Add the wildcards last so it can be overriden
+        names.add("*:" + block.getData());
+        names.add("*");
 
         String value = configuration.getString("protections." + node);
 
@@ -1634,6 +1655,7 @@ public class LWC {
 
             if (temp != null && !temp.isEmpty()) {
                 value = temp;
+                break;
             }
         }
 
@@ -1668,6 +1690,15 @@ public class LWC {
         names.add(material.toString());
         names.add(material.toString().toLowerCase());
 
+        if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
+            int i = materialName.indexOf("_") + 1;
+            while (i > 0) {
+                names.add("*_" + materialName.substring(i));
+                names.add("*_" + materialName.substring(i).toLowerCase());
+                i = materialName.indexOf("_", i) + 1;
+            }
+        }
+
         // Add the wildcards last so it can be overriden
         names.add("*");
 
@@ -1678,6 +1709,7 @@ public class LWC {
 
             if (temp != null && !temp.isEmpty()) {
                 value = temp;
+                break;
             }
         }
 
