@@ -944,7 +944,8 @@ public class LWC {
         message = StringUtils.split(parsed, '\n');
 
         // broadcast an event if they are a player
-        if (sender instanceof Player) {
+        // If the key is "prefix", LWCSendLocaleEvent is not called
+        if (sender instanceof Player && !key.equals("prefix")) {
             LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
             moduleLoader.dispatchEvent(evt);
 
