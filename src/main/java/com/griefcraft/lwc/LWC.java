@@ -1004,8 +1004,10 @@ public class LWC {
      * @param args
      */
     public void sendLocaleToActionBar(CommandSender sender, String key, Object... args) {
-        String[] message; // The message to send to the player
-        message = getLocaleMessage(sender, key, args);
+        // The message to send to the player
+        String[] message = getLocaleMessage(sender, key, args);
+
+        String[] prefix = getLocaleMessage(sender, "prefix");
 
         if (message == null) {
             return;
@@ -1028,12 +1030,27 @@ public class LWC {
             if (configuration.getBoolean("optional.useActionBar", false) && sender instanceof Player) {
                 // Attempt to use the Spigot-API action bar if enabled, but use the normal chat message as a fallback.
                 try {
-                    ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(line));
+                    // prefix[0]: Only use the first
+                    if (ArrayUtils.isEmpty(prefix)) {
+                        ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(line));
+                    } else {
+                        ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(prefix[0] + line));
+                    }
                 } catch (NoSuchMethodError e) {
-                    sender.sendMessage(line);
+                    // prefix[0]: Only use the first
+                    if (ArrayUtils.isEmpty(prefix)) {
+                        sender.sendMessage(line);
+                    } else {
+                        sender.sendMessage(prefix[0] + line);
+                    }
                 }
             } else {
-                sender.sendMessage(line);
+                // prefix[0]: Only use the first
+                if (ArrayUtils.isEmpty(prefix)) {
+                    sender.sendMessage(line);
+                } else {
+                    sender.sendMessage(prefix[0] + line);
+                }
             }
         }
     }
