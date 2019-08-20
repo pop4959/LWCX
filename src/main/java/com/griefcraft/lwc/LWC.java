@@ -943,18 +943,6 @@ public class LWC {
         // message = parsed.split("\\n");
         message = StringUtils.split(parsed, '\n');
 
-        // broadcast an event if they are a player
-        // If the key is "prefix", LWCSendLocaleEvent is not called
-        if (sender instanceof Player && !key.equals("prefix")) {
-            LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
-            moduleLoader.dispatchEvent(evt);
-
-            // did they cancel it?
-            if (evt.isCancelled()) {
-                return null;
-            }
-        }
-
         if (message == null) {
             sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
                     + Colors.White + "\"");
@@ -985,6 +973,17 @@ public class LWC {
             return;
         }
 
+        // broadcast an event if they are a player
+        if (sender instanceof Player && !key.equals("prefix")) {
+            LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
+            moduleLoader.dispatchEvent(evt);
+
+            // did they cancel it?
+            if (evt.isCancelled()) {
+                return;
+            }
+        }
+
         // Send the message!
         // sender.sendMessage(prefix + message);
         // prefix[0]: Only use the first
@@ -1010,6 +1009,17 @@ public class LWC {
 
         if (message == null) {
             return;
+        }
+
+        // broadcast an event if they are a player
+        if (sender instanceof Player && !key.equals("prefix")) {
+            LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
+            moduleLoader.dispatchEvent(evt);
+
+            // did they cancel it?
+            if (evt.isCancelled()) {
+                return;
+            }
         }
 
         // Send the message!
