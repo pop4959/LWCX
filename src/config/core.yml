@@ -77,7 +77,13 @@ optional:
     # If true, LWC will show certain (not all) messages in the action bar instead of the chat.
     # Spigot or better is recommended. This option will have no effect on CraftBukkit servers.
     useActionBar: false
-
+    
+    # This disables protection checks for any item moves except for hopper minecarts. Protection against
+    # hoppers is now done by checking for protections of the containers that the hopper is pointing into
+    # or that are above the hopper when the player places a hopper. If the player doesn't have access to
+    # that protection or the hopper flag isn't allowing it then the placement is blocked.
+    alternativeHopperProtection: false
+    
 # Database information for LWC
 database:
 

@@ -460,6 +460,11 @@ public class LWCPlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onMoveItem(InventoryMoveItemEvent event) {
+        if (plugin.getLWC().useAlternativeHopperProtection()
+                && !(event.getSource().getHolder() instanceof HopperMinecart || event.getDestination().getHolder() instanceof HopperMinecart)) {
+            return;
+        }
+
         boolean result;
 
         // if the initiator is the same as the source it is a dropper i.e.

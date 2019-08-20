@@ -206,10 +206,16 @@ public class LWC {
      */
     private final Map<String, String> protectionConfigurationCache = new HashMap<>();
 
+    /**
+     * Whether alternative-hopper-protection is enabled
+     */
+    private boolean alternativeHoppers;
+
     public LWC(LWCPlugin plugin) {
         this.plugin = plugin;
         LWC.instance = this;
         configuration = Configuration.load("core.yml");
+        alternativeHoppers = configuration.getBoolean("optional.alternativeHopperProtection", false);
         protectionCache = new ProtectionCache(this);
         backupManager = new BackupManager();
         moduleLoader = new ModuleLoader(this);
@@ -1996,6 +2002,7 @@ public class LWC {
         plugin.loadEvents();
         protectionConfigurationCache.clear();
         Configuration.reload();
+        alternativeHoppers = configuration.getBoolean("optional.alternativeHopperProtection", false);
         moduleLoader.dispatchEvent(new LWCReloadEvent());
     }
 
@@ -2141,6 +2148,13 @@ public class LWC {
      */
     public boolean isHistoryEnabled() {
         return !configuration.getBoolean("core.disableHistory", false);
+    }
+
+    /**
+     * @return true if alternative hopper protection is enabled
+     */
+    public boolean useAlternativeHopperProtection() {
+        return alternativeHoppers;
     }
 
     public boolean enforceAccess(Player player, Protection protection, Entity entity, boolean hasAccess) {
