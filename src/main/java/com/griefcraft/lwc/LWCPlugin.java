@@ -341,37 +341,39 @@ public class LWCPlugin extends JavaPlugin {
             return;
         }
 
-        Metrics m = new Metrics(this);
+        if (lwc.getConfiguration().getBoolean("send-metrics-stats", true)) {
+            Metrics m = new Metrics(this);
 
-        m.addCustomChart(new Metrics.AdvancedPie("protected_blocks", () -> {
-            Map<String, Integer> map = new HashMap<String, Integer>();
+            m.addCustomChart(new Metrics.AdvancedPie("protected_blocks", () -> {
+                Map<String, Integer> map = new HashMap<String, Integer>();
 
-            if (lwc.getPhysicalDatabase().getProtectionCount() >= 50000) {
-                map.put("Over 50k", 1);
-            } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 25000) {
-                map.put("Over 25k", 1);
-            } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 10000) {
-                map.put("Over 10k", 1);
-            } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 5000) {
-                map.put("Over 5k", 1);
-            } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 1000) {
-                map.put("Over 1k", 1);
-            } else {
-                map.put("Under 1k", 1);
-            }
+                if (lwc.getPhysicalDatabase().getProtectionCount() >= 50000) {
+                    map.put("Over 50k", 1);
+                } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 25000) {
+                    map.put("Over 25k", 1);
+                } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 10000) {
+                    map.put("Over 10k", 1);
+                } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 5000) {
+                    map.put("Over 5k", 1);
+                } else if (lwc.getPhysicalDatabase().getProtectionCount() >= 1000) {
+                    map.put("Over 1k", 1);
+                } else {
+                    map.put("Under 1k", 1);
+                }
 
-            return map;
-        }));
+                return map;
+            }));
 
-        m.addCustomChart(new Metrics.SimplePie("used_language", this::getCurrentLocale));
+            m.addCustomChart(new Metrics.SimplePie("used_language", this::getCurrentLocale));
 
-        m.addCustomChart(new Metrics.SimplePie("database_used", () -> {
-            String database = lwc.getConfiguration().getString("database.adapter");
-            if (database.equalsIgnoreCase("mysql"))
-                return "MySQL";
+            m.addCustomChart(new Metrics.SimplePie("database_used", () -> {
+                String database = lwc.getConfiguration().getString("database.adapter");
+                if (database.equalsIgnoreCase("mysql"))
+                    return "MySQL";
 
-            return "SQLite";
-        }));
+                return "SQLite";
+            }));
+        }
 
         LWCInfo.setVersion(getDescription().getVersion());
         LWC.ENABLED = true;
