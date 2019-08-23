@@ -1,6 +1,9 @@
 # Core configurable options for LWC
 core:
 
+    # Does the plugin send some data to bStats metrics?
+    send-metrics-stats: true
+
     # The language LWC will use, specified by the shortname. For example, English = en, French = fr, German = de,
     # and so on
     locale: en
