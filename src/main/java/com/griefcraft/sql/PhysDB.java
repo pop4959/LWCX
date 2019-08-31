@@ -500,6 +500,7 @@ public class PhysDB extends Database {
                 lwc.log("This means that Hoppers CANNOT be placed around protections a player does not have access to");
                 lwc.log("If you DO NOT want this feature, simply remove '" + Material.HOPPER.name().toLowerCase()
                         + "' from blacklistedBlocks :-)");
+                lwc.log("Also consider enabling optional.alternativeHopperProtection for more efficient hopper protection, or if you plan on protecting hoppers themselves.");
             }
 
             incrementDatabaseVersion();

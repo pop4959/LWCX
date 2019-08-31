@@ -4,6 +4,7 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCCommandEvent;
+import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -61,6 +62,11 @@ public class AdminView extends JavaModule {
 
         if (args.length < 2) {
             lwc.sendSimpleUsage(sender, "/lwc admin view <id>");
+            return;
+        }
+
+        if (!NumberUtils.isNumber(args[1])) {
+            lwc.sendLocale(sender, "protection.admin.invalidid", "id" ,args[1]);
             return;
         }
 

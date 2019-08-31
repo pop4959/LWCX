@@ -210,6 +210,8 @@ public class CreateModule extends JavaModule {
             return;
         }
 
+        event.setCancelled(true);
+
         if (args.length == 0) {
             lwc.sendLocale(sender, "help.creation");
             return;
@@ -220,7 +222,6 @@ public class CreateModule extends JavaModule {
         String full = StringUtil.join(args, 0).trim();
         String type = args[0].toLowerCase();
         String data = StringUtil.join(args, 1);
-        event.setCancelled(true);
 
         /**
          * Allow individual enforcements with e.g lwc.create.private, or just the

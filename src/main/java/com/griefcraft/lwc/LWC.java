@@ -114,6 +114,7 @@ import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -206,10 +207,16 @@ public class LWC {
      */
     private final Map<String, String> protectionConfigurationCache = new HashMap<>();
 
+    /**
+     * Whether alternative-hopper-protection is enabled
+     */
+    private boolean alternativeHoppers;
+
     public LWC(LWCPlugin plugin) {
         this.plugin = plugin;
         LWC.instance = this;
         configuration = Configuration.load("core.yml");
+        alternativeHoppers = configuration.getBoolean("optional.alternativeHopperProtection", false);
         protectionCache = new ProtectionCache(this);
         backupManager = new BackupManager();
         moduleLoader = new ModuleLoader(this);
@@ -921,6 +928,41 @@ public class LWC {
     }
 
     /**
+     * Check the data of locale
+     * Returns null if invalid
+     *
+     * @param sender CommandSender
+     * @param key key of locale
+     * @param args Character to be rewritten
+     *              Example: %block% --> Chest
+     * @return message or null
+     */
+    private String[] getLocaleMessage(CommandSender sender, String key, Object... args) {
+        String[] message; // The message to send to the player
+        MessageParser parser = plugin.getMessageParser();
+        String parsed = parser.parseMessage(key, args);
+
+        if (parsed == null) {
+             return null; // Nothing to send
+        }
+
+        // message = parsed.split("\\n");
+        message = StringUtils.split(parsed, '\n');
+
+        if (message == null) {
+            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
+                    + Colors.White + "\"");
+            return null;
+        }
+
+        if (message.length > 0 && message[0].equalsIgnoreCase("null")) {
+            return null;
+        }
+
+        return message;
+    }
+
+    /**
      * Send a locale to a player or console
      *
      * @param sender
@@ -928,19 +970,17 @@ public class LWC {
      * @param args
      */
     public void sendLocale(CommandSender sender, String key, Object... args) {
-        String[] message; // The message to send to the player
-        MessageParser parser = plugin.getMessageParser();
-        String parsed = parser.parseMessage(key, args);
+        // The message to send to the player
+        String[] message = getLocaleMessage(sender, key, args);
 
-        if (parsed == null) {
-            return; // Nothing to send
+        String[] prefix = getLocaleMessage(sender, "prefix");
+
+        if (message == null) {
+            return;
         }
 
-        // message = parsed.split("\\n");
-        message = StringUtils.split(parsed, '\n');
-
         // broadcast an event if they are a player
-        if (sender instanceof Player) {
+        if (sender instanceof Player && !key.equals("prefix")) {
             LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
             moduleLoader.dispatchEvent(evt);
 
@@ -950,20 +990,15 @@ public class LWC {
             }
         }
 
-        if (message == null) {
-            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
-                    + Colors.White + "\"");
-            return;
-        }
-
-        if (message.length > 0 && message[0].equalsIgnoreCase("null")) {
-            return;
-        }
-
         // Send the message!
-        // sender.sendMessage(message);
+        // sender.sendMessage(prefix + message);
+        // prefix[0]: Only use the first
         for (String line : message) {
-            sender.sendMessage(line);
+            if (ArrayUtils.isEmpty(prefix)) {
+                sender.sendMessage(line);
+            } else {
+                sender.sendMessage(prefix[0] + line);
+            }
         }
     }
 
@@ -975,19 +1010,17 @@ public class LWC {
      * @param args
      */
     public void sendLocaleToActionBar(CommandSender sender, String key, Object... args) {
-        String[] message; // The message to send to the player
-        MessageParser parser = plugin.getMessageParser();
-        String parsed = parser.parseMessage(key, args);
+        // The message to send to the player
+        String[] message = getLocaleMessage(sender, key, args);
 
-        if (parsed == null) {
-            return; // Nothing to send
+        String[] prefix = getLocaleMessage(sender, "prefix");
+
+        if (message == null) {
+            return;
         }
 
-        // message = parsed.split("\\n");
-        message = StringUtils.split(parsed, '\n');
-
         // broadcast an event if they are a player
-        if (sender instanceof Player) {
+        if (sender instanceof Player && !key.equals("prefix")) {
             LWCSendLocaleEvent evt = new LWCSendLocaleEvent((Player) sender, key);
             moduleLoader.dispatchEvent(evt);
 
@@ -997,28 +1030,33 @@ public class LWC {
             }
         }
 
-        if (message == null) {
-            sender.sendMessage(Colors.Dark_Red + "LWC: " + Colors.White + "Undefined locale: \"" + Colors.Dark_Gray + key
-                    + Colors.White + "\"");
-            return;
-        }
-
-        if (message.length > 0 && message[0].equalsIgnoreCase("null")) {
-            return;
-        }
-
         // Send the message!
         // sender.sendMessage(message);
         for (String line : message) {
             if (configuration.getBoolean("optional.useActionBar", false) && sender instanceof Player) {
                 // Attempt to use the Spigot-API action bar if enabled, but use the normal chat message as a fallback.
                 try {
-                    ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(line));
+                    // prefix[0]: Only use the first
+                    if (ArrayUtils.isEmpty(prefix)) {
+                        ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(line));
+                    } else {
+                        ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(prefix[0] + line));
+                    }
                 } catch (NoSuchMethodError e) {
-                    sender.sendMessage(line);
+                    // prefix[0]: Only use the first
+                    if (ArrayUtils.isEmpty(prefix)) {
+                        sender.sendMessage(line);
+                    } else {
+                        sender.sendMessage(prefix[0] + line);
+                    }
                 }
             } else {
-                sender.sendMessage(line);
+                // prefix[0]: Only use the first
+                if (ArrayUtils.isEmpty(prefix)) {
+                    sender.sendMessage(line);
+                } else {
+                    sender.sendMessage(prefix[0] + line);
+                }
             }
         }
     }
@@ -1407,20 +1445,30 @@ public class LWC {
 
         String materialName = normalizeMaterialName(material);
 
-        // add the name & the block id
-        names.add(materialName);
+        // add the the names with the block data byte
         names.add(materialName + ":" + state.getRawData());
+        names.add(material.toString() + ":" + state.getRawData());
+        names.add(material.toString().toLowerCase() + ":" + state.getRawData());
 
-        // add both upper and lower material name
+        // add the names without the block data
+        names.add(materialName);
         names.add(material.toString());
         names.add(material.toString().toLowerCase());
 
-        // Add the wildcards last so it can be overriden
-        names.add("*");
-
         if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
-            names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
+            int i = materialName.indexOf("_") + 1;
+            while (i > 0) {
+                names.add("*_" + materialName.substring(i) + ":" + state.getRawData());
+                names.add("*_" + materialName.substring(i).toLowerCase() + ":" + state.getRawData());
+                names.add("*_" + materialName.substring(i));
+                names.add("*_" + materialName.substring(i).toLowerCase());
+                i = materialName.indexOf("_", i) + 1;
+            }
         }
+
+        // Add the wildcards last so it can be overriden
+        names.add("*:" + state.getRawData());
+        names.add("*");
 
         String value = configuration.getString("protections." + node);
 
@@ -1429,6 +1477,7 @@ public class LWC {
 
             if (temp != null && !temp.isEmpty()) {
                 value = temp;
+                break;
             }
         }
 
@@ -1574,20 +1623,30 @@ public class LWC {
 
         String materialName = normalizeMaterialName(material);
 
-        // add the name & the block id
-        names.add(materialName);
+        // add the the names with the block data byte
         names.add(materialName + ":" + block.getData());
+        names.add(material.toString() + ":" + block.getData());
+        names.add(material.toString().toLowerCase() + ":" + block.getData());
 
-        // add both upper and lower material name
+        // add the names without the block data
+        names.add(materialName);
         names.add(material.toString());
         names.add(material.toString().toLowerCase());
 
-        // Add the wildcards last so it can be overriden
-        names.add("*");
-
         if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
-            names.add("*_" + materialName.substring(materialName.indexOf("_") + 1));
+            int i = materialName.indexOf("_") + 1;
+            while (i > 0) {
+                names.add("*_" + materialName.substring(i) + ":" + block.getData());
+                names.add("*_" + materialName.substring(i).toLowerCase() + ":" + block.getData());
+                names.add("*_" + materialName.substring(i));
+                names.add("*_" + materialName.substring(i).toLowerCase());
+                i = materialName.indexOf("_", i) + 1;
+            }
         }
+
+        // Add the wildcards last so it can be overriden
+        names.add("*:" + block.getData());
+        names.add("*");
 
         String value = configuration.getString("protections." + node);
 
@@ -1596,6 +1655,7 @@ public class LWC {
 
             if (temp != null && !temp.isEmpty()) {
                 value = temp;
+                break;
             }
         }
 
@@ -1630,6 +1690,15 @@ public class LWC {
         names.add(material.toString());
         names.add(material.toString().toLowerCase());
 
+        if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
+            int i = materialName.indexOf("_") + 1;
+            while (i > 0) {
+                names.add("*_" + materialName.substring(i));
+                names.add("*_" + materialName.substring(i).toLowerCase());
+                i = materialName.indexOf("_", i) + 1;
+            }
+        }
+
         // Add the wildcards last so it can be overriden
         names.add("*");
 
@@ -1640,6 +1709,7 @@ public class LWC {
 
             if (temp != null && !temp.isEmpty()) {
                 value = temp;
+                break;
             }
         }
 
@@ -1996,6 +2066,7 @@ public class LWC {
         plugin.loadEvents();
         protectionConfigurationCache.clear();
         Configuration.reload();
+        alternativeHoppers = configuration.getBoolean("optional.alternativeHopperProtection", false);
         moduleLoader.dispatchEvent(new LWCReloadEvent());
     }
 
@@ -2141,6 +2212,13 @@ public class LWC {
      */
     public boolean isHistoryEnabled() {
         return !configuration.getBoolean("core.disableHistory", false);
+    }
+
+    /**
+     * @return true if alternative hopper protection is enabled
+     */
+    public boolean useAlternativeHopperProtection() {
+        return alternativeHoppers;
     }
 
     public boolean enforceAccess(Player player, Protection protection, Entity entity, boolean hasAccess) {
