@@ -78,6 +78,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -628,6 +629,11 @@ public class LWCPlayerListener implements Listener {
                 && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+
+        if (event.getHand() == EquipmentSlot.OFF_HAND) {
+            return;
+        }
+
         Block block = event.getClickedBlock();
         BlockState state;
 
