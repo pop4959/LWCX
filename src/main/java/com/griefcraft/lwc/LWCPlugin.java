@@ -236,10 +236,12 @@ public class LWCPlugin extends JavaPlugin {
                                 return Completions.toggles(currentArg);
                             break;
                         case "admin":
-                            if (args.length == 2)
-                                return Completions.admin(currentArg);
-                            else if (args.length > 2)
-                                return onTabCompleteAdmin(Arrays.copyOfRange(args, 1, args.length));
+                            if (lwc.isAdmin(sender)) {
+                                if (args.length == 2)
+                                    return Completions.admin(currentArg);
+                                else if (args.length > 2)
+                                    return onTabCompleteAdmin(Arrays.copyOfRange(args, 1, args.length));
+                            }
                             break;
                         default:
                             if (args.length == 1)
@@ -251,9 +253,12 @@ public class LWCPlugin extends JavaPlugin {
             case "lock":
                 return Completions.cmodify(currentArg, false);
             case "cadmin":
-                if (args.length == 1)
-                    return Completions.admin(currentArg);
-                return onTabCompleteAdmin(args);
+                if (lwc.isAdmin(sender)) {
+                    if (args.length == 1)
+                        return Completions.admin(currentArg);
+                    return onTabCompleteAdmin(args);
+                }
+                break;
             case "cmodify":
                 if (args.length >= 1 && Completions.protectionTypes().contains(args[0].toLowerCase()))
                     break;

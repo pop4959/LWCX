@@ -52,6 +52,8 @@ public class BaseAdminModule extends JavaModule {
         if (args.length == 0) {
             if (lwc.isAdmin(sender)) {
                 lwc.sendLocale(sender, "help.admin");
+            } else {
+                lwc.sendLocale(sender, "lwc.admin.denied");
             }
 
             event.setCancelled(true);
