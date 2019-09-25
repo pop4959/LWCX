@@ -1,3 +1,7 @@
+limits:
+    # Should empty limits (ie. 0) be displayed
+    showEmpty: true
+
 # default to unlimited protections
 defaults:
     default: unlimited
