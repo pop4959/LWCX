@@ -470,9 +470,9 @@ public class LWCPlayerListener implements Listener {
         // if the initiator is the same as the source it is a dropper i.e.
         // depositing items
         if (event.getInitiator() == event.getSource()) {
-            result = handleMoveItemEvent(event.getInitiator(), event.getDestination());
+            result = handleMoveItemEvent(event, event.getInitiator(), event.getDestination());
         } else {
-            result = handleMoveItemEvent(event.getInitiator(), event.getSource());
+            result = handleMoveItemEvent(event, event.getInitiator(), event.getSource());
         }
 
         if (result) {
@@ -485,7 +485,7 @@ public class LWCPlayerListener implements Listener {
      *
      * @param inventory
      */
-    private boolean handleMoveItemEvent(Inventory initiator, Inventory inventory) {
+    private boolean handleMoveItemEvent(InventoryMoveItemEvent event, Inventory initiator, Inventory inventory) {
         LWC lwc = LWC.getInstance();
 
         if (inventory == null) {
@@ -551,9 +551,12 @@ public class LWCPlayerListener implements Listener {
         BlockCache blockCache = BlockCache.getInstance();
         boolean denyHoppers = Boolean.parseBoolean(
                 lwc.resolveProtectionConfiguration(blockCache.getBlockType(protection.getBlockId()), "denyHoppers"));
+        boolean protectHopper = protection.hasFlag(Flag.Type.HOPPER);
+        boolean protectHopperIn = inventory == event.getDestination() && protection.hasFlag(Flag.Type.HOPPERIN);
+        boolean protectHopperOut = inventory == event.getSource() && protection.hasFlag(Flag.Type.HOPPEROUT);
 
         // xor = (a && !b) || (!a && b)
-        if (denyHoppers ^ protection.hasFlag(Flag.Type.HOPPER)) {
+        if (denyHoppers ^ (protectHopper || protectHopperIn || protectHopperOut)) {
             return true;
         }
 
