@@ -248,6 +248,8 @@ public class LWCPlugin extends JavaPlugin {
                     }
                 }
                 break;
+            case "lock":
+                return Completions.cmodify(currentArg, false);
             case "cadmin":
                 if (args.length == 1)
                     return Completions.admin(currentArg);
