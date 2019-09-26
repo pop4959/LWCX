@@ -1,7 +1,9 @@
 package com.griefcraft.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,12 +40,12 @@ public class Completions {
         return filter(PROTECTION_TYPES, term);
     }
 
-    public static List<String> players() {
-        return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
+    public static List<String> players(CommandSender requesting) {
+        return Bukkit.getOnlinePlayers().stream().filter(p -> !(requesting instanceof Player) || ((Player) requesting).canSee(p)).map(HumanEntity::getName).collect(Collectors.toList());
     }
 
-    public static List<String> players(String term) {
-        return filter(players(), term);
+    public static List<String> players(String term, CommandSender requesting) {
+        return filter(players(requesting), term);
     }
 
     public static List<String> toggles(String term) {
@@ -66,8 +68,8 @@ public class Completions {
         return filter(MODES, term);
     }
 
-    public static List<String> cmodify(String term, boolean includeTypes) {
-        List<String> players = players();
+    public static List<String> cmodify(String term, CommandSender requesting, boolean includeTypes) {
+        List<String> players = players(requesting);
         List<String> suggestions = new ArrayList<>(players);
         if (includeTypes) {
             suggestions.addAll(PROTECTION_TYPES);

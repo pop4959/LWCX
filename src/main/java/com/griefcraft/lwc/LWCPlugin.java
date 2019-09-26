@@ -216,14 +216,14 @@ public class LWCPlugin extends JavaPlugin {
                                 return Completions.protectionTypes(currentArg);
                             else if (args.length > 2 && ("public".equals(args[1].toLowerCase()) || "password".equals(args[1].toLowerCase())))
                                 break;
-                            return Completions.cmodify(currentArg, false);
+                            return Completions.cmodify(currentArg, sender, false);
                         case "modify":
                             if (args.length >= 2 && Completions.protectionTypes().contains(args[1].toLowerCase()))
                                 break;
-                            return Completions.cmodify(currentArg, args.length == 2);
+                            return Completions.cmodify(currentArg, sender, args.length == 2);
                         case "limits":
                             if (lwc.isAdmin(sender)) {
-                                return Completions.players(currentArg);
+                                return Completions.players(currentArg, sender);
                             }
                             break;
                         case "remove":
@@ -245,7 +245,7 @@ public class LWCPlugin extends JavaPlugin {
                                 if (args.length == 2)
                                     return Completions.admin(currentArg);
                                 else if (args.length > 2)
-                                    return onTabCompleteAdmin(Arrays.copyOfRange(args, 1, args.length));
+                                    return onTabCompleteAdmin(sender, Arrays.copyOfRange(args, 1, args.length));
                             }
                             break;
                         default:
@@ -256,18 +256,18 @@ public class LWCPlugin extends JavaPlugin {
                 }
                 break;
             case "lock":
-                return Completions.cmodify(currentArg, false);
+                return Completions.cmodify(currentArg, sender, false);
             case "cadmin":
                 if (lwc.isAdmin(sender)) {
                     if (args.length == 1)
                         return Completions.admin(currentArg);
-                    return onTabCompleteAdmin(args);
+                    return onTabCompleteAdmin(sender, args);
                 }
                 break;
             case "cmodify":
                 if (args.length >= 1 && Completions.protectionTypes().contains(args[0].toLowerCase()))
                     break;
-                return Completions.cmodify(currentArg, args.length == 1);
+                return Completions.cmodify(currentArg, sender, args.length == 1);
             case "cdroptransfer":
                 if (args.length == 1)
                     return Completions.droptransfer(currentArg);
@@ -288,7 +288,7 @@ public class LWCPlugin extends JavaPlugin {
         return Collections.emptyList();
     }
 
-    private List<String> onTabCompleteAdmin(String[] args) {
+    private List<String> onTabCompleteAdmin(CommandSender sender, String[] args) {
         String currentArg = args[args.length - 1];
         if (args.length >= 1) {
             switch (args[0].toLowerCase()) {
@@ -299,7 +299,7 @@ public class LWCPlugin extends JavaPlugin {
                 case "find":
                 case "forceowner":
                     if (args.length == 2)
-                        return Completions.players(currentArg);
+                        return Completions.players(currentArg, sender);
                     else if (args.length == 3)
                         return Completions.integers(currentArg);
                     break;
@@ -308,7 +308,7 @@ public class LWCPlugin extends JavaPlugin {
                         return Completions.integers(currentArg);
                     break;
                 case "purge":
-                    return Completions.players(currentArg);
+                    return Completions.players(currentArg, sender);
                 default:
                     break;
             }
