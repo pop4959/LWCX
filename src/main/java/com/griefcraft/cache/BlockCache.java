@@ -110,21 +110,25 @@ public class BlockCache {
         PhysDB database = lwc.getPhysicalDatabase();
         String prefix = database.getPrefix();
         try {
-            PreparedStatement statement = database.prepare("SELECT id, name FROM " + prefix + "blocks");
-            ResultSet set = statement.executeQuery();
-            while (set.next()) {
-                Integer materialId = set.getInt("id");
-                String materialName = set.getString("name");
+            PreparedStatement blocksStatement = database.prepare("SELECT id, name FROM " + prefix + "blocks");
+            ResultSet blocksSet = blocksStatement.executeQuery();
+            while (blocksSet.next()) {
+                Integer materialId = blocksSet.getInt("id");
+                String materialName = blocksSet.getString("name");
                 Material material = Material.matchMaterial(materialName);
                 if (material != null) {
                     addMapping(materialId, material);
-                    if (materialId >= nextId) {
-                        nextId = materialId + 1;
-                    }
                 } else {
-                    lwc.log("Unable to load " + materialName + "from " + prefix + "blocks!");
+                    lwc.log("Unable to load " + materialName + " from " + prefix + "blocks!");
                 }
             }
+            blocksSet.close();
+            PreparedStatement idStatement = database.prepare("SELECT MAX(id) FROM " + prefix + "blocks");
+            ResultSet idSet = idStatement.executeQuery();
+            if (idSet.next()) {
+                nextId = idSet.getInt(1) + 1;
+            }
+            idSet.close();
         } catch (SQLException e) {
             lwc.log("Unable to load " + prefix + "blocks!");
             e.printStackTrace();

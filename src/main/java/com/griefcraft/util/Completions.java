@@ -1,7 +1,9 @@
 package com.griefcraft.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,11 +12,11 @@ import java.util.stream.Collectors;
 
 public class Completions {
 
-    private static final List<String> LWC = Arrays.asList("create", "modify", "unlock", "info", "remove", "mode", "flag", "admin");
+    private static final List<String> LWC = Arrays.asList("create", "modify", "unlock", "info", "limits", "remove", "mode", "flag", "admin");
     private static final List<String> ADMIN = Arrays.asList("view", "find", "forceowner", "remove", "purge", "cleanup", "version", "update", "report", "clear");
     private static final List<String> PROTECTION_TYPES = Arrays.asList("public", "private", "donation", "password", "display");
     private static final List<String> TOGGLES = Arrays.asList("on", "off");
-    private static final List<String> FLAGS = Arrays.asList("redstone", "magnet", "exemption", "autoclose", "allowexplosions", "hopper");
+    private static final List<String> FLAGS = Arrays.asList("redstone", "magnet", "exemption", "autoclose", "allowexplosions", "hopper", "hopperin", "hopperout");
     private static final List<String> DROPTRANSFER = Arrays.asList("select", "on", "off", "status");
     private static final List<String> REMOVE = Arrays.asList("protection", "modes");
     private static final List<String> MODES = Arrays.asList("persist", "nospam", "nolock", "droptransfer");
@@ -38,12 +40,12 @@ public class Completions {
         return filter(PROTECTION_TYPES, term);
     }
 
-    public static List<String> players() {
-        return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
+    public static List<String> players(CommandSender requesting) {
+        return Bukkit.getOnlinePlayers().stream().filter(p -> !(requesting instanceof Player) || ((Player) requesting).canSee(p)).map(HumanEntity::getName).collect(Collectors.toList());
     }
 
-    public static List<String> players(String term) {
-        return filter(players(), term);
+    public static List<String> players(String term, CommandSender requesting) {
+        return filter(players(requesting), term);
     }
 
     public static List<String> toggles(String term) {
@@ -66,8 +68,8 @@ public class Completions {
         return filter(MODES, term);
     }
 
-    public static List<String> cmodify(String term, boolean includeTypes) {
-        List<String> players = players();
+    public static List<String> cmodify(String term, CommandSender requesting, boolean includeTypes) {
+        List<String> players = players(requesting);
         List<String> suggestions = new ArrayList<>(players);
         if (includeTypes) {
             suggestions.addAll(PROTECTION_TYPES);

@@ -375,6 +375,11 @@ public class LimitsV2 extends JavaModule {
             }
 
             String stringLimit = limit.getLimit() == UNLIMITED ? "Unlimited" : Integer.toString(limit.getLimit());
+
+            if ("0".equals(stringLimit) && !configuration.getBoolean("limits.showEmpty", true)) {
+                continue;
+            }
+
             String colour = Colors.Yellow;
 
             if (target != null) {

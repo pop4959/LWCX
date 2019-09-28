@@ -68,7 +68,17 @@ public class Flag {
         /**
          * Controls whether or not hoppers can be used on a protection
          */
-        HOPPER;
+        HOPPER,
+
+        /**
+         * Controls whether or not hoppers can be used on a protection to place items in
+         */
+        HOPPERIN,
+
+        /**
+         * Controls whether or not hoppers can be used on a protection to take items out
+         */
+        HOPPEROUT;
 
         Type() {
             this(false);

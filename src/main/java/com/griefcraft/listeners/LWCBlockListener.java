@@ -390,7 +390,7 @@ public class LWCBlockListener implements Listener {
             }
 
             // also check if the hopper is pointing into a protection
-            Hopper hopperData = (Hopper) block.getState().getData();
+            Hopper hopperData = (Hopper) block.getState().getBlockData();
             Block target = block.getRelative(hopperData.getFacing());
             if (shouldBlockHopperPlacement(player, target)) {
                 event.setCancelled(true);
