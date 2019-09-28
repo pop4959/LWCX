@@ -268,6 +268,11 @@ public class LWCPlugin extends JavaPlugin {
                 if (args.length >= 1 && Completions.protectionTypes().contains(args[0].toLowerCase()))
                     break;
                 return Completions.cmodify(currentArg, sender, args.length == 1);
+            case "climits":
+                if (lwc.isAdmin(sender)) {
+                    return Completions.players(currentArg, sender);
+                }
+                break;
             case "cdroptransfer":
                 if (args.length == 1)
                     return Completions.droptransfer(currentArg);
