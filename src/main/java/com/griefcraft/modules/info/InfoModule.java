@@ -86,7 +86,7 @@ public class InfoModule extends JavaModule {
         }
 
         if (lwc.isAdmin(player)) {
-            lwc.sendLocale(player, "protection.interact.info.raw", "raw", protection.toString());
+            protection.sendProtectionInfo(player);
         }
 
         lwc.removeModes(player);
