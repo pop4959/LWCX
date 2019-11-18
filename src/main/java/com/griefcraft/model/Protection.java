@@ -32,7 +32,11 @@ import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.event.LWCProtectionRemovePostEvent;
-import com.griefcraft.util.*;
+import com.griefcraft.util.Colors;
+import com.griefcraft.util.ProtectionFinder;
+import com.griefcraft.util.StringUtil;
+import com.griefcraft.util.TimeUtil;
+import com.griefcraft.util.UUIDRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -43,7 +47,15 @@ import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class Protection {
 
@@ -1045,14 +1057,14 @@ public class Protection {
                 .timeToString((System.currentTimeMillis() / 1000L)
                         - this.lastAccessed);
 
-        /*
-        TODO: Translate
-        if (!lastAccessed.equals("Not yet known")) {}
-        */
+        String lastAccessedLocale = lwc.getLocaleMessage(sender, "lwc.time.past", "time", lastAccessed)[0];
+        if (lastAccessed.equals("Not yet known")) {
+            lastAccessedLocale = lwc.getLocaleMessage(sender, "lwc.time.unknown")[0];
+        } else if (lastAccessed.equals("less than a second")) {
+            lastAccessedLocale = lwc.getLocaleMessage("lwc.time.early")[0];
+        }
 
-        BlockCache blockCache = BlockCache.getInstance();
-        Material blockType = blockCache.getBlockType(blockId);
-        lwc.sendLocale(sender, "protection.info", "id", id, "type", getType(), "name", UUIDRegistry.getName(UUID.fromString(getOwner())), "owner", getOwner(), "world", world, "x", x, "y", y, "z", z, "creation", creation, "flag", flagStr.toString(), "lastAccessed", lastAccessed);
+        lwc.sendLocale(sender, "protection.interact.info.formatted", "id", id, "type", lwc.getPlugin().getMessageParser().parseMessage(getType().toString().toLowerCase()), "name", UUIDRegistry.getName(UUID.fromString(getOwner())), "owner", getOwner(), "world", world, "x", x, "y", y, "z", z, "creation", creation, "flag", flagStr.toString(), "lastAccessed", lastAccessedLocale);
     }
 
     /**

@@ -28,12 +28,14 @@
 
 package com.griefcraft.util;
 
+import com.griefcraft.lwc.LWC;
+
 public class TimeUtil {
 
     /**
      * Parse a time string (e.g 2 hours)
      *
-     * @param time
+     * @param time Time
      * @return the result in seconds
      */
     public static long parseTime(String time) {
@@ -82,10 +84,11 @@ public class TimeUtil {
     /**
      * Convert a given time in seconds to a more readable format
      *
-     * @param time
+     * @param time Time
      * @return the time in a more readable format (e.g 2 days 5 hours 1 minute 34  seconds)
      */
     public static String timeToString(long time) {
+        LWC lwc = LWC.getInstance();
         String str = "";
 
         if ((System.currentTimeMillis() / 1000L) - time <= 0) {
@@ -104,19 +107,19 @@ public class TimeUtil {
         long seconds = time;
 
         if (days > 0) {
-            str += days + " day" + (days == 1 ? "" : "s") + " ";
+            str += days + " " + (days == 1 ? lwc.getLocaleMessage("lwc.time.day")[0] : lwc.getLocaleMessage("lwc.time.days")[0]) + " ";
         }
 
         if (hours > 0) {
-            str += hours + " hour" + (hours == 1 ? "" : "s") + " ";
+            str += hours + " " + (hours == 1 ? lwc.getLocaleMessage("lwc.time.hour")[0] : lwc.getLocaleMessage("lwc.time.hours")[0]) + " ";
         }
 
         if (minutes > 0) {
-            str += minutes + " minute" + (minutes == 1 ? "" : "s") + " ";
+            str += minutes + " " + (minutes == 1 ? lwc.getLocaleMessage("lwc.time.minute")[0] : lwc.getLocaleMessage("lwc.time.minutes")[0]) + " ";
         }
 
         if (seconds > 0) {
-            str += seconds + " second" + (seconds == 1 ? "" : "s") + " ";
+            str += seconds + " " + (seconds == 1 ? lwc.getLocaleMessage("lwc.time.second")[0] : lwc.getLocaleMessage("lwc.time.seconds")[0]) + " ";
         }
 
         if (str.equals("")) {
