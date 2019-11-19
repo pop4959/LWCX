@@ -28,6 +28,7 @@
 
 package com.griefcraft.model;
 
+import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
@@ -1064,7 +1065,20 @@ public class Protection {
             lastAccessedLocale = lwc.getLocaleMessage("lwc.time.early")[0];
         }
 
-        lwc.sendLocale(sender, "protection.interact.info.formatted", "id", id, "type", lwc.getPlugin().getMessageParser().parseMessage(getType().toString().toLowerCase()), "name", UUIDRegistry.getName(UUID.fromString(getOwner())), "owner", getOwner(), "world", world, "x", x, "y", y, "z", z, "creation", creation, "flag", flagStr.toString(), "lastAccessed", lastAccessedLocale);
+        lwc.sendLocale(sender, "protection.interact.info.formatted",
+                "id", id,
+                "type", lwc.getPlugin().getMessageParser().parseMessage(getType().toString().toLowerCase()),
+                "block", LWC.materialToString(BlockCache.getInstance().getBlockType(blockId)),
+                "name", UUIDRegistry.getName(UUID.fromString(getOwner())),
+                "owner", getOwner(),
+                "world", world,
+                "x", x,
+                "y", y,
+                "z", z,
+                "creation", creation,
+                "flag", flagStr.toString(),
+                "lastAccessed", lastAccessedLocale)
+        ;
     }
 
     /**
