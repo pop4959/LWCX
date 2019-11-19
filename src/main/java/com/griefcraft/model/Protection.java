@@ -1058,13 +1058,6 @@ public class Protection {
                 .timeToString((System.currentTimeMillis() / 1000L)
                         - this.lastAccessed);
 
-        String lastAccessedLocale = lwc.getLocaleMessage(sender, "lwc.time.past", "time", lastAccessed)[0];
-        if (lastAccessed.equals("Not yet known")) {
-            lastAccessedLocale = lwc.getLocaleMessage(sender, "lwc.time.unknown")[0];
-        } else if (lastAccessed.equals("less than a second")) {
-            lastAccessedLocale = lwc.getLocaleMessage("lwc.time.early")[0];
-        }
-
         lwc.sendLocale(sender, "protection.interact.info.formatted",
                 "id", id,
                 "type", lwc.getPlugin().getMessageParser().parseMessage(getType().toString().toLowerCase()),
@@ -1077,7 +1070,7 @@ public class Protection {
                 "z", z,
                 "creation", creation,
                 "flag", flagStr.toString(),
-                "lastAccessed", lastAccessedLocale)
+                "lastAccessed", lastAccessed)
         ;
     }
 

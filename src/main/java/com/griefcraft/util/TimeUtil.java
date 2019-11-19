@@ -29,6 +29,7 @@
 package com.griefcraft.util;
 
 import com.griefcraft.lwc.LWC;
+import org.bukkit.Bukkit;
 
 public class TimeUtil {
 
@@ -92,7 +93,7 @@ public class TimeUtil {
         String str = "";
 
         if ((System.currentTimeMillis() / 1000L) - time <= 0) {
-            return "Not yet known";
+            return lwc.getLocaleMessage(Bukkit.getConsoleSender(), "lwc.time.unknown")[0];
         }
 
         long days = time / 86400;
@@ -107,26 +108,26 @@ public class TimeUtil {
         long seconds = time;
 
         if (days > 0) {
-            str += days + " " + (days == 1 ? lwc.getLocaleMessage("lwc.time.day")[0] : lwc.getLocaleMessage("lwc.time.days")[0]) + " ";
+            str += days + " " + (days == 1 ? lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.day")[0] : lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.days")[0]) + " ";
         }
 
         if (hours > 0) {
-            str += hours + " " + (hours == 1 ? lwc.getLocaleMessage("lwc.time.hour")[0] : lwc.getLocaleMessage("lwc.time.hours")[0]) + " ";
+            str += hours + " " + (hours == 1 ? lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.hour")[0] : lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.hours")[0]) + " ";
         }
 
         if (minutes > 0) {
-            str += minutes + " " + (minutes == 1 ? lwc.getLocaleMessage("lwc.time.minute")[0] : lwc.getLocaleMessage("lwc.time.minutes")[0]) + " ";
+            str += minutes + " " + (minutes == 1 ? lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.minute")[0] : lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.minutes")[0]) + " ";
         }
 
         if (seconds > 0) {
-            str += seconds + " " + (seconds == 1 ? lwc.getLocaleMessage("lwc.time.second")[0] : lwc.getLocaleMessage("lwc.time.seconds")[0]) + " ";
+            str += seconds + " " + (seconds == 1 ? lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.second")[0] : lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.seconds")[0]) + " ";
         }
 
         if (str.equals("")) {
-            return "less than a second";
+            return lwc.getLocaleMessage(Bukkit.getConsoleSender(),"lwc.time.early")[0];
         }
 
-        return str.trim();
+        return lwc.getLocaleMessage(Bukkit.getConsoleSender(), "lwc.time.past", "time", str.trim())[0];
     }
 
 }
