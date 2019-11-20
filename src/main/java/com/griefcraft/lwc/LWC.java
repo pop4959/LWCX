@@ -928,7 +928,7 @@ public class LWC {
     }
 
     /**
-     * Check the data of locale
+     * Check the data of locale<br />
      * Returns null if invalid
      *
      * @param sender CommandSender
@@ -937,7 +937,7 @@ public class LWC {
      *              Example: %block% --> Chest
      * @return message or null
      */
-    private String[] getLocaleMessage(CommandSender sender, String key, Object... args) {
+    public String[] getLocaleMessage(CommandSender sender, String key, Object... args) {
         String[] message; // The message to send to the player
         MessageParser parser = plugin.getMessageParser();
         String parsed = parser.parseMessage(key, args);

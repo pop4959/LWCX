@@ -83,6 +83,10 @@ optional:
     # or that are above the hopper when the player places a hopper. If the player doesn't have access to
     # that protection or the hopper flag isn't allowing it then the placement is blocked.
     alternativeHopperProtection: false
+
+    # Use new information format.
+    # When this option is enabled, readability is improved over traditional messages.
+    useFormattedInfo: true
     
 # Database information for LWC
 database:
