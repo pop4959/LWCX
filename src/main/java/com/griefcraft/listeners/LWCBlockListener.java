@@ -308,8 +308,10 @@ public class LWCBlockListener implements Listener {
         for (Block block : event.getBlocks()) {
             Protection protection = lwc.findProtection(block);
             if (protection != null) {
-                event.setCancelled(true);
-                return;
+                Protection pistonProtection = lwc.findProtection(event.getBlock());
+                if (pistonProtection == null || !pistonProtection.getOwner().equals(protection.getOwner())) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -323,8 +325,10 @@ public class LWCBlockListener implements Listener {
         for (Block block : event.getBlocks()) {
             Protection protection = lwc.findProtection(block);
             if (protection != null) {
-                event.setCancelled(true);
-                return;
+                Protection pistonProtection = lwc.findProtection(event.getBlock());
+                if (pistonProtection == null || !pistonProtection.getOwner().equals(protection.getOwner())) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
