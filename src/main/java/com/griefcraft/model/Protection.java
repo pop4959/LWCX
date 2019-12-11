@@ -38,9 +38,11 @@ import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.TimeUtil;
 import com.griefcraft.util.UUIDRegistry;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -1020,6 +1022,55 @@ public class Protection {
                         (blockType != null ? LWC.materialToString(blockType)
                                 : "Not yet cached"), id, owner, world, x, y, z,
                         creation, flagStr, lastAccessed);
+    }
+
+    /**
+     * Sends information for a given protection
+     *
+     * @param sender Command Sender
+     * @see Protection#toString()
+     * @since 2.2.3
+     */
+    public void sendProtectionInfo(CommandSender sender) {
+        LWC lwc = LWC.getInstance();
+
+        // format the flags prettily
+        StringBuilder flagStr = new StringBuilder();
+
+        for (Flag.Type type : Flag.Type.values()) {
+            ChatColor color = ChatColor.RED;
+            for (Flag flag : flags.values()) {
+                if (type.equals(flag.getType())) {
+                    color = ChatColor.GREEN;
+                    break;
+                }
+            }
+            flagStr.append(color).append(type.toString().toLowerCase()).append(" ");
+        }
+
+        if (flagStr.toString().endsWith(" ")) {
+            flagStr = new StringBuilder(flagStr.substring(0, flagStr.length() - 1));
+        }
+
+        // format the last accessed time
+        String lastAccessed = TimeUtil
+                .timeToString((System.currentTimeMillis() / 1000L)
+                        - this.lastAccessed);
+
+        lwc.sendLocale(sender, "protection.interact.info.formatted",
+                "id", id,
+                "type", lwc.getPlugin().getMessageParser().parseMessage(getType().toString().toLowerCase()),
+                "block", LWC.materialToString(BlockCache.getInstance().getBlockType(blockId)),
+                "name", UUIDRegistry.getName(UUID.fromString(getOwner())),
+                "owner", getOwner(),
+                "world", world,
+                "x", x,
+                "y", y,
+                "z", z,
+                "creation", creation,
+                "accessed", lastAccessed,
+                "flags", flagStr.toString())
+        ;
     }
 
     /**

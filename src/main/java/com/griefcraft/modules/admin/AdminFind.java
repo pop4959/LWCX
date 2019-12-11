@@ -93,8 +93,14 @@ public class AdminFind extends JavaModule {
 
         lwc.sendLocale(sender, "protection.find.showing", "start", start, "ceil", ceil, "results", results);
 
+        boolean formatInfo = lwc.getConfiguration().getBoolean("optional.useFormattedInfo", true);
+
         for (Protection protection : protections) {
-            sender.sendMessage(protection.toString());
+            if (formatInfo) {
+                protection.sendProtectionInfo(sender);
+            } else {
+                sender.sendMessage(protection.toString());
+            }
         }
     }
 
