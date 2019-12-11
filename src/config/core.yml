@@ -84,8 +84,8 @@ optional:
     # that protection or the hopper flag isn't allowing it then the placement is blocked.
     alternativeHopperProtection: false
 
-    # Use new information format.
-    # When this option is enabled, readability is improved over traditional messages.
+    # If true, LWC will format protection information for better readability. Otherwise, raw protection
+    # information will be displayed instead (default in versions prior to 2.2.3).
     useFormattedInfo: true
     
 # Database information for LWC

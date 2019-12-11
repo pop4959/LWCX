@@ -87,6 +87,7 @@ public class InfoModule extends JavaModule {
 
         if (lwc.isAdmin(player)) {
             if (lwc.getConfiguration().getBoolean("optional.useFormattedInfo", true)) {
+                lwc.sendLocale(player, "protection.interact.info.header");
                 protection.sendProtectionInfo(player);
             } else {
                 lwc.sendLocale(player, "protection.interact.info.raw", "raw", protection.toString());
