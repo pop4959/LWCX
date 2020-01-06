@@ -1030,9 +1030,9 @@ public class Protection {
      *
      * @param sender Command Sender
      * @see Protection#toString()
-     * @since 2.2.3
+     * @since 2.2.2
      */
-    public void sendProtectionInfo(CommandSender sender, boolean isList) {
+    public void sendProtectionInfo(CommandSender sender) {
         LWC lwc = LWC.getInstance();
 
         // format the flags prettily
@@ -1058,12 +1058,7 @@ public class Protection {
                 .timeToString((System.currentTimeMillis() / 1000L)
                         - this.lastAccessed);
 
-        String key = "protection.interact.info.formatted";
-        if (isList) {
-            key = "protection.interact.info.formatted.list";
-        }
-
-        lwc.sendLocale(sender, key,
+        lwc.sendLocale(sender, "protection.interact.info.formatted",
                 "id", id,
                 "type", lwc.getPlugin().getMessageParser().parseMessage(getType().toString().toLowerCase()),
                 "block", LWC.materialToString(BlockCache.getInstance().getBlockType(blockId)),
