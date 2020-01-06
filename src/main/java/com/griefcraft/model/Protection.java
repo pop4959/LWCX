@@ -28,7 +28,6 @@
 
 package com.griefcraft.model;
 
-import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
@@ -1026,11 +1025,11 @@ public class Protection {
     }
 
     /**
-     * New protection information format
+     * Sends information for a given protection
      *
      * @param sender Command Sender
      * @see Protection#toString()
-     * @since 2.2.2
+     * @since 2.2.3
      */
     public void sendProtectionInfo(CommandSender sender) {
         LWC lwc = LWC.getInstance();
@@ -1069,8 +1068,8 @@ public class Protection {
                 "y", y,
                 "z", z,
                 "creation", creation,
-                "flag", flagStr.toString(),
-                "lastAccessed", lastAccessed)
+                "accessed", lastAccessed,
+                "flags", flagStr.toString())
         ;
     }
 
