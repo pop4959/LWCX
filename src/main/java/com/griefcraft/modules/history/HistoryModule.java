@@ -39,12 +39,14 @@ import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.TimeUtil;
+import com.griefcraft.util.UUIDRegistry;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class HistoryModule extends JavaModule {
 
@@ -173,15 +175,21 @@ public class HistoryModule extends JavaModule {
      * @param historyCount
      */
     public void sendHistoryList(CommandSender sender, List<History> relatedHistory, int page, int maxPages, int historyCount) {
-        String format = "%4s%12s%12s%12s";
+        LWC lwc = LWC.getInstance();
+        String format = "%4s%16s%12s%10s";
 
         // Header
-        LWC.getInstance().sendLocale(sender, "lwc.history.list", "header", String.format(format, "Id", "Player", "Type", "Status"), "size", relatedHistory.size(),
-                "page", page, "totalpages", maxPages, "totalhistory", historyCount);
+        lwc.sendLocale(sender, "lwc.history.list",
+                "header", String.format(format, lwc.getLocaleMessage(sender, "lwc.history.id")[0], lwc.getLocaleMessage(sender, "lwc.history.player")[0], lwc.getLocaleMessage(sender, "lwc.history.type")[0], lwc.getLocaleMessage(sender, "lwc.history.status")[0]),
+                "size", relatedHistory.size(),
+                "page", page,
+                "totalpages", maxPages,
+                "totalhistory", historyCount
+        );
 
         // Send all that is found to them
         for (History history : relatedHistory) {
-            sender.sendMessage(String.format(format, ("" + history.getId()), history.getPlayer(), history.getType(), history.getStatus()));
+            sender.sendMessage(String.format(format, (history.getId() + ""), UUIDRegistry.getName(UUID.fromString(history.getPlayer())), lwc.getPlugin().getMessageParser().parseMessage(history.getType().toString().toLowerCase()), lwc.getPlugin().getMessageParser().parseMessage(history.getStatus().toString().toLowerCase())));
         }
     }
 
