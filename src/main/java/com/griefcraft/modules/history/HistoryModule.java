@@ -189,7 +189,7 @@ public class HistoryModule extends JavaModule {
 
         // Send all that is found to them
         for (History history : relatedHistory) {
-            sender.sendMessage(String.format(format, (history.getId() + ""), UUIDRegistry.getName(UUID.fromString(history.getPlayer())), lwc.getPlugin().getMessageParser().parseMessage(history.getType().toString().toLowerCase()), lwc.getPlugin().getMessageParser().parseMessage(history.getStatus().toString().toLowerCase())));
+            sender.sendMessage(String.format(format, history.getId(), UUIDRegistry.getName(UUID.fromString(history.getPlayer())), lwc.getPlugin().getMessageParser().parseMessage(history.getType().toString().toLowerCase()), lwc.getPlugin().getMessageParser().parseMessage(history.getStatus().toString().toLowerCase())));
         }
     }
 
