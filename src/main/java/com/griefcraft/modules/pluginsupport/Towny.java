@@ -34,7 +34,7 @@ import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
-import com.palmergames.bukkit.towny.event.TownUnclaimEvent;
+import com.palmergames.bukkit.towny.event.PlotClearEvent;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
@@ -50,7 +50,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class Towny extends JavaModule implements Listener {
 
@@ -197,26 +196,21 @@ public class Towny extends JavaModule implements Listener {
     }
 
     @EventHandler
-    public void onTownUnclaim(TownUnclaimEvent event) {
+    public void onPlotClear(PlotClearEvent event) {
         LWC lwc = LWC.getInstance();
-        Town town = event.getTown();
-        List<TownBlock> townBlocks = town.getTownBlocks();
-
-        for (TownBlock townBlock : townBlocks) {
-            World world = townBlock.getWorldCoord().getBukkitWorld();
-            PlotBlockData pbd = new PlotBlockData(townBlock);
-            for (int x = 0; x < pbd.getSize(); ++x) {
-                for (int z = 0; z < pbd.getSize(); ++z) {
-                    for (int y = pbd.getHeight(); y > 0; --y) {
-                        int blockX = pbd.getX() * pbd.getSize() + x;
-                        int blockZ = pbd.getZ() * pbd.getSize() + z;
-                        if (!lwc.isProtectable(world.getBlockAt(blockX, y, blockZ))) {
-                            continue;
-                        }
-                        Protection protection = lwc.getPhysicalDatabase().loadProtection(world.getName(), blockX, y, blockZ);
-                        if (protection != null) {
-                            protection.remove();
-                        }
+        World world = event.getTownBlock().getWorldCoord().getBukkitWorld();
+        PlotBlockData pbd = new PlotBlockData(event.getTownBlock());
+        for (int x = 0; x < pbd.getSize(); ++x) {
+            for (int z = 0; z < pbd.getSize(); ++z) {
+                for (int y = pbd.getHeight(); y > 0; --y) {
+                    int blockX = pbd.getX() * pbd.getSize() + x;
+                    int blockZ = pbd.getZ() * pbd.getSize() + z;
+                    if (!lwc.isProtectable(world.getBlockAt(blockX, y, blockZ))) {
+                        continue;
+                    }
+                    Protection protection = lwc.getPhysicalDatabase().loadProtection(world.getName(), blockX, y, blockZ);
+                    if (protection != null) {
+                        protection.remove();
                     }
                 }
             }
