@@ -49,9 +49,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.palmergames</groupId>
+            <groupId>com.palmergames.bukkit.towny</groupId>
             <artifactId>Towny</artifactId>
-            <version>0.89.2.0</version>
+            <version>0.95.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

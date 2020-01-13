@@ -38,10 +38,12 @@ import com.palmergames.bukkit.towny.event.PlotClearEvent;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.TownyWorld;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.regen.PlotBlockData;
+import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -103,22 +105,27 @@ public class Towny extends JavaModule implements Listener {
             }
 
             try {
+                TownBlock townBlock = WorldCoord.parseWorldCoord(event.getProtection().getBlock()).getTownBlock();
+                Town town = townBlock.getTown();
+                Block block = event.getProtection().getBlock();
                 // Does the town exist?
-                Town town = WorldCoord.parseWorldCoord(event.getProtection().getBlock()).getTownBlock().getTown();
                 if (town == null) {
                     return;
                 }
 
                 // Check if the player is a resident of said town
-                if (!town.hasResident(player.getName())) {
-                    // Not a resident
-                    event.setAccess(Permission.Access.NONE);
-                } else if (town.getMayor().getName().equalsIgnoreCase(player.getName())) {
+                if (town.getMayor().getName().equalsIgnoreCase(player.getName())) {
                     // Town mayor
                     event.setAccess(Permission.Access.ADMIN);
-                } else {
+                } else if (PlayerCacheUtil.getCachePermission(player, block.getLocation(), block.getType(), TownyPermission.ActionType.DESTROY)) {
+                    // Has access to build (e.g. plot owner, embassy owner)
+                    event.setAccess(Permission.Access.PLAYER);
+                } else if (town.hasResident(player.getName())) {
                     // Resident
                     event.setAccess(Permission.Access.PLAYER);
+                } else {
+                    // Not a resident
+                    event.setAccess(Permission.Access.NONE);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
