@@ -29,6 +29,7 @@
 package com.griefcraft.modules.history;
 
 import com.griefcraft.lwc.LWC;
+import com.griefcraft.lwc.MessageParser;
 import com.griefcraft.model.Action;
 import com.griefcraft.model.History;
 import com.griefcraft.model.LWCPlayer;
@@ -176,11 +177,18 @@ public class HistoryModule extends JavaModule {
      */
     public void sendHistoryList(CommandSender sender, List<History> relatedHistory, int page, int maxPages, int historyCount) {
         LWC lwc = LWC.getInstance();
+        MessageParser parser = lwc.getPlugin().getMessageParser();
         String format = "%4s%16s%12s%10s";
 
         // Header
+        String header = String.format(format,
+                lwc.getLocaleMessage(sender, "lwc.history.id")[0],
+                lwc.getLocaleMessage(sender, "lwc.history.player")[0],
+                lwc.getLocaleMessage(sender, "lwc.history.type")[0],
+                lwc.getLocaleMessage(sender, "lwc.history.status")[0]);
+
         lwc.sendLocale(sender, "lwc.history.list",
-                "header", String.format(format, lwc.getLocaleMessage(sender, "lwc.history.id")[0], lwc.getLocaleMessage(sender, "lwc.history.player")[0], lwc.getLocaleMessage(sender, "lwc.history.type")[0], lwc.getLocaleMessage(sender, "lwc.history.status")[0]),
+                "header", header,
                 "size", relatedHistory.size(),
                 "page", page,
                 "totalpages", maxPages,
@@ -189,7 +197,11 @@ public class HistoryModule extends JavaModule {
 
         // Send all that is found to them
         for (History history : relatedHistory) {
-            sender.sendMessage(String.format(format, history.getId(), UUIDRegistry.getName(UUID.fromString(history.getPlayer())), lwc.getPlugin().getMessageParser().parseMessage(history.getType().toString().toLowerCase()), lwc.getPlugin().getMessageParser().parseMessage(history.getStatus().toString().toLowerCase())));
+            sender.sendMessage(String.format(format,
+                    history.getId(),
+                    UUIDRegistry.getName(UUID.fromString(history.getPlayer())),
+                    parser.parseMessage(history.getType().toString().toLowerCase()),
+                    parser.parseMessage(history.getStatus().toString().toLowerCase())));
         }
     }
 
