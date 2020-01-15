@@ -32,6 +32,7 @@ import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
 import com.griefcraft.listeners.LWCServerListener;
+import com.griefcraft.modules.pluginsupport.Towny;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.sql.Database;
 import com.griefcraft.util.Metrics;
@@ -352,6 +353,9 @@ public class LWCPlugin extends JavaPlugin {
         pluginManager.registerEvents(new LWCEntityListener(this), this);
         pluginManager.registerEvents(new LWCBlockListener(this), this);
         pluginManager.registerEvents(new LWCServerListener(this), this);
+        if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
+            pluginManager.registerEvents(new Towny(), this);
+        }
     }
 
     /**
