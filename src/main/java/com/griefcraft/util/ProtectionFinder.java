@@ -31,6 +31,7 @@ package com.griefcraft.util;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
+import com.griefcraft.util.matchers.BedMatcher;
 import com.griefcraft.util.matchers.DoorMatcher;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 import com.griefcraft.util.matchers.GravityMatcher;
@@ -183,6 +184,13 @@ public class ProtectionFinder {
         else if (DoorMatcher.PROTECTABLES_DOORS.contains(material)) {
             return new Matcher[]{
                     new DoorMatcher()
+            };
+        }
+
+        // Beds
+        else if (BedMatcher.BEDS.contains(material)) {
+            return new Matcher[]{
+                    new BedMatcher()
             };
         }
 
