@@ -194,7 +194,13 @@ public class Towny extends JavaModule implements Listener {
         try {
             TownBlock townBlock = world.getTownBlock(Coord.parseCoord(block));
             // If an exception is not thrown, we are in a town.
-            if (!townBlock.getTown().hasResident(event.getPlayer().getName())) {
+
+            // If the player is a resident, they can register protections.
+            if (townBlock.getTown().hasResident(event.getPlayer().getName())) {
+                return;
+            }
+            // If the player is not resident, check if they have access to the plot.
+            if (!PlayerCacheUtil.getCachePermission(event.getPlayer(), block.getLocation(), block.getType(), TownyPermission.ActionType.DESTROY)) {
                 cancel(event);
             }
         } catch (Exception e) {
