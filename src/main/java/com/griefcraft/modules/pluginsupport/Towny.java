@@ -35,6 +35,7 @@ import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
+import com.griefcraft.util.config.Configuration;
 import com.palmergames.bukkit.towny.event.PlotClearEvent;
 import com.palmergames.bukkit.towny.event.TownUnclaimEvent;
 import com.palmergames.bukkit.towny.object.Coord;
@@ -59,9 +60,9 @@ import java.util.List;
 public class Towny extends JavaModule implements Listener {
 
     /**
-     * townyBorders: If Towny borders are to be used.
+     * The Towny module configuration
      */
-    private boolean townyBorders;
+    private Configuration configuration = Configuration.load("towny.yml");
 
     /**
      * The Towny plugin
@@ -69,19 +70,31 @@ public class Towny extends JavaModule implements Listener {
     private com.palmergames.bukkit.towny.Towny towny;
 
     /**
+     * townBorders: If Towny borders are to be used.
+     */
+    private boolean townyBorders = false;
+
+    /**
      * Load the module
      */
     @Override
     public void load(LWC lwc) {
-        // Check configuration
-        this.townyBorders = lwc.getConfiguration().getBoolean("core.townyBorders", false);
-
         // Check for Towny
         Plugin townyPlugin = lwc.getPlugin().getServer().getPluginManager().getPlugin("Towny");
         if (townyPlugin == null) {
             return;
         }
 
+        // Check configuration
+        this.townyBorders = lwc.getConfiguration().getBoolean("core.townyBorders", false);
+        if (this.townyBorders) {
+            // This configuration used to be in core.yml but we'd like to migrate it to towny.yml
+            configuration.setProperty("towny.townBorders", true);
+            lwc.getConfiguration().removeProperty("core.townyBorders");
+        }
+        this.townyBorders = configuration.getBoolean("towny.townBorders", false);
+
+        // Get the Towny instance
         this.towny = (com.palmergames.bukkit.towny.Towny) townyPlugin;
     }
 
@@ -213,11 +226,17 @@ public class Towny extends JavaModule implements Listener {
 
     @EventHandler
     public void onTownUnclaim(TownUnclaimEvent event) {
+        if (!configuration.getBoolean("towny.cleanup.townUnclaim", false)) {
+            return;
+        }
         removeProtections(event.getTown().getTownBlocks());
     }
 
     @EventHandler
     public void onPlotClear(PlotClearEvent event) {
+        if (!configuration.getBoolean("towny.cleanup.plotClear", false)) {
+            return;
+        }
         removeProtections(Lists.newArrayList(event.getTownBlock()));
     }
 
