@@ -84,12 +84,6 @@ public class Towny extends JavaModule implements Listener {
         }
 
         // Check configuration
-        this.townyBorders = lwc.getConfiguration().getBoolean("core.townyBorders", false);
-        if (this.townyBorders) {
-            // This configuration used to be in core.yml but we'd like to migrate it to towny.yml
-            configuration.setProperty("towny.townBorders", true);
-            lwc.getConfiguration().removeProperty("core.townyBorders");
-        }
         this.townyBorders = configuration.getBoolean("towny.townBorders", false);
 
         // Get the Towny instance
