@@ -28,7 +28,6 @@
 
 package com.griefcraft.modules.pluginsupport;
 
-import com.google.common.collect.Lists;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
@@ -36,6 +35,7 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.griefcraft.util.config.Configuration;
+import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.event.PlotClearEvent;
 import com.palmergames.bukkit.towny.event.TownUnclaimEvent;
 import com.palmergames.bukkit.towny.object.Coord;
@@ -45,7 +45,6 @@ import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.TownyWorld;
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import com.palmergames.bukkit.towny.regen.PlotBlockData;
 import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -55,7 +54,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class Towny extends JavaModule implements Listener {
 
@@ -225,7 +223,7 @@ public class Towny extends JavaModule implements Listener {
         if (!configuration.getBoolean("towny.cleanup.townUnclaim", false)) {
             return;
         }
-        removeProtections(event.getTown().getTownBlocks());
+        removeProtections(event.getWorldCoord());
     }
 
     @EventHandler
@@ -233,26 +231,32 @@ public class Towny extends JavaModule implements Listener {
         if (!configuration.getBoolean("towny.cleanup.plotClear", false)) {
             return;
         }
-        removeProtections(Lists.newArrayList(event.getTownBlock()));
+        TownBlock townBlock = event.getTownBlock();
+        if (townBlock == null) {
+            return;
+        }
+        removeProtections(townBlock.getWorldCoord());
     }
 
-    private void removeProtections(List<TownBlock> townBlocks) {
+    private void removeProtections(WorldCoord worldCoord) {
+        if (worldCoord == null) {
+            return;
+        }
         LWC lwc = LWC.getInstance();
-        for (TownBlock townBlock : townBlocks) {
-            World world = townBlock.getWorldCoord().getBukkitWorld();
-            PlotBlockData pbd = new PlotBlockData(townBlock);
-            for (int x = 0; x < pbd.getSize(); ++x) {
-                for (int z = 0; z < pbd.getSize(); ++z) {
-                    for (int y = pbd.getHeight(); y > 0; --y) {
-                        int blockX = pbd.getX() * pbd.getSize() + x;
-                        int blockZ = pbd.getZ() * pbd.getSize() + z;
-                        if (!lwc.isProtectable(world.getBlockAt(blockX, y, blockZ))) {
-                            continue;
-                        }
-                        Protection protection = lwc.getPhysicalDatabase().loadProtection(world.getName(), blockX, y, blockZ);
-                        if (protection != null) {
-                            protection.remove();
-                        }
+        World world = worldCoord.getBukkitWorld();
+        int townBlockHeight = world.getMaxHeight() - 1;
+        int townBlockSize = TownySettings.getTownBlockSize();
+        for (int x = 0; x < townBlockSize; ++x) {
+            for (int z = 0; z < townBlockSize; ++z) {
+                for (int y = townBlockHeight; y > 0; --y) {
+                    int blockX = worldCoord.getX() * townBlockSize + x;
+                    int blockZ = worldCoord.getZ() * townBlockSize + z;
+                    if (!lwc.isProtectable(world.getBlockAt(blockX, y, blockZ))) {
+                        continue;
+                    }
+                    Protection protection = lwc.getPhysicalDatabase().loadProtection(world.getName(), blockX, y, blockZ);
+                    if (protection != null) {
+                        protection.remove();
                     }
                 }
             }
