@@ -208,7 +208,8 @@ public class Towny extends JavaModule implements Listener {
                 cancel(event);
             }
         } catch (Exception e) {
-            // If an exception is thrown, we are not in a town (do nothing).
+            // If an exception is thrown, we are not in a town.
+            cancel(event);
         }
     }
 
