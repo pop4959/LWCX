@@ -23,8 +23,8 @@
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
         <repository>
-            <id>elmakers-repo</id>
-            <url>http://maven.elmakers.com/repository/</url>
+            <id>glaremasters-repo</id>
+            <url>https://repo.glaremasters.me/repository/public/</url>
         </repository>
     </repositories>
     <dependencies>
