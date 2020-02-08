@@ -34,7 +34,10 @@ import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
+import com.griefcraft.util.config.Configuration;
+import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.event.PlotClearEvent;
+import com.palmergames.bukkit.towny.event.TownUnclaimEvent;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
@@ -42,7 +45,6 @@ import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.TownyWorld;
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import com.palmergames.bukkit.towny.regen.PlotBlockData;
 import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -56,9 +58,9 @@ import java.lang.reflect.Method;
 public class Towny extends JavaModule implements Listener {
 
     /**
-     * townyBorders: If Towny borders are to be used.
+     * The Towny module configuration
      */
-    private boolean townyBorders;
+    private Configuration configuration = Configuration.load("towny.yml");
 
     /**
      * The Towny plugin
@@ -66,19 +68,25 @@ public class Towny extends JavaModule implements Listener {
     private com.palmergames.bukkit.towny.Towny towny;
 
     /**
+     * townBorders: If Towny borders are to be used.
+     */
+    private boolean townyBorders = false;
+
+    /**
      * Load the module
      */
     @Override
     public void load(LWC lwc) {
-        // Check configuration
-        this.townyBorders = lwc.getConfiguration().getBoolean("core.townyBorders", false);
-
         // Check for Towny
         Plugin townyPlugin = lwc.getPlugin().getServer().getPluginManager().getPlugin("Towny");
         if (townyPlugin == null) {
             return;
         }
 
+        // Check configuration
+        this.townyBorders = configuration.getBoolean("towny.townBorders", false);
+
+        // Get the Towny instance
         this.towny = (com.palmergames.bukkit.towny.Towny) townyPlugin;
     }
 
@@ -195,29 +203,49 @@ public class Towny extends JavaModule implements Listener {
             TownBlock townBlock = world.getTownBlock(Coord.parseCoord(block));
             // If an exception is not thrown, we are in a town.
 
-            // If the player is a resident, they can register protections.
-            if (townBlock.getTown().hasResident(event.getPlayer().getName())) {
-                return;
-            }
-            // If the player is not resident, check if they have access to the plot.
+            // Check if they have access to the plot.
             if (!PlayerCacheUtil.getCachePermission(event.getPlayer(), block.getLocation(), block.getTypeId(), TownyPermission.ActionType.DESTROY)) {
                 cancel(event);
             }
         } catch (Exception e) {
-            // If an exception is thrown, we are not in a town (do nothing).
+            // If an exception is thrown, we are not in a town.
+            cancel(event);
         }
     }
 
     @EventHandler
+    public void onTownUnclaim(TownUnclaimEvent event) {
+        if (!configuration.getBoolean("towny.cleanup.townUnclaim", false)) {
+            return;
+        }
+        removeProtections(event.getWorldCoord());
+    }
+
+    @EventHandler
     public void onPlotClear(PlotClearEvent event) {
+        if (!configuration.getBoolean("towny.cleanup.plotClear", false)) {
+            return;
+        }
+        TownBlock townBlock = event.getTownBlock();
+        if (townBlock == null) {
+            return;
+        }
+        removeProtections(townBlock.getWorldCoord());
+    }
+
+    private void removeProtections(WorldCoord worldCoord) {
+        if (worldCoord == null) {
+            return;
+        }
         LWC lwc = LWC.getInstance();
-        World world = event.getTownBlock().getWorldCoord().getBukkitWorld();
-        PlotBlockData pbd = new PlotBlockData(event.getTownBlock());
-        for (int x = 0; x < pbd.getSize(); ++x) {
-            for (int z = 0; z < pbd.getSize(); ++z) {
-                for (int y = pbd.getHeight(); y > 0; --y) {
-                    int blockX = pbd.getX() * pbd.getSize() + x;
-                    int blockZ = pbd.getZ() * pbd.getSize() + z;
+        World world = worldCoord.getBukkitWorld();
+        int townBlockHeight = world.getMaxHeight() - 1;
+        int townBlockSize = TownySettings.getTownBlockSize();
+        for (int x = 0; x < townBlockSize; ++x) {
+            for (int z = 0; z < townBlockSize; ++z) {
+                for (int y = townBlockHeight; y > 0; --y) {
+                    int blockX = worldCoord.getX() * townBlockSize + x;
+                    int blockZ = worldCoord.getZ() * townBlockSize + z;
                     if (!lwc.isProtectable(world.getBlockAt(blockX, y, blockZ))) {
                         continue;
                     }
