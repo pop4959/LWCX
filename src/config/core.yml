@@ -31,9 +31,6 @@ core:
     # If true, LWC will not log history about protections. If you are using LWC-Economy and this is disabled, you will
     # NOT receive refunds for purchased protections
     disableHistory: false
-
-    # if true, LWC will only allow protections to be created inside of Towns via the Towny plugin
-    townyBorders: false
     
     # if true, LWC will only allow members of a faction to register protections in claims via the Factions plugin
     factionCheck: false
@@ -185,6 +182,12 @@ protections:
         furnace:
             enabled: true
             autoRegister: private
+        blast_furnace:
+            enabled: true
+            autoRegister: private
+        smoker:
+            enabled: true
+            autoRegister: private
         dispenser:
             enabled: true
             autoRegister: private
@@ -194,28 +197,10 @@ protections:
         barrel:
             enabled: true
             autoRegister: private
-        blast_furnace:
-            enabled: true
-            autoRegister: private
-        cartography_table:
-            enabled: true
-            autoRegister: private
         composter:
             enabled: true
             autoRegister: private
-        grindstone:
-            enabled: true
-            autoRegister: private
         lectern:
-            enabled: true
-            autoRegister: private
-        loom:
-            enabled: true
-            autoRegister: private
-        smoker:
-            enabled: true
-            autoRegister: private
-        stonecutter:
             enabled: true
             autoRegister: private
         shulker_box:
