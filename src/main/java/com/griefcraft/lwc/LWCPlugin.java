@@ -422,7 +422,7 @@ public class LWCPlugin extends JavaPlugin {
         LWCResourceBundle locale;
         String localization = getCurrentLocale();
 
-        File localeDir = new File("plugins/LWC/locale/");
+        File localeDir = new File(this.getDataFolder() + File.separator + "locale");
         if (!localeDir.exists()) {
             localeDir.mkdir();
         }

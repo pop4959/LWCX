@@ -74,7 +74,7 @@ public class AdminDump extends JavaModule {
 
         if (toDump.equals("locale")) {
             // check if the file already exists
-            File localeFile = new File(ModuleLoader.ROOT_PATH + "locale/lwc.properties");
+            File localeFile = new File(ModuleLoader.ROOT_PATH + File.separator + "locale" + File.separator + "lwc.properties");
 
             if (localeFile.exists()) {
                 lwc.sendLocale(sender, "lwc.admin.dump.fileexists", "file", localeFile.getPath());
@@ -82,7 +82,7 @@ public class AdminDump extends JavaModule {
             }
 
             // let's create the locale folder if needed
-            new File(ModuleLoader.ROOT_PATH + "locale/").mkdir();
+            new File(ModuleLoader.ROOT_PATH + File.separator + "locale").mkdir();
 
             try {
                 localeFile.createNewFile();

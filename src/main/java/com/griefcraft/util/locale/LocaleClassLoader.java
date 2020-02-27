@@ -28,6 +28,8 @@
 
 package com.griefcraft.util.locale;
 
+import com.griefcraft.lwc.LWC;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,7 +38,7 @@ public class LocaleClassLoader extends ClassLoader {
 
     @Override
     protected URL findResource(String name) {
-        File file = new File("plugins/LWC/locale/" + name);
+        File file = new File(LWC.getInstance().getPlugin().getDataFolder() + File.separator + "locale" + File.separator + name);
 
         try {
             return new URL("file:" + file.getAbsolutePath());

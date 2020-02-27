@@ -62,7 +62,7 @@ public class BackupManager {
     /**
      * The folder where backups are stored at
      */
-    public static String BACKUP_FOLDER = "plugins/LWC/backups/";
+    public static String BACKUP_FOLDER = LWC.getInstance().getPlugin().getDataFolder() + File.separator + "backups";
 
     /**
      * The date format to name backup files with by default
