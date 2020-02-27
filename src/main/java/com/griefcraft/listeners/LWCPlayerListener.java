@@ -45,7 +45,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Hopper;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -70,10 +69,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LWCPlayerListener implements Listener {
 
@@ -563,21 +559,6 @@ public class LWCPlayerListener implements Listener {
         }
     }
 
-    /*
-     * @EventHandler public void onPlayerChat(PlayerChatEvent event) { if
-     * (event.isCancelled() || !LWC.ENABLED) { return; }
-     *
-     * LWC lwc = plugin.getLWC(); if
-     * (!lwc.getConfiguration().getBoolean("core.filterunlock", true)) { return; }
-     *
-     * // We want to block messages starting with cunlock incase someone screws up
-     * /cunlock password. String message = event.getMessage();
-     *
-     * if (message.startsWith("cunlock") || message.startsWith("lcunlock") ||
-     * message.startsWith(".cunlock")) { event.setCancelled(true);
-     * lwc.sendLocale(event.getPlayer(), "lwc.blockedmessage"); } }
-     */
-
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         LWC lwc = plugin.getLWC();
@@ -882,57 +863,6 @@ public class LWCPlayerListener implements Listener {
         if (!canAdmin) {
             event.setCancelled(true);
         }
-    }
-
-    /**
-     * Compares the enchantments on two item stacks and checks that they are equal
-     * (identical)
-     *
-     * @param stack1
-     * @param stack2
-     * @return
-     */
-    private boolean areEnchantmentsEqual(ItemStack stack1, ItemStack stack2) {
-        if (stack1 == null || stack2 == null) {
-            return false;
-        }
-
-        Map<Enchantment, Integer> enchantments1 = stack1.getEnchantments();
-        Map<Enchantment, Integer> enchantments2 = stack2.getEnchantments();
-
-        if (enchantments1.size() != enchantments2.size()) {
-            return false;
-        }
-
-        // Enchanted Books use ItemMeta
-        if (stack1.getItemMeta() != null && stack2.getItemMeta() != null) {
-            if (!stack1.getItemMeta().equals(stack2.getItemMeta())) {
-                return false;
-            }
-        }
-
-        for (Enchantment enchantment : enchantments1.keySet()) {
-            if (!enchantments2.containsKey(enchantment)) {
-                return false;
-            }
-
-            int level1 = enchantments1.get(enchantment);
-            int level2 = enchantments2.get(enchantment);
-
-            if (level1 != level2) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static String getMinecraftVersion() {
-        Matcher matcher = Pattern.compile("(\\(MC: )([\\d\\.]+)(\\))").matcher(Bukkit.getVersion());
-        if (matcher.find()) {
-            return matcher.group(2);
-        }
-        return null;
     }
 
 }
