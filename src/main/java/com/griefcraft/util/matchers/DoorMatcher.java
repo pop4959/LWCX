@@ -39,7 +39,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Matches doors (both Iron & Wooden)
+ * Matches doors (both Iron and Wooden)
  */
 public class DoorMatcher implements ProtectionFinder.Matcher {
 

@@ -37,8 +37,8 @@ import java.util.List;
 public class History {
 
     /**
-     * The history type defines what this History object is for, such as TRANSACTION.
-     * <p/>
+     * <p>The history type defines what this History object is for, such as TRANSACTION.</p>
+     * 
      * Ordering <b>must</b> remain constant as internally, the ordinal is used and
      * if ordering is changed, LWC will experience undefined behaviour.
      */
@@ -52,8 +52,8 @@ public class History {
     }
 
     /**
-     * The status of this History object; most often ACTIVE or INACTIVE.
-     * <p/>
+     * <p>The status of this History object; most often ACTIVE or INACTIVE.</p>
+     * 
      * As with {@link Type}, the ordering <b>must</b> remain constant and not change.
      */
     public enum Status {
@@ -368,7 +368,7 @@ public class History {
     }
 
     /**
-     * Alias for {@see save}
+     * Alias for save
      */
     public void sync() {
         save();

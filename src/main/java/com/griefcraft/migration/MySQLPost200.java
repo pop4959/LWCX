@@ -41,7 +41,7 @@ public class MySQLPost200 implements MigrationUtility {
     private static Logger logger = Logger.getLogger("Patcher");
 
     /**
-     * Check for required SQLite->MySQL conversion
+     * Check for required SQLite to MySQL conversion
      */
     public void run() {
         LWC lwc = LWC.getInstance();

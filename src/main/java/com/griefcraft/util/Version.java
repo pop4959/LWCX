@@ -32,12 +32,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The version class is an immutable object representation of a semantic version (semver.org)
- * <p/>
+ * <p>The version class is an immutable object representation of a semantic version (semver.org)</p>
+ * 
  * Some (valid) test cases:
- * 1.0.1 > 1.0.0
- * 1.0.0 > 1.0.0-beta2
- * 1.0.0-beta2 > 1.0.0-alpha3
+ * 1.0.1 is greater than 1.0.0
+ * 1.0.0 is greater than 1.0.0-beta2
+ * 1.0.0-beta2 is greater than 1.0.0-alpha3
  */
 public final class Version implements Comparable<Object> {
 
