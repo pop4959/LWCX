@@ -109,7 +109,6 @@ public class UUIDRegistry {
      *
      * @param name
      * @return
-     * @throws Exception
      */
     @SuppressWarnings("deprecation")
     public static UUID getUUID(String name) {

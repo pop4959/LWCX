@@ -41,7 +41,7 @@ public class MySQLPost200 implements MigrationUtility {
     private static Logger logger = Logger.getLogger("Patcher");
 
     /**
-     * Check for required SQLite->MySQL conversion
+     * Check for required SQLite to MySQL conversion
      */
     public void run() {
         LWC lwc = LWC.getInstance();
@@ -58,7 +58,7 @@ public class MySQLPost200 implements MigrationUtility {
         String database = lwc.getConfiguration().getString("database.path");
 
         if (database == null || database.trim().equals("")) {
-            database = "plugins/LWC/lwc.db";
+            database = lwc.getPlugin().getDataFolder() + File.separator + "lwc.db";
         }
 
         File file = new File(database);

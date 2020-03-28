@@ -177,7 +177,7 @@ public class ModuleLoader {
     /**
      * Path to the root of scripts
      */
-    public final static String ROOT_PATH = "plugins/LWC/";
+    public final static String ROOT_PATH = LWC.getInstance().getPlugin().getDataFolder().toString();
 
     /**
      * Map of loaded modules
@@ -300,9 +300,9 @@ public class ModuleLoader {
     }
 
     /**
-     * Check if a method overrides a method using reflection. This method uses a
-     * cache for constant access after the caches are warm and toasty.
-     * <p/>
+     * <p>Check if a method overrides a method using reflection. This method uses a
+     * cache for constant access after the caches are warm and toasty.</p>
+     * 
      * This assumes the object is overriding JavaModule
      *
      * @param object
@@ -396,11 +396,10 @@ public class ModuleLoader {
 
     /**
      * Shutdown the plugin loader
-     *
-     * @todo broadcast UNLOAD
      */
     public void shutdown() {
         pluginModules.clear();
+        // TODO: broadcast UNLOAD
     }
 
     /**

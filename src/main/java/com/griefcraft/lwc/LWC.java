@@ -41,32 +41,8 @@ import com.griefcraft.io.BackupManager;
 import com.griefcraft.listeners.LWCMCPCSupport;
 import com.griefcraft.migration.ConfigPost300;
 import com.griefcraft.migration.MySQLPost200;
-import com.griefcraft.model.Flag;
-import com.griefcraft.model.History;
-import com.griefcraft.model.LWCPlayer;
-import com.griefcraft.model.Permission;
-import com.griefcraft.model.Protection;
-import com.griefcraft.modules.admin.AdminBackup;
-import com.griefcraft.modules.admin.AdminCache;
-import com.griefcraft.modules.admin.AdminCleanup;
-import com.griefcraft.modules.admin.AdminClear;
-import com.griefcraft.modules.admin.AdminDump;
-import com.griefcraft.modules.admin.AdminExpire;
-import com.griefcraft.modules.admin.AdminFind;
-import com.griefcraft.modules.admin.AdminFlush;
-import com.griefcraft.modules.admin.AdminForceOwner;
-import com.griefcraft.modules.admin.AdminLocale;
-import com.griefcraft.modules.admin.AdminOwnerAll;
-import com.griefcraft.modules.admin.AdminPurge;
-import com.griefcraft.modules.admin.AdminPurgeBanned;
-import com.griefcraft.modules.admin.AdminQuery;
-import com.griefcraft.modules.admin.AdminRebuild;
-import com.griefcraft.modules.admin.AdminReload;
-import com.griefcraft.modules.admin.AdminRemove;
-import com.griefcraft.modules.admin.AdminReport;
-import com.griefcraft.modules.admin.AdminVersion;
-import com.griefcraft.modules.admin.AdminView;
-import com.griefcraft.modules.admin.BaseAdminModule;
+import com.griefcraft.model.*;
+import com.griefcraft.modules.admin.*;
 import com.griefcraft.modules.confirm.ConfirmModule;
 import com.griefcraft.modules.create.CreateModule;
 import com.griefcraft.modules.credits.CreditsModule;
@@ -82,11 +58,7 @@ import com.griefcraft.modules.history.HistoryModule;
 import com.griefcraft.modules.info.InfoModule;
 import com.griefcraft.modules.limits.LimitsModule;
 import com.griefcraft.modules.limits.LimitsV2;
-import com.griefcraft.modules.modes.BaseModeModule;
-import com.griefcraft.modules.modes.DropTransferModule;
-import com.griefcraft.modules.modes.NoLockModule;
-import com.griefcraft.modules.modes.NoSpamModule;
-import com.griefcraft.modules.modes.PersistModule;
+import com.griefcraft.modules.modes.*;
 import com.griefcraft.modules.modify.ModifyModule;
 import com.griefcraft.modules.owners.OwnersModule;
 import com.griefcraft.modules.pluginsupport.Factions;
@@ -104,12 +76,7 @@ import com.griefcraft.scripting.event.LWCReloadEvent;
 import com.griefcraft.scripting.event.LWCSendLocaleEvent;
 import com.griefcraft.sql.Database;
 import com.griefcraft.sql.PhysDB;
-import com.griefcraft.util.Colors;
-import com.griefcraft.util.DatabaseThread;
-import com.griefcraft.util.ProtectionFinder;
-import com.griefcraft.util.Statistics;
-import com.griefcraft.util.StringUtil;
-import com.griefcraft.util.UUIDRegistry;
+import com.griefcraft.util.*;
 import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 import net.md_5.bungee.api.ChatMessageType;
@@ -136,14 +103,7 @@ import org.bukkit.plugin.Plugin;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class LWC {
 
@@ -264,8 +224,8 @@ public class LWC {
     }
 
     /**
-     * Normalize a name to a more readable & usable form.
-     * <p/>
+     * <p>Normalize a name to a more readable and usable form.</p>
+     * 
      * E.g sign_post/wall_sign = Sign, furnace/burning_furnace = Furnace,
      * iron_door_block = iron_door
      *
@@ -662,9 +622,11 @@ public class LWC {
      * @param player
      * @param protection
      * @param block
+     * @param hasAccess
+     * @param notice     Should this method print a notice to the player? (some events may call this several times)
      * @return true if the player was granted access
      */
-    public boolean enforceAccess(Player player, Protection protection, Block block, boolean hasAccess) {
+    public boolean enforceAccess(Player player, Protection protection, Block block, boolean hasAccess, boolean notice) {
         MessageParser parser = plugin.getMessageParser();
 
         if (block == null || protection == null) {
@@ -697,52 +659,58 @@ public class LWC {
             }
         }
 
-        boolean permShowNotices = hasPermission(player, "lwc.shownotices");
-        if ((permShowNotices && configuration.getBoolean("core.showNotices", true))
-                && !Boolean.parseBoolean(resolveProtectionConfiguration(block, "quiet"))) {
-            boolean isOwner = protection.isOwner(player);
-            boolean showMyNotices = configuration.getBoolean("core.showMyNotices", true);
+        if (notice) {
+            boolean permShowNotices = hasPermission(player, "lwc.shownotices");
+            if ((permShowNotices && configuration.getBoolean("core.showNotices", true))
+                    && !Boolean.parseBoolean(resolveProtectionConfiguration(block, "quiet"))) {
+                boolean isOwner = protection.isOwner(player);
+                boolean showMyNotices = configuration.getBoolean("core.showMyNotices", true);
 
-            if (!isOwner || (isOwner && (showMyNotices || permShowNotices))) {
-                String owner;
+                if (!isOwner || (isOwner && (showMyNotices || permShowNotices))) {
+                    String owner;
 
-                // replace your username with "you" if you own the protection
-                if (protection.isRealOwner(player)) {
-                    owner = parser.parseMessage("you");
-                } else {
-                    owner = UUIDRegistry.formatPlayerName(protection.getOwner(), false);
-                }
+                    // replace your username with "you" if you own the protection
+                    if (protection.isRealOwner(player)) {
+                        owner = parser.parseMessage("you");
+                    } else {
+                        owner = UUIDRegistry.formatPlayerName(protection.getOwner(), false);
+                    }
 
-                String blockName = materialToString(block);
-                String protectionTypeToString = parser.parseMessage(protection.typeToString().toLowerCase());
+                    String blockName = materialToString(block);
+                    String protectionTypeToString = parser.parseMessage(protection.typeToString().toLowerCase());
 
-                if (protectionTypeToString == null) {
-                    protectionTypeToString = "Unknown";
-                }
+                    if (protectionTypeToString == null) {
+                        protectionTypeToString = "Unknown";
+                    }
 
-                if (parser.parseMessage("protection." + blockName.toLowerCase() + ".notice.protected") != null) {
-                    sendLocaleToActionBar(player, "protection." + blockName.toLowerCase() + ".notice.protected", "type",
-                            protectionTypeToString, "block", blockName, "owner", owner);
-                } else {
-                    sendLocaleToActionBar(player, "protection.general.notice.protected", "type", protectionTypeToString, "block",
-                            blockName, "owner", owner);
+                    if (parser.parseMessage("protection." + blockName.toLowerCase() + ".notice.protected") != null) {
+                        sendLocaleToActionBar(player, "protection." + blockName.toLowerCase() + ".notice.protected", "type",
+                                protectionTypeToString, "block", blockName, "owner", owner);
+                    } else {
+                        sendLocaleToActionBar(player, "protection.general.notice.protected", "type", protectionTypeToString, "block",
+                                blockName, "owner", owner);
+                    }
                 }
             }
-        }
 
-        if (!hasAccess) {
-            Protection.Type type = protection.getType();
+            if (!hasAccess) {
+                Protection.Type type = protection.getType();
 
-            if (type == Protection.Type.PASSWORD) {
-                sendLocaleToActionBar(player, "protection.general.locked.password", "block", materialToString(block), "owner",
-                        protection.getOwner());
-            } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION || type == Protection.Type.DISPLAY) {
-                sendLocaleToActionBar(player, "protection.general.locked.private", "block", materialToString(block), "owner",
-                        protection.getOwner());
+                if (type == Protection.Type.PASSWORD) {
+                    sendLocaleToActionBar(player, "protection.general.locked.password", "block", materialToString(block), "owner",
+                            protection.getOwner());
+                } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION || type == Protection.Type.DISPLAY) {
+                    sendLocaleToActionBar(player, "protection.general.locked.private", "block", materialToString(block), "owner",
+                            protection.getOwner());
+                }
             }
         }
 
         return hasAccess;
+    }
+
+    public boolean enforceAccess(Player player, Protection protection, Block block, boolean hasAccess) {
+        return enforceAccess(player, protection, block, hasAccess, true);
     }
 
     /**
@@ -928,13 +896,13 @@ public class LWC {
     }
 
     /**
-     * Check the data of locale<br />
+     * <p>Check the data of locale</p>
      * Returns null if invalid
      *
      * @param sender CommandSender
-     * @param key key of locale
-     * @param args Character to be rewritten
-     *              Example: %block% --> Chest
+     * @param key    key of locale
+     * @param args   Character to be rewritten
+     *               Example: %block% = Chest
      * @return message or null
      */
     public String[] getLocaleMessage(CommandSender sender, String key, Object... args) {
@@ -943,7 +911,7 @@ public class LWC {
         String parsed = parser.parseMessage(key, args);
 
         if (parsed == null) {
-             return null; // Nothing to send
+            return null; // Nothing to send
         }
 
         // message = parsed.split("\\n");

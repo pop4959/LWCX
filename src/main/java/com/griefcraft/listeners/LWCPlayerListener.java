@@ -36,22 +36,15 @@ import com.griefcraft.model.Flag;
 import com.griefcraft.model.LWCPlayer;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.Module;
-import com.griefcraft.scripting.event.LWCBlockInteractEvent;
-import com.griefcraft.scripting.event.LWCDropItemEvent;
-import com.griefcraft.scripting.event.LWCEntityInteractEvent;
-import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
-import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
-import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
+import com.griefcraft.scripting.event.*;
 import com.griefcraft.util.UUIDRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Hopper;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -68,28 +61,15 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LWCPlayerListener implements Listener {
 
@@ -579,21 +559,6 @@ public class LWCPlayerListener implements Listener {
         }
     }
 
-    /*
-     * @EventHandler public void onPlayerChat(PlayerChatEvent event) { if
-     * (event.isCancelled() || !LWC.ENABLED) { return; }
-     *
-     * LWC lwc = plugin.getLWC(); if
-     * (!lwc.getConfiguration().getBoolean("core.filterunlock", true)) { return; }
-     *
-     * // We want to block messages starting with cunlock incase someone screws up
-     * /cunlock password. String message = event.getMessage();
-     *
-     * if (message.startsWith("cunlock") || message.startsWith("lcunlock") ||
-     * message.startsWith(".cunlock")) { event.setCancelled(true);
-     * lwc.sendLocale(event.getPlayer(), "lwc.blockedmessage"); } }
-     */
-
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         LWC lwc = plugin.getLWC();
@@ -601,11 +566,6 @@ public class LWCPlayerListener implements Listener {
         LWCPlayer lwcPlayer = lwc.wrapPlayer(player);
 
         if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
-
-        // Only accept interaction from offhand in exceptional circumstances (when fired somehow for a container)
-        if (event.getHand() == EquipmentSlot.OFF_HAND && !(event.getClickedBlock() instanceof Container)) {
             return;
         }
 
@@ -722,7 +682,8 @@ public class LWCPlayerListener implements Listener {
             }
 
             if (result == Module.Result.DEFAULT) {
-                canAccess = lwc.enforceAccess(player, protection, block, canAccess);
+                canAccess = lwc.enforceAccess(player, protection, block, canAccess,
+                        event.getHand() == EquipmentSlot.HAND);
             }
 
             if (!canAccess || result == Module.Result.CANCEL) {
@@ -902,57 +863,6 @@ public class LWCPlayerListener implements Listener {
         if (!canAdmin) {
             event.setCancelled(true);
         }
-    }
-
-    /**
-     * Compares the enchantments on two item stacks and checks that they are equal
-     * (identical)
-     *
-     * @param stack1
-     * @param stack2
-     * @return
-     */
-    private boolean areEnchantmentsEqual(ItemStack stack1, ItemStack stack2) {
-        if (stack1 == null || stack2 == null) {
-            return false;
-        }
-
-        Map<Enchantment, Integer> enchantments1 = stack1.getEnchantments();
-        Map<Enchantment, Integer> enchantments2 = stack2.getEnchantments();
-
-        if (enchantments1.size() != enchantments2.size()) {
-            return false;
-        }
-
-        // Enchanted Books use ItemMeta
-        if (stack1.getItemMeta() != null && stack2.getItemMeta() != null) {
-            if (!stack1.getItemMeta().equals(stack2.getItemMeta())) {
-                return false;
-            }
-        }
-
-        for (Enchantment enchantment : enchantments1.keySet()) {
-            if (!enchantments2.containsKey(enchantment)) {
-                return false;
-            }
-
-            int level1 = enchantments1.get(enchantment);
-            int level2 = enchantments2.get(enchantment);
-
-            if (level1 != level2) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static String getMinecraftVersion() {
-        Matcher matcher = Pattern.compile("(\\(MC: )([\\d\\.]+)(\\))").matcher(Bukkit.getVersion());
-        if (matcher.find()) {
-            return matcher.group(2);
-        }
-        return null;
     }
 
 }
