@@ -712,7 +712,7 @@ public class LWC {
                 if (protection.isRealOwner(player)) {
                     owner = parser.parseMessage("you");
                 } else {
-                    owner = protection.getFormattedOwnerPlayerName();
+                    owner = UUIDRegistry.formatPlayerName(protection.getOwner(), false);
                 }
 
                 String blockName = materialToString(block);
@@ -1966,7 +1966,7 @@ public class LWC {
                 if (type == Permission.Type.PLAYER) {
                     sendLocale(sender, "protection.interact.rights.register."
                                     + localeChild, "name",
-                            UUIDRegistry.formatPlayerName(value), "isadmin",
+                            UUIDRegistry.formatPlayerName(value, false), "isadmin",
                             isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold
                                     + "]" : "");
                 } else {
@@ -1982,7 +1982,7 @@ public class LWC {
                 if (type == Permission.Type.PLAYER) {
                     sendLocale(sender, "protection.interact.rights.remove."
                                     + localeChild, "name",
-                            UUIDRegistry.formatPlayerName(value), "isadmin",
+                            UUIDRegistry.formatPlayerName(value, false), "isadmin",
                             isAdmin ? "[" + Colors.Red + "ADMIN" + Colors.Gold
                                     + "]" : "");
                 } else {
@@ -2205,7 +2205,7 @@ public class LWC {
                 if (protection.isRealOwner(player)) {
                     owner = parser.parseMessage("you");
                 } else {
-                    owner = protection.getFormattedOwnerPlayerName();
+                    owner = UUIDRegistry.formatPlayerName(protection.getOwner(), false);
                 }
 
                 String blockName = entity.getType().getName();
