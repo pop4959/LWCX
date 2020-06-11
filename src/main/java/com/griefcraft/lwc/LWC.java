@@ -104,6 +104,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.logging.Level;
 
 public class LWC {
 
@@ -1824,10 +1825,10 @@ public class LWC {
             try {
                 registerModule(new Factions());
             } catch (NoClassDefFoundError e) {
-                this.log("Failed to hook into Factions!");
+                plugin.getLogger().warning("Failed to hook into Factions!");
                 this.log("Please make sure you are using an updated version of FactionsUUID.");
                 this.log("https://www.spigotmc.org/resources/factionsuuid.1035/");
-                e.printStackTrace();
+                plugin.getLogger().log(Level.FINE, "Unable to find necessary FactionsUUID classes:", e);
             }
         }
     }
