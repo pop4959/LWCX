@@ -34,6 +34,7 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Flag;
 import com.griefcraft.model.LWCPlayer;
+import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.event.*;
@@ -793,11 +794,13 @@ public class LWCPlayerListener implements Listener {
             }
         }
 
-        // Can they admin it? (remove items/etc)
+        // Can they admin it?
         boolean canAdmin = lwc.canAdminProtection(player, protection);
+        // Can they access it? (using getAccess instead of canAccessProtection since that is only for opening)
+        boolean canAccess = protection.getAccess(player.getUniqueId().toString(), Permission.Type.PLAYER) == Permission.Access.PLAYER;
 
-        // nope.avi
-        if (!canAdmin) {
+        // If not either, then they cannot remove items, etc
+        if (!(canAdmin || canAccess)) {
             event.setCancelled(true);
         }
     }
