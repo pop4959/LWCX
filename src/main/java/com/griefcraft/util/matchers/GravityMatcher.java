@@ -62,6 +62,11 @@ public class GravityMatcher implements ProtectionFinder.Matcher {
         } else {
             PROTECTABLES_POSTS.add(Material.getMaterial("SIGN"));
         }
+        if (VersionUtil.getMinorVersion() > 15) {
+            PROTECTABLES_POSTS.addAll(EnumSet.of(Material.CRIMSON_BUTTON, Material.WARPED_BUTTON,
+                    Material.POLISHED_BLACKSTONE_BUTTON, Material.CRIMSON_PRESSURE_PLATE, Material.WARPED_PRESSURE_PLATE,
+                    Material.POLISHED_BLACKSTONE_PRESSURE_PLATE, Material.CRIMSON_SIGN, Material.WARPED_SIGN));
+        }
     }
 
     public boolean matches(ProtectionFinder finder) {

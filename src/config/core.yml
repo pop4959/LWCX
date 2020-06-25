@@ -270,6 +270,10 @@ protections:
             enabled: true
         dark_oak_door:
             enabled: true
+        crimson_door:
+            enabled: true
+        warped_door:
+            enabled: true
         iron_trapdoor:
             enabled: true
         oak_trapdoor:
@@ -284,6 +288,10 @@ protections:
             enabled: true
         dark_oak_trapdoor:
             enabled: true
+        crimson_trapdoor:
+            enabled: true
+        warped_trapdoor:
+            enabled: true
         oak_fence_gate:
             enabled: true
         spruce_fence_gate:
@@ -295,6 +303,10 @@ protections:
         acacia_fence_gate:
             enabled: true
         dark_oak_fence_gate:
+            enabled: true
+        crimson_fence_gate:
+            enabled: true
+        warped_fence_gate:
             enabled: true
         white_banner:
             enabled: true
