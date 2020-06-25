@@ -64,6 +64,9 @@ public class WallMatcher implements ProtectionFinder.Matcher {
         } else {
             PROTECTABLES_WALL.add(Material.getMaterial("WALL_SIGN"));
         }
+        if (VersionUtil.getMinorVersion() > 15) {
+            PROTECTABLES_WALL.addAll(EnumSet.of(Material.CRIMSON_WALL_SIGN, Material.WARPED_WALL_SIGN));
+        }
     }
 
     /**
