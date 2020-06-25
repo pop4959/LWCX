@@ -4,7 +4,7 @@
     <groupId>com.griefcraft.lwc</groupId>
     <artifactId>LWCX</artifactId>
     <name>LWCX</name>
-    <version>2.2.5</version>
+    <version>2.2.6</version>
     <description>LWC Extended - An updated version of the LWC block protection plugin</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.15-R0.1-SNAPSHOT</version>
+            <version>1.16.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

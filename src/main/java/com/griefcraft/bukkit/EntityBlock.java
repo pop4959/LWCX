@@ -138,6 +138,11 @@ public class EntityBlock implements Block {
     }
 
     @Override
+    public Collection<ItemStack> getDrops(ItemStack itemStack, Entity entity) {
+        return null;
+    }
+
+    @Override
     public boolean isPassable() {
         return false;
     }
