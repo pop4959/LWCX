@@ -631,10 +631,12 @@ public class LWCPlayerListener implements Listener {
         }
 
         // Offhand slot does not exist in Minecraft 1.8
-        EquipmentSlot offhand;
+        EquipmentSlot hand, offhand;
         try {
+            hand = EquipmentSlot.valueOf("HAND");
             offhand = EquipmentSlot.valueOf("OFF_HAND");
         } catch (IllegalArgumentException e) {
+            hand = null;
             offhand = null;
         }
         if (offhand != null && offhand == event.getHand()) {
@@ -768,7 +770,7 @@ public class LWCPlayerListener implements Listener {
 
             if (result == Module.Result.DEFAULT) {
                 canAccess = lwc.enforceAccess(player, protection, block,
-                        canAccess, event.getHand() == EquipmentSlot.HAND);
+                        canAccess, hand == null || hand == event.getHand());
             }
 
             if (!canAccess || result == Module.Result.CANCEL) {
