@@ -768,7 +768,7 @@ public class LWCPlayerListener implements Listener {
 
             if (result == Module.Result.DEFAULT) {
                 canAccess = lwc.enforceAccess(player, protection, block,
-                        canAccess);
+                        canAccess, event.getHand() == EquipmentSlot.HAND);
             }
 
             if (!canAccess || result == Module.Result.CANCEL) {

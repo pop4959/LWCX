@@ -655,11 +655,13 @@ public class LWC {
      * @param player
      * @param protection
      * @param block
+     * @param hasAccess
+     * @param notice     Should this method print a notice to the player? (some events may call this several times)
      * @return true if the player was granted access
      */
     @SuppressWarnings("deprecation")
     public boolean enforceAccess(Player player, Protection protection,
-                                 Block block, boolean hasAccess) {
+                                 Block block, boolean hasAccess, boolean notice) {
         MessageParser parser = plugin.getMessageParser();
 
         if (block == null || protection == null) {
@@ -696,63 +698,68 @@ public class LWC {
             }
         }
 
-        boolean permShowNotices = hasPermission(player, "lwc.shownotices");
-        if ((permShowNotices && configuration.getBoolean("core.showNotices",
-                true))
-                && !Boolean.parseBoolean(resolveProtectionConfiguration(block,
-                "quiet"))) {
-            boolean isOwner = protection.isOwner(player);
-            boolean showMyNotices = configuration.getBoolean(
-                    "core.showMyNotices", true);
+        if (notice) {
+            boolean permShowNotices = hasPermission(player, "lwc.shownotices");
+            if ((permShowNotices && configuration.getBoolean("core.showNotices",
+                    true))
+                    && !Boolean.parseBoolean(resolveProtectionConfiguration(block,
+                    "quiet"))) {
+                boolean isOwner = protection.isOwner(player);
+                boolean showMyNotices = configuration.getBoolean(
+                        "core.showMyNotices", true);
 
-            if (!isOwner || (isOwner && (showMyNotices || permShowNotices))) {
-                String owner;
+                if (!isOwner || (isOwner && (showMyNotices || permShowNotices))) {
+                    String owner;
 
-                // replace your username with "you" if you own the protection
-                if (protection.isRealOwner(player)) {
-                    owner = parser.parseMessage("you");
-                } else {
-                    owner = UUIDRegistry.formatPlayerName(protection.getOwner(), false);
+                    // replace your username with "you" if you own the protection
+                    if (protection.isRealOwner(player)) {
+                        owner = parser.parseMessage("you");
+                    } else {
+                        owner = UUIDRegistry.formatPlayerName(protection.getOwner(), false);
+                    }
+
+                    String blockName = materialToString(block);
+                    String protectionTypeToString = parser.parseMessage(protection
+                            .typeToString().toLowerCase());
+
+                    if (protectionTypeToString == null) {
+                        protectionTypeToString = "Unknown";
+                    }
+
+                    if (parser.parseMessage("protection." + blockName.toLowerCase()
+                            + ".notice.protected") != null) {
+                        sendLocale(player, "protection." + blockName.toLowerCase()
+                                        + ".notice.protected", "type",
+                                protectionTypeToString, "block", blockName,
+                                "owner", owner);
+                    } else {
+                        sendLocale(player, "protection.general.notice.protected",
+                                "type", protectionTypeToString, "block", blockName,
+                                "owner", owner);
+                    }
                 }
+            }
 
-                String blockName = materialToString(block);
-                String protectionTypeToString = parser.parseMessage(protection
-                        .typeToString().toLowerCase());
+            if (!hasAccess) {
+                Protection.Type type = protection.getType();
 
-                if (protectionTypeToString == null) {
-                    protectionTypeToString = "Unknown";
-                }
-
-                if (parser.parseMessage("protection." + blockName.toLowerCase()
-                        + ".notice.protected") != null) {
-                    sendLocale(player, "protection." + blockName.toLowerCase()
-                                    + ".notice.protected", "type",
-                            protectionTypeToString, "block", blockName,
-                            "owner", owner);
-                } else {
-                    sendLocale(player, "protection.general.notice.protected",
-                            "type", protectionTypeToString, "block", blockName,
-                            "owner", owner);
+                if (type == Protection.Type.PASSWORD) {
+                    sendLocale(player, "protection.general.locked.password",
+                            "block", materialToString(block), "owner",
+                            protection.getOwner());
+                } else if (type == Protection.Type.PRIVATE
+                        || type == Protection.Type.DONATION) {
+                    sendLocale(player, "protection.general.locked.private",
+                            "block", materialToString(block), "owner",
+                            protection.getOwner());
                 }
             }
         }
-
-        if (!hasAccess) {
-            Protection.Type type = protection.getType();
-
-            if (type == Protection.Type.PASSWORD) {
-                sendLocale(player, "protection.general.locked.password",
-                        "block", materialToString(block), "owner",
-                        protection.getOwner());
-            } else if (type == Protection.Type.PRIVATE
-                    || type == Protection.Type.DONATION) {
-                sendLocale(player, "protection.general.locked.private",
-                        "block", materialToString(block), "owner",
-                        protection.getOwner());
-            }
-        }
-
         return hasAccess;
+    }
+
+    public boolean enforceAccess(Player player, Protection protection, Block block, boolean hasAccess) {
+        return enforceAccess(player, protection, block, hasAccess, true);
     }
 
     /**
