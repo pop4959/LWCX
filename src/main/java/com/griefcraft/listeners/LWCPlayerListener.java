@@ -630,7 +630,14 @@ public class LWCPlayerListener implements Listener {
             return;
         }
 
-        if (event.getHand() == EquipmentSlot.OFF_HAND) {
+        // Offhand slot does not exist in Minecraft 1.8
+        EquipmentSlot offhand;
+        try {
+            offhand = EquipmentSlot.valueOf("OFF_HAND");
+        } catch (IllegalArgumentException e) {
+            offhand = null;
+        }
+        if (offhand != null && offhand == event.getHand()) {
             return;
         }
 
