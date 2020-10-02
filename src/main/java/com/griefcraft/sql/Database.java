@@ -202,7 +202,7 @@ public abstract class Database {
      * @return if the connection was successful
      */
     public boolean connect() throws Exception {
-        if (connection != null) {
+        if (connection != null && !connection.isClosed() && connection.isValid(1)) {
             return true;
         }
 
@@ -242,7 +242,6 @@ public abstract class Database {
             connection = driver.connect("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
                     properties);
             connected = true;
-//			setAutoCommit(true);
             return true;
         } catch (SQLException e) {
             log("Failed to connect to " + currentType + ": " + e.getErrorCode() + " - " + e.getMessage());
