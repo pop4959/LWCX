@@ -28,6 +28,7 @@
 
 package com.griefcraft.lwc;
 
+import com.griefcraft.cache.LRUCache;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.StringUtil;
 
@@ -50,7 +51,12 @@ public class SimpleMessageParser implements MessageParser {
     /**
      * A heavy cache that includes binds.
      */
-    private final Map<String, String> bindMessageCache = new HashMap<>();
+    private final LRUCache<String, String> bindMessageCache = new LRUCache<>(1000);
+
+    /**
+     * Temporary debug variable for bind message cache hits / misses.
+     */
+    public long bindMessageCacheHits, bindMessageCacheMisses;
 
     public SimpleMessageParser(ResourceBundle locale) {
         this.locale = locale;
@@ -70,6 +76,7 @@ public class SimpleMessageParser implements MessageParser {
         }
 
         if (bindMessageCache.containsKey(cacheKey)) {
+            ++bindMessageCacheHits;
             return bindMessageCache.get(cacheKey);
         }
 
@@ -119,6 +126,7 @@ public class SimpleMessageParser implements MessageParser {
         }
 
         // include the binds
+        ++bindMessageCacheMisses;
         bindMessageCache.put(cacheKey, value);
         return value;
     }
