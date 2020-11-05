@@ -96,6 +96,11 @@ public class EntityBlock implements Block {
     }
 
     @Override
+    public boolean applyBoneMeal(BlockFace blockFace) {
+        return false;
+    }
+
+    @Override
     public Biome getBiome() {
         // TODO Auto-generated method stub
         return null;
