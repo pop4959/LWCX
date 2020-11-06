@@ -31,6 +31,7 @@ package com.griefcraft.lwc;
 import com.griefcraft.cache.LRUCache;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.StringUtil;
+import com.griefcraft.util.config.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,9 +50,16 @@ public class SimpleMessageParser implements MessageParser {
     private final Map<String, String> basicMessageCache = new HashMap<>();
 
     /**
+     * Loads the size of the bindMessageCache from the core config
+     */
+    private Configuration configuration = Configuration.load("core.yml");
+
+    public final int bindMessageCacheSize = configuration.getInt("core.bindMessageCacheSize", 1000);
+
+    /**
      * A heavy cache that includes binds.
      */
-    private final LRUCache<String, String> bindMessageCache = new LRUCache<>(1000);
+    private final LRUCache<String, String> bindMessageCache = new LRUCache<>(bindMessageCacheSize);
 
     /**
      * Temporary debug variable for bind message cache hits / misses.
