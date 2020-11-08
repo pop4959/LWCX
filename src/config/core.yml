@@ -17,9 +17,6 @@ core:
     # as much as possible
     precache: -1
 
-    # How big the message cache should be. Increase this value, if you have many bindMessageCache misses in /lwc debug
-    bindMessageCacheSize: 1000
-
     # If true, players will be sent a notice in their chat box when they open a protection they have access to, but
     # not their own unless <showMyNotices> is set to true
     showNotices: true
