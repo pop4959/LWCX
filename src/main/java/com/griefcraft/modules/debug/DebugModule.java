@@ -109,6 +109,7 @@ public class DebugModule extends JavaModule {
         if (messageParser instanceof SimpleMessageParser) {
             SimpleMessageParser simpleMessageParser = (SimpleMessageParser) messageParser;
             player.sendMessage(" ");
+            player.sendMessage("bindMessageCache size: " + simpleMessageParser.bindMessageCacheSize);
             player.sendMessage("bindMessageCache hits: " + simpleMessageParser.bindMessageCacheHits);
             player.sendMessage("bindMessageCache misses: " + simpleMessageParser.bindMessageCacheMisses);
         }
