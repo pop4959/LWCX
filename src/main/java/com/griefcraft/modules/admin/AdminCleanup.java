@@ -114,13 +114,13 @@ public class AdminCleanup extends JavaModule {
          *
          * @param toRemove
          */
-        public void push(List<Integer> toRemove) throws SQLException {
+        public void push(List<Protection> toRemove) throws SQLException {
             final StringBuilder builder = new StringBuilder();
             final int total = toRemove.size();
             int count = 0;
 
             // iterate over the items to remove
-            Iterator<Integer> iter = toRemove.iterator();
+            Iterator<Protection> iter = toRemove.iterator();
 
             // the database prefix
             String prefix = lwc.getPhysicalDatabase().getPrefix();
@@ -129,7 +129,11 @@ public class AdminCleanup extends JavaModule {
             Statement statement = lwc.getPhysicalDatabase().getConnection().createStatement();
 
             while (iter.hasNext()) {
-                int protectionId = iter.next();
+                Protection protection = iter.next();
+                int protectionId = protection.getId();
+
+                lwc.getDatabaseThread().removeProtection(protection);
+                lwc.getPlugin().getServer().getScheduler().runTask(lwc.getPlugin(), protection::removeCache);
 
                 if (count % 100000 == 0) {
                     builder.append("DELETE FROM ").append(prefix).append("protections WHERE id IN (")
@@ -153,7 +157,7 @@ public class AdminCleanup extends JavaModule {
         }
 
         public void run() {
-            List<Integer> toRemove = new LinkedList<>();
+            List<Protection> toRemove = new LinkedList<>();
             int removed = 0;
             int percentChecked = 0;
 
@@ -235,7 +239,7 @@ public class AdminCleanup extends JavaModule {
                                 boolean exists = entityExists.get();
 
                                 if (!exists) {
-                                    toRemove.add(protection.getId());
+                                    toRemove.add(protection);
                                     removed++;
 
                                     if (!silent) {
@@ -251,7 +255,7 @@ public class AdminCleanup extends JavaModule {
 
                             // remove protections not found in the world
                             if (block == null || !lwc.isProtectable(block)) {
-                                toRemove.add(protection.getId());
+                                toRemove.add(protection);
                                 removed++;
 
                                 if (!silent) {
