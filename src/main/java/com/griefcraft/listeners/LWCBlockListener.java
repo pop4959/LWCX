@@ -133,8 +133,8 @@ public class LWCBlockListener implements Listener {
             // we don't have the block id of the block before it
             // so we have to do some raw lookups (these are usually cache hits
             // however, at least!)
-            Protection protection = lwc.getPhysicalDatabase().loadProtection(block.getWorld().getName(), block.getX(),
-                    block.getY(), block.getZ());
+            // HOOK: getPersistentDataContainer()
+            Protection protection = lwc.getPhysicalDatabase().loadProtection(block);
             if (protection != null) {
                 event.setCancelled(true);
             }
@@ -520,9 +520,8 @@ public class LWCBlockListener implements Listener {
             if (blockId < 0) {
                 return;
             }
-            Protection protection = lwc.getPhysicalDatabase().registerProtection(blockId, type,
-                    block.getWorld().getName(), player.getUniqueId().toString(), "", block.getX(), block.getY(),
-                    block.getZ());
+            // HOOK: save
+            Protection protection = lwc.getPhysicalDatabase().registerProtection(blockState, type.ordinal(), player.getUniqueId().toString(), "");
 
             if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(block, "quiet"))) {
                 lwc.sendLocaleToActionBar(player, "protection.onplace.create.finalize", "type",
@@ -533,6 +532,7 @@ public class LWCBlockListener implements Listener {
             if (protection != null) {
                 lwc.getModuleLoader().dispatchEvent(new LWCProtectionRegistrationPostEvent(protection));
             }
+
             protection.saveNow();
         } catch (Exception e) {
             lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");

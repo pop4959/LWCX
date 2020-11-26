@@ -303,7 +303,8 @@ public class ProtectionFinder {
             return Result.E_NOT_FOUND;
         }
 
-        Protection protection = lwc.getPhysicalDatabase().loadProtection(block.getWorld().getName(), block.getX(), block.getY(), block.getZ());
+        // HOOK: getPersistentDataContainer()
+        Protection protection = lwc.getPhysicalDatabase().loadProtection(block);
 
         if (protection != null) {
             if (protection.getProtectionFinder() == null) {

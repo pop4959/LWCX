@@ -45,8 +45,11 @@ import com.griefcraft.util.UUIDRegistry;
 import com.griefcraft.util.config.Configuration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataHolder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -711,6 +714,95 @@ public class PhysDB extends Database {
     }
 
     /**
+     * Resolve one protection from a params.
+     *
+     * @param protectionId, x, y, z, blockId, type, world, owner, password, date, lastAccessed
+     * @return
+     */
+// HOOK: build Protection data
+    public Protection resolveProtection(int protectionId, int x, int y, int z, int blockId, int type, String world, String owner, String password, String date, long lastAccessed, String data) {
+        Protection protection = new Protection();
+
+        protection.setId(protectionId);
+        protection.setX(x);
+        protection.setY(y);
+        protection.setZ(z);
+        protection.setBlockId(blockId);
+        protection.setType(Protection.Type.values()[type]);
+        protection.setWorld(world);
+        protection.setOwner(owner);
+        protection.setPassword(password);
+        protection.setCreation(date);
+        protection.setLastAccessed(lastAccessed);
+
+        if (data == null || data.trim().isEmpty()) {
+            return protection;
+        }
+
+        // rev up them JSON parsers!
+        Object object = null;
+
+        try {
+            object = jsonParser.parse(data);
+        } catch (Exception | Error e) {
+            return protection;
+        }
+
+        if (!(object instanceof JSONObject)) {
+            return protection;
+        }
+
+        // obtain the root
+        JSONObject root = (JSONObject) object;
+        protection.getData().putAll(root);
+
+        // Attempt to parse rights
+        Object rights = root.get("rights");
+
+        if (rights != null && (rights instanceof JSONArray)) {
+            JSONArray array = (JSONArray) rights;
+
+            for (Object node : array) {
+                // we only want to use the maps
+                if (!(node instanceof JSONObject)) {
+                    continue;
+                }
+
+                JSONObject map = (JSONObject) node;
+
+                // decode the map
+                Permission permission = Permission.decodeJSON(map);
+
+                // bingo!
+                if (permission != null) {
+                    protection.addPermission(permission);
+                }
+            }
+        }
+
+        // Attempt to parse flags
+        Object flags = root.get("flags");
+        if (flags != null && (rights instanceof JSONArray)) {
+            JSONArray array = (JSONArray) flags;
+
+            for (Object node : array) {
+                if (!(node instanceof JSONObject)) {
+                    continue;
+                }
+
+                JSONObject map = (JSONObject) node;
+
+                Flag flag = Flag.decodeJSON(map);
+
+                if (flag != null) {
+                    protection.addFlag(flag);
+                }
+            }
+        }
+
+        return protection;
+    }
+    /**
      * Resolve one protection from a ResultSet. The ResultSet is not closed.
      *
      * @param set
@@ -719,8 +811,6 @@ public class PhysDB extends Database {
     @SuppressWarnings("unchecked")
     public Protection resolveProtection(ResultSet set) {
         try {
-            Protection protection = new Protection();
-
             int protectionId = set.getInt("id");
             int x = set.getInt("x");
             int y = set.getInt("y");
@@ -732,88 +822,10 @@ public class PhysDB extends Database {
             String password = set.getString("password");
             String date = set.getString("date");
             long lastAccessed = set.getLong("last_accessed");
-
-            protection.setId(protectionId);
-            protection.setX(x);
-            protection.setY(y);
-            protection.setZ(z);
-            protection.setBlockId(blockId);
-            protection.setType(Protection.Type.values()[type]);
-            protection.setWorld(world);
-            protection.setOwner(owner);
-            protection.setPassword(password);
-            protection.setCreation(date);
-            protection.setLastAccessed(lastAccessed);
-
             // check for oh so beautiful data!
             String data = set.getString("data");
 
-            if (data == null || data.trim().isEmpty()) {
-                return protection;
-            }
-
-            // rev up them JSON parsers!
-            Object object = null;
-
-            try {
-                object = jsonParser.parse(data);
-            } catch (Exception | Error e) {
-                return protection;
-            }
-
-            if (!(object instanceof JSONObject)) {
-                return protection;
-            }
-
-            // obtain the root
-            JSONObject root = (JSONObject) object;
-            protection.getData().putAll(root);
-
-            // Attempt to parse rights
-            Object rights = root.get("rights");
-
-            if (rights != null && (rights instanceof JSONArray)) {
-                JSONArray array = (JSONArray) rights;
-
-                for (Object node : array) {
-                    // we only want to use the maps
-                    if (!(node instanceof JSONObject)) {
-                        continue;
-                    }
-
-                    JSONObject map = (JSONObject) node;
-
-                    // decode the map
-                    Permission permission = Permission.decodeJSON(map);
-
-                    // bingo!
-                    if (permission != null) {
-                        protection.addPermission(permission);
-                    }
-                }
-            }
-
-            // Attempt to parse flags
-            Object flags = root.get("flags");
-            if (flags != null && (rights instanceof JSONArray)) {
-                JSONArray array = (JSONArray) flags;
-
-                for (Object node : array) {
-                    if (!(node instanceof JSONObject)) {
-                        continue;
-                    }
-
-                    JSONObject map = (JSONObject) node;
-
-                    Flag flag = Flag.decodeJSON(map);
-
-                    if (flag != null) {
-                        protection.addFlag(flag);
-                    }
-                }
-            }
-
-            return protection;
+            return resolveProtection(protectionId, x, y, z, blockId, type, world, owner, password, date, lastAccessed, data);
         } catch (SQLException e) {
             printException(e);
             return null;
@@ -920,6 +932,62 @@ public class PhysDB extends Database {
         } catch (SQLException e) {
             printException(e);
         }
+    }
+
+    /**
+     * Load a protection at the given BlockState
+     *
+     * @param block
+     * @return the Protection object
+     */
+    // HOOK: read data
+    public Protection loadProtection(BlockState block) {
+        int x = block.getX();
+        int y = block.getY();
+        int z = block.getZ();
+        String world = block.getWorld().getName();
+
+        // the unique key to use in the cache
+        String cacheKey = world + ":" + x + ":" + y + ":" + z;
+
+        // the protection cache
+        ProtectionCache cache = LWC.getInstance().getProtectionCache();
+
+        // check if the protection is already cached
+        Protection cached = cache.getProtection(cacheKey);
+        if (cached != null) {
+            return cached;
+        }
+
+        PersistentDataHolder dataHolder = null;
+        try {
+            dataHolder = (PersistentDataHolder) block;
+        } catch (ClassCastException e) {
+        }
+        if (dataHolder != null) {
+            PersistentDataContainer pdc = dataHolder.getPersistentDataContainer();
+
+            PersistentDB helper = LWC.getInstance().getPersistentDB();
+            PersistentDB.ProtectionInfo info = new PersistentDB.ProtectionInfo();
+            boolean ok = helper.readFrom(pdc, info);
+            if (ok) {
+                BlockCache blockCache = BlockCache.getInstance();
+                int blockId = blockCache.getBlockId(block.getType());
+
+                Protection protection = resolveProtection(
+                    info.protectionId, x, y, z, blockId, info.type,
+                    world, info.owner, info.password, info.date, info.lastAccessed, info.data
+                );
+                protection.usePDC = true;
+
+                // Cache it
+                cache.addProtection(protection);
+                protectionCount++;
+                return protection;
+            }
+        }
+
+        return loadProtection(world, x, y, z, false);
     }
 
     /**
@@ -1168,6 +1236,72 @@ public class PhysDB extends Database {
         return protections;
     }
 
+
+    /**
+     * Register a protection
+     *
+     * @param blockState
+     * @param type
+     * @param player
+     * @param data
+     * @return
+     */
+    // HOOK: save/pending save
+    public Protection registerProtection(BlockState block, int type, String player, String pwd) {
+        BlockCache blockCache = BlockCache.getInstance();
+        int blockId = blockCache.getBlockId(block.getType());
+        //int blockId = block.getType();
+        int x = block.getX();
+        int y = block.getY();
+        int z = block.getZ();
+        String world = block.getWorld().getName();
+
+        PersistentDataHolder dataHolder = null;
+        try {
+            dataHolder = (PersistentDataHolder) block;
+        } catch (ClassCastException e) {
+        }
+        if (dataHolder != null) {
+            PersistentDataContainer pdc = dataHolder.getPersistentDataContainer();
+
+            String date = new Timestamp(new Date().getTime()).toString();
+            long lastAccessed = System.currentTimeMillis() / 1000L;
+
+            // build data to write
+            PersistentDB helper = LWC.getInstance().getPersistentDB();
+            PersistentDB.ProtectionInfo info = new PersistentDB.ProtectionInfo();
+            info.protectionId = helper.getID();
+            info.type = type;
+            info.owner = player;
+            info.password = pwd;
+            info.date = date;
+            info.lastAccessed = lastAccessed;
+            info.data = "";
+
+            // write data & update BlockState
+            boolean ok = helper.saveTo(pdc, info);
+            if (ok) {
+                // write back!!
+                block.update(true); // update(true)?
+
+                Protection protection = resolveProtection(info.protectionId, x, y, z, blockId, type, world, player, pwd, date, lastAccessed, "");
+                protection.usePDC = true;
+
+                // We need to create the initial transaction for this protection
+                // this transaction is viewable and modifiable during
+                // POST_REGISTRATION
+                protection.removeCache();
+
+                // Cache it
+                ProtectionCache cache = LWC.getInstance().getProtectionCache();
+                cache.addProtection(protection);
+                protectionCount++;
+                return protection;
+            }
+        }
+        return registerProtection(blockId, Protection.Type.values()[type], world, player, pwd, x, y, z);
+    }
+
     /**
      * Register a protection
      *
@@ -1181,9 +1315,9 @@ public class PhysDB extends Database {
      * @param z
      * @return
      */
-    public Protection registerProtection(int blockId, int type, String world, String player, String data, int x, int y,
+    public Protection registerProtection(int blockId, int type, String world, String player, String pwd, int x, int y,
                                          int z) {
-        return registerProtection(blockId, Protection.Type.values()[type], world, player, data, x, y, z);
+        return registerProtection(blockId, Protection.Type.values()[type], world, player, pwd, x, y, z);
     }
 
     /**
@@ -1200,7 +1334,7 @@ public class PhysDB extends Database {
      * @return
      */
     public Protection registerProtection(int blockId, Protection.Type type, String world, String player,
-                                         String data, int x, int y, int z) {
+                                         String pwd, int x, int y, int z) {
         ProtectionCache cache = LWC.getInstance().getProtectionCache();
         try {
             statement = prepare("INSERT INTO " + prefix
@@ -1209,7 +1343,7 @@ public class PhysDB extends Database {
             statement.setInt(2, type.ordinal());
             statement.setString(3, world);
             statement.setString(4, player);
-            statement.setString(5, data);
+            statement.setString(5, pwd);
             statement.setInt(6, x);
             statement.setInt(7, y);
             statement.setInt(8, z);
@@ -1802,6 +1936,7 @@ public class PhysDB extends Database {
      *
      * @param protection
      */
+// HOOK: save
     public void saveProtection(Protection protection) {
         try {
             PreparedStatement statement = prepare("REPLACE INTO " + prefix

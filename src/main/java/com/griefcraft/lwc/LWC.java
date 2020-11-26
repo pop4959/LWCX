@@ -76,6 +76,7 @@ import com.griefcraft.scripting.event.LWCReloadEvent;
 import com.griefcraft.scripting.event.LWCSendLocaleEvent;
 import com.griefcraft.sql.Database;
 import com.griefcraft.sql.PhysDB;
+import com.griefcraft.sql.PersistentDB;
 import com.griefcraft.util.*;
 import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
@@ -172,6 +173,11 @@ public class LWC {
      */
     private boolean alternativeHoppers;
 
+    /**
+     * helper for PersistentDataContainer
+     */
+    public PersistentDB persistentDB;
+
     public LWC(LWCPlugin plugin) {
         this.plugin = plugin;
         LWC.instance = this;
@@ -180,6 +186,7 @@ public class LWC {
         protectionCache = new ProtectionCache(this);
         backupManager = new BackupManager();
         moduleLoader = new ModuleLoader(this);
+        persistentDB = new PersistentDB(plugin);
     }
 
     /**
@@ -589,6 +596,12 @@ public class LWC {
         }
 
         physicalDatabase = null;
+
+
+        if (persistentDB != null) {
+            persistentDB.dispose();
+        }
+
 
         // Clean ourselves up
         instance = null;
@@ -2125,6 +2138,13 @@ public class LWC {
      */
     public PhysDB getPhysicalDatabase() {
         return physicalDatabase;
+    }
+
+    /**
+     * @return PersistentDataContainer helper object
+     */
+    public PersistentDB getPersistentDB() {
+        return persistentDB;
     }
 
     /**
