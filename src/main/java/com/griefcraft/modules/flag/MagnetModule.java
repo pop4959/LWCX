@@ -48,9 +48,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 
 public class MagnetModule extends JavaModule {
@@ -99,6 +101,7 @@ public class MagnetModule extends JavaModule {
             Server server = Bukkit.getServer();
             LWC lwc = LWC.getInstance();
 
+            Map<Item, List<Protection>> itemsToCheck = new HashMap<>();
             // Do we need to requeue?
             if (items.size() == 0) {
                 for (World world : server.getWorlds()) {
@@ -141,36 +144,75 @@ public class MagnetModule extends JavaModule {
                             continue;
                         }
 
-                        Location location = item.getLocation();
-                        int x = location.getBlockX();
-                        int y = location.getBlockY();
-                        int z = location.getBlockZ();
+                        itemsToCheck.put(item, null); // add to check later, async
+                    }
+                }
+            }
 
-                        List<Protection> protections = lwc.getPhysicalDatabase().loadProtections(world.getName(), x, y,
-                                z, radius);
-                        for (Protection protection : protections) {
-                            if (protection.hasFlag(Flag.Type.MAGNET)) {
+            boolean needsAsync = !lwc.getPhysicalDatabase().hasAllProtectionsCached();
+            if (needsAsync) {
+                Bukkit.getScheduler().runTaskAsynchronously(LWC.getInstance().getPlugin(), () -> this.runAsyncTask(itemsToCheck, true)); // loadProtections can be async
+            } else {
+                this.runAsyncTask(itemsToCheck, false);
+            }
+        }
 
-                                if (protection.getBukkitWorld().getName() != item.getWorld().getName())
-                                    continue;
+        private void runAsyncTask(Map<Item, List<Protection>> items, boolean needsAsync) {
+            LWC lwc = LWC.getInstance();
 
-                                // we only want inventory blocks
-                                if (!(protection.getBlock().getState() instanceof InventoryHolder)) {
-                                    continue;
-                                }
+            Map<Item, List<Protection>> itemProtectionMap = new HashMap<>(items.size());
 
-                                // never allow a shulker box to enter another shulker box
-                                if (item.getItemStack().getType().toString().contains("SHULKER_BOX") && protection.getBlock().getType().toString().contains("SHULKER_BOX")) {
-                                    continue;
-                                }
+            for (Map.Entry<Item, List<Protection>> entry : items.entrySet()) {
+                Item item = entry.getKey();
+                Location location = item.getLocation();
+                int x = location.getBlockX();
+                int y = location.getBlockY();
+                int z = location.getBlockZ();
 
-                                MagnetNode node = new MagnetNode();
-                                node.item = item;
-                                node.protection = protection;
-                                items.offer(node);
-                                break;
-                            }
+                List<Protection> protections = lwc.getPhysicalDatabase().loadProtections(item.getWorld().getName(), x, y,
+                  z, radius);
+                entry.setValue(protections);
+            }
+
+            if (needsAsync) {
+                Bukkit.getScheduler().runTask(LWC.getInstance().getPlugin(), () -> this.handleItems(itemProtectionMap));
+            } else {
+                this.handleItems(itemProtectionMap);
+            }
+        }
+
+        private void handleItems(Map<Item, List<Protection>> itemsToCheck) {
+            LWC lwc = LWC.getInstance();
+
+            for (Map.Entry<Item, List<Protection>> entry : itemsToCheck.entrySet()) {
+                Item item = entry.getKey();
+                List<Protection> protections = entry.getValue();
+
+                if (!item.isDead()) {
+                    continue;
+                }
+
+                for (Protection protection : protections) {
+                    if (protection.hasFlag(Flag.Type.MAGNET)) {
+
+                        if (!Objects.equals(protection.getBukkitWorld().getName(), item.getWorld().getName()))
+                            continue;
+
+                        // we only want inventory blocks
+                        if (!(protection.getBlock().getState() instanceof InventoryHolder)) {
+                            continue;
                         }
+
+                        // never allow a shulker box to enter another shulker box
+                        if (item.getItemStack().getType().toString().contains("SHULKER_BOX") && protection.getBlock().getType().toString().contains("SHULKER_BOX")) {
+                            continue;
+                        }
+
+                        MagnetNode node = new MagnetNode();
+                        node.item = item;
+                        node.protection = protection;
+                        MagnetModule.this.items.offer(node);
+                        break;
                     }
                 }
             }
