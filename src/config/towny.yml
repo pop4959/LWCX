@@ -8,3 +8,5 @@ towny:
         plotClear: false
         # Should LWC remove protections when the town is unclaimed?
         townUnclaim: false
+        # Should LWC remove protections when a town goes to Ruin?
+        townRuin: false
