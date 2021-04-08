@@ -26,6 +26,10 @@
             <id>glaremasters-repo</id>
             <url>https://repo.glaremasters.me/repository/public/</url>
         </repository>
+	    <repository>
+	        <id>jitpack.io</id>
+	        <url>https://jitpack.io</url>
+	    </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -49,9 +53,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.palmergames.bukkit.towny</groupId>
+            <groupId>com.github.TownyAdvanced</groupId>
             <artifactId>Towny</artifactId>
-            <version>0.95.1.0</version>
+            <version>0.96.7.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
