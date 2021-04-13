@@ -214,16 +214,15 @@ public abstract class Database {
         // load the database jar
         ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
 
-        // What class should we try to load?
-        String className = "";
-        if (currentType == Type.MySQL) {
-            className = "com.mysql.jdbc.Driver";
-        } else {
-            className = "org.sqlite.JDBC";
-        }
-
         // Load the driver class
-        Driver driver = (Driver) classLoader.loadClass(className).newInstance();
+        Driver driver;
+        if (currentType == Type.MySQL) {
+            // Use our shaded MySQL driver
+            driver = new com.mysql.jdbc.Driver();
+        } else {
+            // Use the server's built-in SQLite driver
+            driver = (Driver) classLoader.loadClass("org.sqlite.JDBC").newInstance();
+        }
 
         // Create the properties to pass to the driver
         Properties properties = new Properties();
