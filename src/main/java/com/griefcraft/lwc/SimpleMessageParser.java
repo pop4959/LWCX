@@ -99,13 +99,7 @@ public class SimpleMessageParser implements MessageParser {
             value = locale.getString(key);
 
             // apply colors
-            for (String colorKey : Colors.localeColors.keySet()) {
-                String color = Colors.localeColors.get(colorKey);
-
-                if (value.contains(colorKey)) {
-                    value = StringUtil.fastReplace(value, colorKey, color);
-                }
-            }
+            value = Colors.apply(value);
 
             // Apply aliases
             String[] aliasvars = new String[]{"cprivate", "cpublic", "cpassword", "cmodify", "cunlock", "cinfo", "cremove"};
