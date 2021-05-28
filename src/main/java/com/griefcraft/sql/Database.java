@@ -34,10 +34,9 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.ModuleException;
 import com.griefcraft.util.Statistics;
 import com.griefcraft.util.config.Configuration;
-import org.bukkit.Bukkit;
 
 import java.sql.Connection;
-import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,19 +46,9 @@ import java.util.concurrent.TimeUnit;
 public abstract class Database {
 
     public enum Type {
-        MySQL("mysql.jar"),
-        SQLite("sqlite.jar"),
-        NONE("nil");
-
-        private String driver;
-
-        Type(String driver) {
-            this.driver = driver;
-        }
-
-        public String getDriver() {
-            return driver;
-        }
+        MySQL,
+        SQLite,
+        NONE;
 
         /**
          * Match the given string to a database type
@@ -211,19 +200,6 @@ public abstract class Database {
             return false;
         }
 
-        // load the database jar
-        ClassLoader classLoader = Bukkit.getServer().getClass().getClassLoader();
-
-        // Load the driver class
-        Driver driver;
-        if (currentType == Type.MySQL) {
-            // Use our shaded MySQL driver
-            driver = new com.mysql.jdbc.Driver();
-        } else {
-            // Use the server's built-in SQLite driver
-            driver = (Driver) classLoader.loadClass("org.sqlite.JDBC").newInstance();
-        }
-
         // Create the properties to pass to the driver
         Properties properties = new Properties();
 
@@ -238,7 +214,7 @@ public abstract class Database {
 
         // Connect to the database
         try {
-            connection = driver.connect("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
+            connection = DriverManager.getConnection("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
                     properties);
             connected = true;
             return true;
