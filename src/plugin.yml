@@ -152,6 +152,9 @@ permissions:
       description: Allows you to view the owner and other misc data on a protection.
   lwc.remove:
       description: Allows you to remove protections you own.
+  lwc.removeall:
+    description: Allows you to remove all protections you own.
+    default: true
 
   lwc.flag.*:
       description: Gives you access to every usable flag.
