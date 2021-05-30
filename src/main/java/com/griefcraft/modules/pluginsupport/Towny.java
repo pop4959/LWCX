@@ -116,20 +116,20 @@ public class Towny extends JavaModule implements Listener {
             Block block = event.getProtection().getBlock();
             if (TownyAPI.getInstance().isWilderness(block))
             	return; // Return if we're in the wilderness.
-            
+
             Town town = TownyAPI.getInstance().getTown(block.getLocation());
             TownBlock townBlock = TownyAPI.getInstance().getTownBlock(block.getLocation());
             if (town == null || townBlock == null) {
             	return;
             }
-            
+
             String ownerName = null;
             if (townBlock.hasResident()) {
-            	try { // Get the name of the resident who personally owns the plot, if someone does own it personally. 
+            	try { // Get the name of the resident who personally owns the plot, if someone does own it personally.
 					ownerName = townBlock.getResident().getName();
 				} catch (NotRegisteredException ignored) {}
             }
-            
+
             // Check if the player is a resident of said town, or should otherwise have permissions based on Towny's ruleset.
             if (town.getMayor().getName().equalsIgnoreCase(player.getName())) {
                 // Town mayor
@@ -159,31 +159,37 @@ public class Towny extends JavaModule implements Listener {
     }
 
     /*
-     * Registers protection if the block is not in the wilderness and the player is able to Destroy at the location.
+     * Prevents protection registration if either the block is not accessible to the player in the town, or if the
+     * block is in the wilderness and towny borders is enabled.
      */
     @Override
     public void onRegisterProtection(LWCProtectionRegisterEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
-        if (!townyBorders || towny == null || !TownyAPI.getInstance().isTownyWorld(event.getBlock().getWorld())) {
+        if (event.isCancelled() || towny == null || !TownyAPI.getInstance().isTownyWorld(event.getBlock().getWorld())) {
             return;
         }
 
         // The block being protected
         Block block = event.getBlock();
 
+        Town town = TownyAPI.getInstance().getTown(block.getLocation());
+
+        if (town != null && !PlayerCacheUtil.getCachePermission(event.getPlayer(), block.getLocation(), block.getType(), TownyPermission.ActionType.DESTROY)) {
+            cancel(event);
+            return;
+        }
+
+        if (!townyBorders) {
+            return;
+        }
+
         if (TownyAPI.getInstance().isWilderness(block)) {
         	cancel(event);
-        } else if (!PlayerCacheUtil.getCachePermission(event.getPlayer(), block.getLocation(), block.getType(), TownyPermission.ActionType.DESTROY)) {
-            cancel(event);
         }
     }
 
     /*
-     * When a townblock is unclaimed by a town, 
-     * this will remove any protections present in the townblock, 
+     * When a townblock is unclaimed by a town,
+     * this will remove any protections present in the townblock,
      * if this feature is enabled in the config.
      */
     @EventHandler
@@ -195,7 +201,7 @@ public class Towny extends JavaModule implements Listener {
     }
 
     /*
-     * When a plot is "cleared" of special blocks, 
+     * When a plot is "cleared" of special blocks,
      * this will remove any protections present in the townblock,
      * if this feature is enabled in the config.
      */
@@ -210,9 +216,9 @@ public class Towny extends JavaModule implements Listener {
         }
         removeProtections(townBlock.getWorldCoord());
     }
-    
+
     /*
-     * When a town falls to Ruin status, 
+     * When a town falls to Ruin status,
      * this will remove any protections present in the town,
      * if this feature is enabled in the config.
      */
@@ -221,7 +227,7 @@ public class Towny extends JavaModule implements Listener {
     	if (!configuration.getBoolean("towny.cleanup.townRuin", false)) {
     		return;
     	}
-    	
+
     	for (TownBlock townBlock : new ArrayList<TownBlock>(event.getTown().getTownBlocks())) {
     		removeProtections(townBlock.getWorldCoord());
     	}
@@ -230,7 +236,7 @@ public class Towny extends JavaModule implements Listener {
     /**
      * Parses over the blocks in a Towny WorldCoord (Essentially a TownBlock,)
      * and removes any LWC protections present.
-     * 
+     *
      * @param worldCoord WorldCoord from which to remove any protections.
      */
     private void removeProtections(WorldCoord worldCoord) {
