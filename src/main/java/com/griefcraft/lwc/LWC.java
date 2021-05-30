@@ -1907,6 +1907,7 @@ public class LWC {
         for (String value : arguments) {
             boolean remove = false;
             boolean isAdmin = false;
+            boolean ownerChange = false;
             Permission.Type type = Permission.Type.PLAYER;
 
             // Gracefully ignore id
@@ -1959,11 +1960,20 @@ public class LWC {
                 value = value.substring(7);
             }
 
+            if (value.toLowerCase().startsWith("owner:")) {
+                type = Permission.Type.PLAYER;
+                ownerChange = true;
+                value = value.substring(6);
+            }
+
             if (value.trim().isEmpty()) {
                 continue;
             }
 
             String localeChild = type.toString().toLowerCase();
+
+            // Store the original value (keep player name / original input)
+            final String originalValue = value;
 
             // If it's a player, convert it to UUID
             if (type == Permission.Type.PLAYER) {
@@ -1972,6 +1982,13 @@ public class LWC {
                 if (uuid != null) {
                     value = uuid.toString();
                 }
+            }
+
+            if (ownerChange) {
+                protection.setOwner(value);
+                protection.save();
+                sendLocale(sender, "protection.interact.forceowner.finalize", "player", UUIDRegistry.formatPlayerName(originalValue, false));
+                continue;
             }
 
             if (!remove) {
