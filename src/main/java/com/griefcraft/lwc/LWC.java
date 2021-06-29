@@ -28,6 +28,7 @@
 
 package com.griefcraft.lwc;
 
+import com.griefcraft.cache.DefaultsCache;
 import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
@@ -60,6 +61,7 @@ import com.griefcraft.modules.limits.LimitsModule;
 import com.griefcraft.modules.limits.LimitsV2;
 import com.griefcraft.modules.modes.*;
 import com.griefcraft.modules.modify.ModifyModule;
+import com.griefcraft.modules.modifydefault.DefaultModule;
 import com.griefcraft.modules.owners.OwnersModule;
 import com.griefcraft.modules.pluginsupport.Factions;
 import com.griefcraft.modules.pluginsupport.Towny;
@@ -138,6 +140,11 @@ public class LWC {
     private final ProtectionCache protectionCache;
 
     /**
+     * The defaults cache
+     */
+    private final DefaultsCache defaultsCache;
+
+    /**
      * Physical database instance
      */
     private PhysDB physicalDatabase;
@@ -178,6 +185,7 @@ public class LWC {
         configuration = Configuration.load("core.yml");
         alternativeHoppers = configuration.getBoolean("optional.alternativeHopperProtection", false);
         protectionCache = new ProtectionCache(this);
+        defaultsCache = new DefaultsCache(this);
         backupManager = new BackupManager();
         moduleLoader = new ModuleLoader(this);
     }
@@ -225,7 +233,7 @@ public class LWC {
 
     /**
      * <p>Normalize a name to a more readable and usable form.</p>
-     * 
+     *
      * E.g sign_post/wall_sign = Sign, furnace/burning_furnace = Furnace,
      * iron_door_block = iron_door
      *
@@ -1733,6 +1741,7 @@ public class LWC {
         registerModule(new LimitsModule());
         registerModule(new CreateModule());
         registerModule(new ModifyModule());
+        registerModule(new DefaultModule());
         registerModule(new DestroyModule());
         registerModule(new FreeModule());
         registerModule(new InfoModule());
@@ -2006,6 +2015,28 @@ public class LWC {
         }
     }
 
+    public void processDefaultModifications(CommandSender sender, String data) {
+        String senderId = null;
+        UUID uuid = UUIDRegistry.getUUID(sender.getName());
+        if (uuid != null) {
+            senderId = uuid.toString();
+        } else {
+            sendLocale(sender, "lwc.defaults.error");
+            return;
+        }
+        Default defaults = new Default();
+        defaults.setOwner(senderId);
+        defaults.setData(data);
+        defaults.save();
+        if("-".equals(data)) {
+            defaultsCache.clear(sender);
+            sendLocale(sender, "lwc.defaults.cleared");
+        } else {
+            defaultsCache.set(sender, data);
+            sendLocale(sender, "lwc.defaults.saved");
+        }
+    }
+
     /**
      * Reload internal data structures
      */
@@ -2153,6 +2184,10 @@ public class LWC {
      */
     public double getVersion() {
         return Double.parseDouble(plugin.getDescription().getVersion());
+    }
+
+    public DefaultsCache getDefaultsCache() {
+        return defaultsCache;
     }
 
     /**
