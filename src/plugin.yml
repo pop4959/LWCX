@@ -90,6 +90,9 @@ commands:
     description: Flag to allow a given protection to explode from explosions.
   ctnt:
     description: Flag to allow a given protection to explode from explosions.
+  cdefault:
+    description: Sets the default protection to run on newly placed private chests.
+    usage: /<command> <Modifications>
 
 permissions:
 
@@ -145,7 +148,7 @@ permissions:
     description: Allows you to create a display protection.
 
   lwc.modify:
-      description: Allows you to modify protections you own.
+      description: Allows you to modify protections you own, and use the default command.
   lwc.unlock:
       description: Allows you to unlock password-protected protections.
   lwc.info:
