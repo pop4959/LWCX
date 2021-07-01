@@ -61,6 +61,10 @@ public class DefaultModule extends JavaModule {
         LWC lwc = event.getLWC();
         if(event.getProtection().getType() == Protection.Type.PRIVATE) {
             String data = lwc.getDefaultsCache().getOrLoad(event.getPlayer());
+            if(data == null) {
+                // They have not set a default yet.
+                return;
+            }
             // Fake a command + interact through the ModifyModule, to ensure we automatically
             // pick up future changes to the system.
             ModifyModule modify = new ModifyModule();
