@@ -400,8 +400,6 @@ public class PhysDB extends Database {
             column = new Column("id");
             column.setType("INTEGER");
             column.setPrimary(true);
-            column.setAutoIncrement(true);
-            column.setAutoIncrement(false);
             blocks.add(column);
 
             column = new Column("name");
