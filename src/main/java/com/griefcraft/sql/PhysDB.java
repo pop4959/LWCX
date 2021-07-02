@@ -286,6 +286,7 @@ public class PhysDB extends Database {
             column = new Column("id");
             column.setType("INTEGER");
             column.setPrimary(true);
+            column.setAutoIncrement(true);
             protections.add(column);
 
             column = new Column("owner");
@@ -342,6 +343,7 @@ public class PhysDB extends Database {
             column = new Column("id");
             column.setType("INTEGER");
             column.setPrimary(true);
+            column.setAutoIncrement(true);
             history.add(column);
 
             column = new Column("protectionId");
@@ -386,7 +388,6 @@ public class PhysDB extends Database {
             column = new Column("name");
             column.setType("VARCHAR(40)");
             column.setPrimary(true);
-            column.setAutoIncrement(false);
             internal.add(column);
 
             column = new Column("value");
@@ -399,7 +400,6 @@ public class PhysDB extends Database {
             column = new Column("id");
             column.setType("INTEGER");
             column.setPrimary(true);
-            column.setAutoIncrement(false);
             blocks.add(column);
 
             column = new Column("name");
