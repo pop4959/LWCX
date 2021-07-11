@@ -102,6 +102,7 @@ public class MagnetModule extends JavaModule {
             // Do we need to requeue?
             if (items.size() == 0) {
                 for (World world : server.getWorlds()) {
+                    entitiesLoop:
                     for (Entity entity : world.getEntities()) {
                         if (isDisplay(entity)) {
                             continue;
@@ -133,14 +134,6 @@ public class MagnetModule extends JavaModule {
                             continue;
                         }
 
-                        LWCMagnetPullEvent event = new LWCMagnetPullEvent(item);
-                        lwc.getModuleLoader().dispatchEvent(event);
-
-                        // has the event been cancelled?
-                        if (event.isCancelled()) {
-                            continue;
-                        }
-
                         Location location = item.getLocation();
                         int x = location.getBlockX();
                         int y = location.getBlockY();
@@ -154,14 +147,25 @@ public class MagnetModule extends JavaModule {
                                 if (protection.getBukkitWorld().getName() != item.getWorld().getName())
                                     continue;
 
+                                // where the item will go
+                                Block destination = protection.getBlock();
+
                                 // we only want inventory blocks
-                                if (!(protection.getBlock().getState() instanceof InventoryHolder)) {
+                                if (!(destination.getState() instanceof InventoryHolder)) {
                                     continue;
                                 }
 
                                 // never allow a shulker box to enter another shulker box
-                                if (item.getItemStack().getType().toString().contains("SHULKER_BOX") && protection.getBlock().getType().toString().contains("SHULKER_BOX")) {
+                                if (item.getItemStack().getType().toString().contains("SHULKER_BOX") && destination.getType().toString().contains("SHULKER_BOX")) {
                                     continue;
+                                }
+
+                                LWCMagnetPullEvent event = new LWCMagnetPullEvent(item,destination);
+                                lwc.getModuleLoader().dispatchEvent(event);
+
+                                // has the event been cancelled?
+                                if (event.isCancelled()) {
+                                    continue entitiesLoop;
                                 }
 
                                 MagnetNode node = new MagnetNode();

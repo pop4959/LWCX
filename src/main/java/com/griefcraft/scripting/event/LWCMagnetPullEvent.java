@@ -29,22 +29,34 @@
 package com.griefcraft.scripting.event;
 
 import com.griefcraft.scripting.ModuleLoader;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.event.Cancellable;
 
 public class LWCMagnetPullEvent extends LWCEvent implements Cancellable {
 
     private Item item;
+    private Block destination;
     private boolean cancelled;
 
+    public LWCMagnetPullEvent(Item item, Block destination) {
+        super(ModuleLoader.Event.MAGNET_PULL);
+        this.item = item;
+        this.destination = destination;
+    }
+
+    @Deprecated
     public LWCMagnetPullEvent(Item item) {
         super(ModuleLoader.Event.MAGNET_PULL);
-
         this.item = item;
     }
 
     public Item getItem() {
         return item;
+    }
+
+    public Block getDestination() {
+        return destination;
     }
 
     public boolean isCancelled() {
