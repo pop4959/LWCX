@@ -102,7 +102,6 @@ public class MagnetModule extends JavaModule {
             // Do we need to requeue?
             if (items.size() == 0) {
                 for (World world : server.getWorlds()) {
-                    entitiesLoop:
                     for (Entity entity : world.getEntities()) {
                         if (isDisplay(entity)) {
                             continue;
@@ -165,7 +164,7 @@ public class MagnetModule extends JavaModule {
 
                                 // has the event been cancelled?
                                 if (event.isCancelled()) {
-                                    continue entitiesLoop;
+                                    break;
                                 }
 
                                 MagnetNode node = new MagnetNode();
