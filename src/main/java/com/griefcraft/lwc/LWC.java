@@ -440,7 +440,6 @@ public class LWC {
      * @param itemStack
      * @return remaining items (if any)
      */
-    @SuppressWarnings("deprecation")
     public Map<Integer, ItemStack> depositItems(Block block, ItemStack itemStack) {
         BlockState blockState;
 
@@ -455,12 +454,10 @@ public class LWC {
 
                 if (inventory.getItem(0) != null && inventory.getItem(1) != null) {
                     if (inventory.getItem(0).getType() == itemStack.getType()
-                            && inventory.getItem(0).getData().getData() == itemStack.getData().getData()
                             && inventory.getItem(0)
                             .getMaxStackSize() >= (inventory.getItem(0).getAmount() + itemStack.getAmount())) {
                         // ItemStack fits on Slot 0
                     } else if (inventory.getItem(1).getType() == itemStack.getType()
-                            && inventory.getItem(1).getData().getData() == itemStack.getData().getData()
                             && inventory.getItem(1)
                             .getMaxStackSize() >= (inventory.getItem(1).getAmount() + itemStack.getAmount())) {
                         // ItemStack fits on Slot 1
@@ -1279,10 +1276,9 @@ public class LWC {
      * @param block2
      * @return
      */
-    @SuppressWarnings("deprecation")
     public boolean blockEquals(Block block, Block block2) {
         return block.getType() == block2.getType() && block.getX() == block2.getX() && block.getY() == block2.getY()
-                && block.getZ() == block2.getZ() && block.getData() == block2.getData();
+                && block.getZ() == block2.getZ();
     }
 
     /**
@@ -1364,10 +1360,9 @@ public class LWC {
      * @return
      */
 
-    @SuppressWarnings("deprecation")
     public boolean blockEquals(BlockState block, BlockState block2) {
         return block.getType() == block2.getType() && block.getX() == block2.getX() && block.getY() == block2.getY()
-                && block.getZ() == block2.getZ() && block.getRawData() == block2.getRawData();
+                && block.getZ() == block2.getZ();
     }
 
     public Protection findProtection(World world, int x, int y, int z) {
@@ -1404,7 +1399,7 @@ public class LWC {
     @SuppressWarnings("deprecation")
     public String resolveProtectionConfiguration(BlockState state, String node) {
         Material material = state.getType();
-        String cacheKey = state.getRawData() + "-" + material.toString() + "-" + node;
+        String cacheKey = material.toString() + "-" + node;
         if (protectionConfigurationCache.containsKey(cacheKey)) {
             return protectionConfigurationCache.get(cacheKey);
         }
@@ -1412,11 +1407,6 @@ public class LWC {
         List<String> names = new ArrayList<String>();
 
         String materialName = normalizeMaterialName(material);
-
-        // add the the names with the block data byte
-        names.add(materialName + ":" + state.getRawData());
-        names.add(material.toString() + ":" + state.getRawData());
-        names.add(material.toString().toLowerCase() + ":" + state.getRawData());
 
         // add the names without the block data
         names.add(materialName);
@@ -1426,8 +1416,6 @@ public class LWC {
         if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
             int i = materialName.indexOf("_") + 1;
             while (i > 0) {
-                names.add("*_" + materialName.substring(i) + ":" + state.getRawData());
-                names.add("*_" + materialName.substring(i).toLowerCase() + ":" + state.getRawData());
                 names.add("*_" + materialName.substring(i));
                 names.add("*_" + materialName.substring(i).toLowerCase());
                 i = materialName.indexOf("_", i) + 1;
@@ -1435,7 +1423,6 @@ public class LWC {
         }
 
         // Add the wildcards last so it can be overriden
-        names.add("*:" + state.getRawData());
         names.add("*");
 
         String value = configuration.getString("protections." + node);
@@ -1454,7 +1441,7 @@ public class LWC {
     }
 
     public String resolveProtectionConfiguration(EntityType state, String node) {
-        String cacheKey = state + "-" + state + "-" + node;
+        String cacheKey = state + "-" + node;
         if (protectionConfigurationCache.containsKey(cacheKey)) {
             return protectionConfigurationCache.get(cacheKey);
         }
@@ -1576,13 +1563,12 @@ public class LWC {
      * @param node
      * @return
      */
-    @SuppressWarnings("deprecation")
     public String resolveProtectionConfiguration(Block block, String node) {
         Material material = block.getType();
         if (material == null) {
             return null;
         }
-        String cacheKey = block.getData() + "-" + material.toString() + "-" + node;
+        String cacheKey = material.toString() + "-" + node;
         if (protectionConfigurationCache.containsKey(cacheKey)) {
             return protectionConfigurationCache.get(cacheKey);
         }
@@ -1590,11 +1576,6 @@ public class LWC {
         List<String> names = new ArrayList<>();
 
         String materialName = normalizeMaterialName(material);
-
-        // add the the names with the block data byte
-        names.add(materialName + ":" + block.getData());
-        names.add(material.toString() + ":" + block.getData());
-        names.add(material.toString().toLowerCase() + ":" + block.getData());
 
         // add the names without the block data
         names.add(materialName);
@@ -1604,8 +1585,6 @@ public class LWC {
         if (materialName.contains("_")) { // Prefix wildcarding for shulker boxes & gates
             int i = materialName.indexOf("_") + 1;
             while (i > 0) {
-                names.add("*_" + materialName.substring(i) + ":" + block.getData());
-                names.add("*_" + materialName.substring(i).toLowerCase() + ":" + block.getData());
                 names.add("*_" + materialName.substring(i));
                 names.add("*_" + materialName.substring(i).toLowerCase());
                 i = materialName.indexOf("_", i) + 1;
@@ -1613,7 +1592,6 @@ public class LWC {
         }
 
         // Add the wildcards last so it can be overriden
-        names.add("*:" + block.getData());
         names.add("*");
 
         String value = configuration.getString("protections." + node);

@@ -70,11 +70,6 @@ public class RestorableBlock implements Restorable {
     private int z;
 
     /**
-     * The block data
-     */
-    private int data;
-
-    /**
      * The items in this block's inventory if it has one
      */
     private final Map<Integer, ItemStack> items = new HashMap<>();
@@ -104,7 +99,6 @@ public class RestorableBlock implements Restorable {
                 // Begin screwing with shit :p
                 BlockCache blockCache = BlockCache.getInstance();
                 block.setType(blockCache.getBlockType(id));
-//                block.setData((byte) data);
 
                 if (items.size() > 0) {
                     if (!(block.getState() instanceof InventoryHolder)) {
@@ -149,7 +143,6 @@ public class RestorableBlock implements Restorable {
         rblock.x = block.getX();
         rblock.y = block.getY();
         rblock.z = block.getZ();
-        rblock.data = block.getData();
 
         BlockState state = block.getState();
 
@@ -220,14 +213,6 @@ public class RestorableBlock implements Restorable {
 
     public void setZ(int z) {
         this.z = z;
-    }
-
-    public int getData() {
-        return data;
-    }
-
-    public void setData(int data) {
-        this.data = data;
     }
 
     public Map<Integer, ItemStack> getItems() {

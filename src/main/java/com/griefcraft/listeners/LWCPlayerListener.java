@@ -30,6 +30,7 @@ package com.griefcraft.listeners;
 
 import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.cache.BlockCache;
+import com.griefcraft.integration.IPermissions;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Flag;
@@ -797,7 +798,21 @@ public class LWCPlayerListener implements Listener {
         // Can they admin it?
         boolean canAdmin = lwc.canAdminProtection(player, protection);
         // Can they access it? (using getAccess instead of canAccessProtection since that is only for opening)
-        boolean canAccess = protection.getAccess(player.getUniqueId().toString(), Permission.Type.PLAYER) == Permission.Access.PLAYER;
+        boolean canAccess = false;
+        if (protection.getAccess(player.getUniqueId().toString(), Permission.Type.PLAYER) == Permission.Access.PLAYER) {
+            canAccess = true;
+        } else if (protection.getAccess(player.getName(), Permission.Type.PLAYER) == Permission.Access.PLAYER) {
+            canAccess = true;
+        } else {
+            IPermissions permissions = lwc.getPermissions();
+            if (permissions != null) {
+                for (String groupName : permissions.getGroups(player)) {
+                    if (protection.getAccess(groupName, Permission.Type.GROUP) == Permission.Access.PLAYER) {
+                        canAccess = true;
+                    }
+                }
+            }
+        }
 
         // If not either, then they cannot remove items, etc
         if (!(canAdmin || canAccess)) {

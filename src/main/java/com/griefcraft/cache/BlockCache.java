@@ -157,7 +157,7 @@ public class BlockCache {
             ++nextId;
             return newId;
         } catch (SQLException e) {
-            lwc.log("Unable to add new block to " + prefix + "blocks!");
+            lwc.log("Unable to add " + blockMaterial.name() + " to " + prefix + "blocks!");
             e.printStackTrace();
             return -1;
         }

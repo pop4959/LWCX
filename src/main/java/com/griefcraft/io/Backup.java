@@ -140,7 +140,6 @@ public class Backup {
             rprotection.setX(inputStream.readInt());
             rprotection.setY(inputStream.readShort());
             rprotection.setZ(inputStream.readInt());
-            rprotection.setData(inputStream.readUTF());
             rprotection.setCreated(inputStream.readLong());
             rprotection.setUpdated(inputStream.readLong());
 
@@ -152,7 +151,6 @@ public class Backup {
             rblock.setX(inputStream.readInt());
             rblock.setY(inputStream.readShort());
             rblock.setZ(inputStream.readInt());
-            rblock.setData(inputStream.read() & 0xFF);
             int itemCount = inputStream.readShort();
 
             for (int i = 0; i < itemCount; i++) {
@@ -202,7 +200,6 @@ public class Backup {
             outputStream.writeInt(rprotection.getX());
             outputStream.writeShort(rprotection.getY());
             outputStream.writeInt(rprotection.getZ());
-            outputStream.writeUTF(rprotection.getData());
             outputStream.writeLong(rprotection.getCreated());
             outputStream.writeLong(rprotection.getUpdated());
         } else if (restorable.getType() == 1) { // Block, TODO DID I SAY TO DO THE ENUM YET??
@@ -213,7 +210,6 @@ public class Backup {
             outputStream.writeInt(rblock.getX());
             outputStream.writeShort(rblock.getY());
             outputStream.writeInt(rblock.getZ());
-            outputStream.write((byte) rblock.getData());
             outputStream.writeShort(rblock.getItems().size());
 
             // Write the items if there are any

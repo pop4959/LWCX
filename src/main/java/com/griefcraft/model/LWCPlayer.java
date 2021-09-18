@@ -370,6 +370,16 @@ public class LWCPlayer implements CommandSender {
         }
     }
 
+    @Override
+    public void sendMessage(UUID uuid, String s) {
+        player.sendMessage(player.getUniqueId(), s);
+    }
+
+    @Override
+    public void sendMessage(UUID uuid, String[] strings) {
+        player.sendMessage(player.getUniqueId(), strings);
+    }
+
     public Server getServer() {
         return player.getServer();
     }

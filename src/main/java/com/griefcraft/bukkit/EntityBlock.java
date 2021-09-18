@@ -96,6 +96,11 @@ public class EntityBlock implements Block {
     }
 
     @Override
+    public boolean applyBoneMeal(BlockFace blockFace) {
+        return false;
+    }
+
+    @Override
     public Biome getBiome() {
         // TODO Auto-generated method stub
         return null;
@@ -121,8 +126,7 @@ public class EntityBlock implements Block {
 
     @Override
     public byte getData() {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new IllegalStateException("getData should not be called.");
     }
 
     @Override
