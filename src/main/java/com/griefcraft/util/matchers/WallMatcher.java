@@ -64,6 +64,9 @@ public class WallMatcher implements ProtectionFinder.Matcher {
         } else {
             PROTECTABLES_WALL.add(Material.getMaterial("WALL_SIGN"));
         }
+        if (VersionUtil.getMinorVersion() > 15) {
+            PROTECTABLES_WALL.addAll(EnumSet.of(Material.CRIMSON_WALL_SIGN, Material.WARPED_WALL_SIGN));
+        }
     }
 
     /**
@@ -110,30 +113,12 @@ public class WallMatcher implements ProtectionFinder.Matcher {
      * @return
      */
     private Block tryMatchBlock(Block block, BlockFace matchingFace) {
-        byte direction = block.getData();
         BlockData blockData = block.getBlockData();
 
         // Blocks such as wall signs or banners
-        if (PROTECTABLES_WALL.contains(block.getType()) && blockData instanceof Directional) {
+        if ((PROTECTABLES_WALL.contains(block.getType()) || PROTECTABLES_LEVERS_ET_AL.contains(block.getType()))
+                && blockData instanceof Directional) {
             if (((Directional) block.getState().getBlockData()).getFacing() == matchingFace) {
-                return block;
-            }
-        }
-
-        // Levers, buttons
-        else if (PROTECTABLES_LEVERS_ET_AL.contains(block.getType())) {
-            byte EAST = 0x4;
-            byte WEST = 0x3;
-            byte SOUTH = 0x1;
-            byte NORTH = 0x2;
-
-            if (matchingFace == BlockFace.EAST && (direction & EAST) == EAST) {
-                return block;
-            } else if (matchingFace == BlockFace.WEST && (direction & WEST) == WEST) {
-                return block;
-            } else if (matchingFace == BlockFace.SOUTH && (direction & SOUTH) == SOUTH) {
-                return block;
-            } else if (matchingFace == BlockFace.NORTH && (direction & NORTH) == NORTH) {
                 return block;
             }
         }

@@ -452,25 +452,20 @@ public class LWCBlockListener implements Listener {
             return;
         }
 
-        String autoRegisterType = lwc.resolveProtectionConfiguration(block, "autoRegister");
-
         // is the user allowed to auto protect
         if (!lwc.hasPermission(player, "lwc.autoprotect", "lwc.protect")) {
             return;
         }
 
+        String autoRegisterType = lwc.resolveProtectionConfiguration(block, "autoRegister");
+
         // is it auto protectable?
-        if ((!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation") && !autoRegisterType.equalsIgnoreCase("display")) || autoRegisterType.equalsIgnoreCase("false")) {
+        if (!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation") && !autoRegisterType.equalsIgnoreCase("display")) {
             return;
         }
 
         if (!lwc.hasPermission(player, "lwc.create." + autoRegisterType, "lwc.create", "lwc.protect")) {
             return;
-        }
-
-        // set the auto register type if they have the perm node
-        if (lwc.hasPermission(player, "lwc.autoprotect")) {
-            autoRegisterType = "private";
         }
 
         // Parse the type

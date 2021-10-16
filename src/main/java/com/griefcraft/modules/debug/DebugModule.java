@@ -31,6 +31,7 @@ package com.griefcraft.modules.debug;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCInfo;
 import com.griefcraft.lwc.MessageParser;
+import com.griefcraft.lwc.SimpleMessageParser;
 import com.griefcraft.model.Flag;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCCommandEvent;
@@ -103,6 +104,15 @@ public class DebugModule extends JavaModule {
         doPermission(player, "lwc.admin");
         player.sendMessage("isMod: " + strval(lwc.isMod(player)));
         player.sendMessage("isAdmin: " + strval(lwc.isAdmin(player)));
+
+        MessageParser messageParser = lwc.getPlugin().getMessageParser();
+        if (messageParser instanceof SimpleMessageParser) {
+            SimpleMessageParser simpleMessageParser = (SimpleMessageParser) messageParser;
+            player.sendMessage(" ");
+            player.sendMessage("bindMessageCache size: " + simpleMessageParser.bindMessageCacheSize);
+            player.sendMessage("bindMessageCache hits: " + simpleMessageParser.bindMessageCacheHits);
+            player.sendMessage("bindMessageCache misses: " + simpleMessageParser.bindMessageCacheMisses);
+        }
     }
 
     /**

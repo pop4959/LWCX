@@ -34,6 +34,7 @@ import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
 import com.griefcraft.listeners.LWCServerListener;
+import com.griefcraft.modules.pluginsupport.Towny;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.sql.Database;
 import com.griefcraft.util.Completions;
@@ -421,7 +422,7 @@ public class LWCPlugin extends JavaPlugin {
         LWCResourceBundle locale;
         String localization = getCurrentLocale();
 
-        File localeDir = new File("plugins/LWC/locale/");
+        File localeDir = new File(this.getDataFolder() + File.separator + "locale");
         if (!localeDir.exists()) {
             localeDir.mkdir();
         }
@@ -508,6 +509,9 @@ public class LWCPlugin extends JavaPlugin {
         pluginManager.registerEvents(new LWCServerListener(this), this);
         if (VersionUtil.getMinorVersion() > 13) {
             pluginManager.registerEvents(new LWC114Listener(), this);
+        }
+        if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
+            pluginManager.registerEvents(new Towny(), this);
         }
     }
 

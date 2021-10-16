@@ -107,12 +107,12 @@ public class EntityBlockState implements BlockState {
 
     @Override
     public byte getRawData() {
-        return 0;
+        throw new IllegalStateException("getRawData should not be called.");
     }
 
     @Override
     public void setRawData(byte b) {
-
+        throw new IllegalStateException("setRawData should not be called.");
     }
 
     @Override

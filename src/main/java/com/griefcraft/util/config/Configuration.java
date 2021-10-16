@@ -117,7 +117,7 @@ public class Configuration extends ConfigurationNode {
             return loaded.get(config);
         }
 
-        File file = new File(ModuleLoader.ROOT_PATH + config);
+        File file = new File(ModuleLoader.ROOT_PATH + File.separator + config);
         File folder = new File(ModuleLoader.ROOT_PATH);
 
         if (!folder.exists()) {
@@ -130,7 +130,7 @@ public class Configuration extends ConfigurationNode {
                 return null;
             }
 
-            extractFile("/config/" + config, ModuleLoader.ROOT_PATH + config);
+            extractFile("/config/" + config, ModuleLoader.ROOT_PATH + File.separator + config);
         }
 
         Configuration configuration = new Configuration(file);

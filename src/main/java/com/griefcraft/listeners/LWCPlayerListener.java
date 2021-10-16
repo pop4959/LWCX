@@ -30,28 +30,23 @@ package com.griefcraft.listeners;
 
 import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.cache.BlockCache;
+import com.griefcraft.integration.IPermissions;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Flag;
 import com.griefcraft.model.LWCPlayer;
+import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.Module;
-import com.griefcraft.scripting.event.LWCBlockInteractEvent;
-import com.griefcraft.scripting.event.LWCDropItemEvent;
-import com.griefcraft.scripting.event.LWCEntityInteractEvent;
-import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
-import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
-import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
+import com.griefcraft.scripting.event.*;
 import com.griefcraft.util.UUIDRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Hopper;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -68,28 +63,15 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LWCPlayerListener implements Listener {
 
@@ -579,21 +561,6 @@ public class LWCPlayerListener implements Listener {
         }
     }
 
-    /*
-     * @EventHandler public void onPlayerChat(PlayerChatEvent event) { if
-     * (event.isCancelled() || !LWC.ENABLED) { return; }
-     *
-     * LWC lwc = plugin.getLWC(); if
-     * (!lwc.getConfiguration().getBoolean("core.filterunlock", true)) { return; }
-     *
-     * // We want to block messages starting with cunlock incase someone screws up
-     * /cunlock password. String message = event.getMessage();
-     *
-     * if (message.startsWith("cunlock") || message.startsWith("lcunlock") ||
-     * message.startsWith(".cunlock")) { event.setCancelled(true);
-     * lwc.sendLocale(event.getPlayer(), "lwc.blockedmessage"); } }
-     */
-
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         LWC lwc = plugin.getLWC();
@@ -604,25 +571,23 @@ public class LWCPlayerListener implements Listener {
             return;
         }
 
-        // Only accept interaction from offhand in exceptional circumstances (when fired somehow for a container)
-        if (event.getHand() == EquipmentSlot.OFF_HAND && !(event.getClickedBlock() instanceof Container)) {
-            return;
-        }
+        // This event can sometimes be thrown twice (for the main hand and offhand), and while we need to check both
+        // for protection access, we want to avoid doing duplicate work (throwing events, printing messages, etc).
+        boolean usingMainHand = event.getHand() == EquipmentSlot.HAND;
 
         Block block = event.getClickedBlock();
-        BlockState state;
-        try {
-            state = block.getState();
-        } catch (NullPointerException e) {
+        if (block == null) {
             return;
         }
 
-        // Prevent players with lwc.deny from interacting with blocks that have
-        // an inventory
+        BlockState state = block.getState();
+        // Prevent players with lwc.deny from interacting with blocks that have an inventory
         if (state instanceof InventoryHolder && lwc.isProtectable(block)) {
             if (!lwc.hasPermission(player, "lwc.protect") && lwc.hasPermission(player, "lwc.deny")
                     && !lwc.isAdmin(player) && !lwc.isMod(player)) {
-                lwc.sendLocale(player, "protection.interact.error.blocked");
+                if (usingMainHand) {
+                    lwc.sendLocale(player, "protection.interact.error.blocked");
+                }
                 event.setCancelled(true);
                 return;
             }
@@ -630,99 +595,92 @@ public class LWCPlayerListener implements Listener {
 
         try {
             Set<String> actions = lwcPlayer.getActionNames();
+            Module.Result result = Module.Result.DEFAULT;
             Protection protection = lwc.findProtection(block.getLocation());
-            Module.Result result;
             boolean canAccess = lwc.canAccessProtection(player, protection);
 
-            // Calculate if the player has a pending action (i.e any action
-            // besides 'interacted')
-            int actionCount = actions.size();
-            boolean hasInteracted = actions.contains("interacted");
-            boolean hasPendingAction = (hasInteracted && actionCount > 1) || (!hasInteracted && actionCount > 0);
-
-            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                boolean ignoreLeftClick = Boolean
-                        .parseBoolean(lwc.resolveProtectionConfiguration(block, "ignoreLeftClick"));
-
-                if (ignoreLeftClick) {
-                    return;
-                }
-            } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                boolean ignoreRightClick = Boolean
-                        .parseBoolean(lwc.resolveProtectionConfiguration(block, "ignoreRightClick"));
-
-                if (ignoreRightClick) {
-                    return;
-                }
-            }
-
-            // If the event was cancelled and they have an action, warn them
-            if (event.isCancelled()) {
-                // only send it if a non-"interacted" action is set which is
-                // always set on the player
-                if (hasPendingAction) {
-                    lwc.sendLocale(player, "lwc.pendingaction");
+            if (usingMainHand) {
+                if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    boolean ignoreLeftClick = Boolean
+                            .parseBoolean(lwc.resolveProtectionConfiguration(block, "ignoreLeftClick"));
+                    if (ignoreLeftClick) {
+                        return;
+                    }
+                } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    boolean ignoreRightClick = Boolean
+                            .parseBoolean(lwc.resolveProtectionConfiguration(block, "ignoreRightClick"));
+                    if (ignoreRightClick) {
+                        return;
+                    }
                 }
 
-                // it's cancelled, do not continue !
-                return;
-            }
+                // Calculate if the player has a pending action (i.e any action besides 'interacted')
+                int actionCount = actions.size();
+                boolean hasInteracted = actions.contains("interacted");
+                boolean hasPendingAction = (hasInteracted && actionCount > 1) || (!hasInteracted && actionCount > 0);
 
-            // register in an action what protection they interacted with (if
-            // applicable.)
-            if (protection != null) {
-                com.griefcraft.model.Action action = new com.griefcraft.model.Action();
-                action.setName("interacted");
-                action.setPlayer(lwcPlayer);
-                action.setProtection(protection);
-
-                lwcPlayer.addAction(action);
-            }
-
-            // events are only used when they already have an action pending
-            boolean canAdmin = lwc.canAdminProtection(player, protection);
-
-            if (protection != null) {
-                LWCProtectionInteractEvent evt = new LWCProtectionInteractEvent(event, protection, actions, canAccess,
-                        canAdmin);
-                lwc.getModuleLoader().dispatchEvent(evt);
-
-                result = evt.getResult();
-            } else {
-                LWCBlockInteractEvent evt = new LWCBlockInteractEvent(event, block, actions);
-                lwc.getModuleLoader().dispatchEvent(evt);
-
-                result = evt.getResult();
-            }
-
-            if (result == Module.Result.ALLOW) {
-                return;
-            }
-
-            // optional.onlyProtectIfOwnerIsOnline
-            if (protection != null && !canAccess
-                    && lwc.getConfiguration().getBoolean("optional.onlyProtectWhenOwnerIsOnline", false)) {
-                Player owner = protection.getBukkitOwner();
-
-                // If they aren't online, allow them in :P
-                if (owner == null || !owner.isOnline()) {
+                // If the event was cancelled and they have an action, warn them
+                if (event.isCancelled()) {
+                    // only send it if a non-"interacted" action is set which is always set on the player
+                    if (hasPendingAction) {
+                        lwc.sendLocale(player, "lwc.pendingaction");
+                    }
+                    // it's cancelled, do not continue !
                     return;
                 }
-            }
 
-            // optional.onlyProtectIfOwnerIsOffline
-            if (protection != null && !canAccess
-                    && lwc.getConfiguration().getBoolean("optional.onlyProtectWhenOwnerIsOffline", false)) {
-                Player owner = protection.getBukkitOwner();
+                // register in an action what protection they interacted with (if applicable.)
+                if (protection != null) {
+                    com.griefcraft.model.Action action = new com.griefcraft.model.Action();
+                    action.setName("interacted");
+                    action.setPlayer(lwcPlayer);
+                    action.setProtection(protection);
+                    lwcPlayer.addAction(action);
+                }
 
-                // If they aren't online, allow them in :P
-                if (owner != null && owner.isOnline()) {
+                // events are only used when they already have an action pending
+                boolean canAdmin = lwc.canAdminProtection(player, protection);
+
+                if (protection != null) {
+                    LWCProtectionInteractEvent evt = new LWCProtectionInteractEvent(event, protection, actions,
+                            canAccess, canAdmin);
+                    lwc.getModuleLoader().dispatchEvent(evt);
+
+                    result = evt.getResult();
+                } else {
+                    LWCBlockInteractEvent evt = new LWCBlockInteractEvent(event, block, actions);
+                    lwc.getModuleLoader().dispatchEvent(evt);
+
+                    result = evt.getResult();
+                }
+
+                if (result == Module.Result.ALLOW) {
                     return;
+                }
+
+                // optional.onlyProtectIfOwnerIsOnline
+                if (protection != null && !canAccess
+                        && lwc.getConfiguration().getBoolean("optional.onlyProtectWhenOwnerIsOnline", false)) {
+                    Player owner = protection.getBukkitOwner();
+                    // If they aren't online, allow them in :P
+                    if (owner == null || !owner.isOnline()) {
+                        return;
+                    }
+                }
+
+                // optional.onlyProtectIfOwnerIsOffline
+                if (protection != null && !canAccess
+                        && lwc.getConfiguration().getBoolean("optional.onlyProtectWhenOwnerIsOffline", false)) {
+                    Player owner = protection.getBukkitOwner();
+                    // If they aren't online, allow them in :P
+                    if (owner != null && owner.isOnline()) {
+                        return;
+                    }
                 }
             }
 
             if (result == Module.Result.DEFAULT) {
-                canAccess = lwc.enforceAccess(player, protection, block, canAccess);
+                canAccess = lwc.enforceAccess(player, protection, block, canAccess, usingMainHand);
             }
 
             if (!canAccess || result == Module.Result.CANCEL) {
@@ -837,11 +795,27 @@ public class LWCPlayerListener implements Listener {
             }
         }
 
-        // Can they admin it? (remove items/etc)
+        // Can they admin it?
         boolean canAdmin = lwc.canAdminProtection(player, protection);
+        // Can they access it? (using getAccess instead of canAccessProtection since that is only for opening)
+        boolean canAccess = false;
+        if (protection.getAccess(player.getUniqueId().toString(), Permission.Type.PLAYER) == Permission.Access.PLAYER) {
+            canAccess = true;
+        } else if (protection.getAccess(player.getName(), Permission.Type.PLAYER) == Permission.Access.PLAYER) {
+            canAccess = true;
+        } else {
+            IPermissions permissions = lwc.getPermissions();
+            if (permissions != null) {
+                for (String groupName : permissions.getGroups(player)) {
+                    if (protection.getAccess(groupName, Permission.Type.GROUP) == Permission.Access.PLAYER) {
+                        canAccess = true;
+                    }
+                }
+            }
+        }
 
-        // nope.avi
-        if (!canAdmin) {
+        // If not either, then they cannot remove items, etc
+        if (!(canAdmin || canAccess)) {
             event.setCancelled(true);
         }
     }
@@ -902,57 +876,6 @@ public class LWCPlayerListener implements Listener {
         if (!canAdmin) {
             event.setCancelled(true);
         }
-    }
-
-    /**
-     * Compares the enchantments on two item stacks and checks that they are equal
-     * (identical)
-     *
-     * @param stack1
-     * @param stack2
-     * @return
-     */
-    private boolean areEnchantmentsEqual(ItemStack stack1, ItemStack stack2) {
-        if (stack1 == null || stack2 == null) {
-            return false;
-        }
-
-        Map<Enchantment, Integer> enchantments1 = stack1.getEnchantments();
-        Map<Enchantment, Integer> enchantments2 = stack2.getEnchantments();
-
-        if (enchantments1.size() != enchantments2.size()) {
-            return false;
-        }
-
-        // Enchanted Books use ItemMeta
-        if (stack1.getItemMeta() != null && stack2.getItemMeta() != null) {
-            if (!stack1.getItemMeta().equals(stack2.getItemMeta())) {
-                return false;
-            }
-        }
-
-        for (Enchantment enchantment : enchantments1.keySet()) {
-            if (!enchantments2.containsKey(enchantment)) {
-                return false;
-            }
-
-            int level1 = enchantments1.get(enchantment);
-            int level2 = enchantments2.get(enchantment);
-
-            if (level1 != level2) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static String getMinecraftVersion() {
-        Matcher matcher = Pattern.compile("(\\(MC: )([\\d\\.]+)(\\))").matcher(Bukkit.getVersion());
-        if (matcher.find()) {
-            return matcher.group(2);
-        }
-        return null;
     }
 
 }

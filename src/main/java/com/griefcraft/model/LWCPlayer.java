@@ -164,8 +164,6 @@ public class LWCPlayer implements CommandSender {
 
     /**
      * Disable all modes enabled by the player
-     *
-     * @return
      */
     public void disableAllModes() {
         modes.clear();
@@ -370,6 +368,16 @@ public class LWCPlayer implements CommandSender {
         for (String _s : s) {
             sendMessage(_s);
         }
+    }
+
+    @Override
+    public void sendMessage(UUID uuid, String s) {
+        player.sendMessage(player.getUniqueId(), s);
+    }
+
+    @Override
+    public void sendMessage(UUID uuid, String[] strings) {
+        player.sendMessage(player.getUniqueId(), strings);
     }
 
     public Server getServer() {
