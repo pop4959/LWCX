@@ -706,7 +706,7 @@ public class LWC {
                             protection.getOwner());
                 } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION || type == Protection.Type.DISPLAY) {
                     sendLocaleToActionBar(player, "protection.general.locked.private", "block", materialToString(block),
-                            "name", UUIDRegistry.getName(UUID.fromString(protection.getOwner())),
+                            "name", UUIDRegistry.isValidUUID(protection.getOwner()) ? UUIDRegistry.getName(UUID.fromString(protection.getOwner())) : protection.getOwner(),
                             "owner", protection.getOwner());
                 }
             }
@@ -2297,7 +2297,7 @@ public class LWC {
                         protection.getOwner());
             } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION) {
                 sendLocaleToActionBar(player, "protection.general.locked.private", "block", blockName,
-                        "name", UUIDRegistry.getName(UUID.fromString(protection.getOwner())),
+                        "name", UUIDRegistry.isValidUUID(protection.getOwner()) ? UUIDRegistry.getName(UUID.fromString(protection.getOwner())) : protection.getOwner(),
                         "owner", protection.getOwner());
             }
         }

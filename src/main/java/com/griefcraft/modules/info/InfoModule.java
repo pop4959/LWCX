@@ -64,7 +64,7 @@ public class InfoModule extends JavaModule {
         String type = lwc.getPlugin().getMessageParser().parseMessage(protection.typeToString().toLowerCase());
 
         lwc.sendLocale(player, "lwc.info",
-                "name", UUIDRegistry.getName(UUID.fromString(protection.getOwner())),
+                "name", UUIDRegistry.isValidUUID(protection.getOwner()) ? UUIDRegistry.getName(UUID.fromString(protection.getOwner())) : protection.getOwner(),
                 "owner", protection.getOwner(),
                 "type", type);
 

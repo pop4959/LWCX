@@ -1058,7 +1058,7 @@ public class Protection {
                 "id", id,
                 "type", lwc.getPlugin().getMessageParser().parseMessage(getType().toString().toLowerCase()),
                 "block", LWC.materialToString(BlockCache.getInstance().getBlockType(blockId)),
-                "name", UUIDRegistry.getName(UUID.fromString(getOwner())),
+                "name", UUIDRegistry.isValidUUID(getOwner()) ? UUIDRegistry.getName(UUID.fromString(getOwner())) : getOwner(),
                 "owner", getOwner(),
                 "world", world,
                 "x", x,
