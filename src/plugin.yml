@@ -6,8 +6,8 @@ author: Hidendra
 authors: [pop4959, Me_Goes_RAWR]
 website: https://www.spigotmc.org/resources/lwc-extended.69551/
 description: >
-             Inventory protection & management utilizing SQLite or MySQL as its backend
-             Other blocks can also be protected individually, if configured.
+  Inventory protection & management utilizing SQLite or MySQL as its backend
+  Other blocks can also be protected individually, if configured.
 load: startup
 softdepend: [Vault, WorldEdit, WorldGuard, Towny, Factions]
 
@@ -92,99 +92,101 @@ commands:
     description: Flag to allow a given protection to explode from explosions.
 
 permissions:
-
+  
   lwc.*:
-      description: Full administrative access to LWC
-      default: false
-      children:
-          lwc.protect: true
-          lwc.admin: true
-
+    description: Full administrative access to LWC
+    default: false
+    children:
+      lwc.protect: true
+      lwc.admin: true
+  
   lwc.protect:
-      description: Gives the ability to basic LWC usage (almost everything except LWC admin.)
-      default: true
-
+    description: Gives the ability to basic LWC usage (almost everything except LWC admin.)
+    default: true
+  
   lwc.admin:
-      description: Gives you absolutely power over LWC. As an LWC admin, you have no restrictions.
-      default: false
-      children:
-          lwc.allcommands: true
-
+    description: Gives you absolutely power over LWC. As an LWC admin, you have no restrictions.
+    default: false
+    children:
+      lwc.allcommands: true
+  
   lwc.allcommands:
-      description: Gives you access to every LWC command. Without lwc.admin or lwc.mod, you cannot open protections you do not own.
-      default: false
-
+    description: Gives you access to every LWC command. Without lwc.admin or lwc.mod, you cannot open protections you do not own.
+    default: false
+  
   lwc.shownotices:
-      description: Shows LWC notices
-      default: op
-
+    description: Shows LWC notices
+    default: op
+  
   lwc.mod:
-      description: Allows you to open anyone's protection but not remove them
-      default: false
-
+    description: Allows you to open anyone's protection but not remove them
+    default: false
+    children:
+      lwc.protect.bypass: true
+  
   lwc.deny:
-      description: Denys you access to any block LWC can protect. For example, with this permission set, you cannot open even unprotected chests (if protectable.)
-
+    description: Denys you access to any block LWC can protect. For example, with this permission set, you cannot open even unprotected chests (if protectable.)
+  
   lwc.create.*:
-      description: Allows you to create every basic protection (public, private, password.)
-      children:
-          lwc.create.public: true
-          lwc.create.password: true
-          lwc.create.private: true
-          lwc.create.donation: true
-          lwc.create.display: true
+    description: Allows you to create every basic protection (public, private, password.)
+    children:
+      lwc.create.public: true
+      lwc.create.password: true
+      lwc.create.private: true
+      lwc.create.donation: true
+      lwc.create.display: true
   lwc.create.public:
-      description: Allows you to create a public protection.
+    description: Allows you to create a public protection.
   lwc.create.password:
-      description: Allows you to create a password protection.
+    description: Allows you to create a password protection.
   lwc.create.private:
-      description: Allows you to create a private protection.
+    description: Allows you to create a private protection.
   lwc.create.donation:
     description: Allows you to create a donation protection.
   lwc.create.display:
     description: Allows you to create a display protection.
-
+  
   lwc.modify:
-      description: Allows you to modify protections you own.
+    description: Allows you to modify protections you own.
   lwc.unlock:
-      description: Allows you to unlock password-protected protections.
+    description: Allows you to unlock password-protected protections.
   lwc.info:
-      description: Allows you to view the owner and other misc data on a protection.
+    description: Allows you to view the owner and other misc data on a protection.
   lwc.remove:
-      description: Allows you to remove protections you own.
-
+    description: Allows you to remove protections you own.
+  
   lwc.flag.*:
-      description: Gives you access to every usable flag.
-      children:
-           lwc.allflags: true
+    description: Gives you access to every usable flag.
+    children:
+      lwc.allflags: true
   lwc.allflags:
-      description: Gives you access to every usable flag.
-      children:
-           lwc.flag.redstone: true
-           lwc.flag.magnet: true
-           lwc.flag.autoclose: true
-           lwc.flag.allowexplosions: true
+    description: Gives you access to every usable flag.
+    children:
+      lwc.flag.redstone: true
+      lwc.flag.magnet: true
+      lwc.flag.autoclose: true
+      lwc.flag.allowexplosions: true
   lwc.flag.redstone:
-      description: Allows you to use the redstone flag, which enables or disables the use of redstone on a protection depending on plugin settings.
+    description: Allows you to use the redstone flag, which enables or disables the use of redstone on a protection depending on plugin settings.
   lwc.flag.magnet:
-      description: Allows you to use the magnet flag, which makes a protection such as a chest suck up dropped items in a specific radius around it.
+    description: Allows you to use the magnet flag, which makes a protection such as a chest suck up dropped items in a specific radius around it.
   lwc.flag.autoclose:
-      description: Allows a door to automatically close itself after 3 seconds (configurable.)
-
+    description: Allows a door to automatically close itself after 3 seconds (configurable.)
+  
   lwc.mode.*:
-      description: Gives you access to every usable mode, provided they are already disabled.
+    description: Gives you access to every usable mode, provided they are already disabled.
   lwc.allmodes:
-      description: Gives you access to every mode, provided they are already disabled.
-      children:
-          lwc.mode.persist: true
-          lwc.mode.droptransfer: true
-          lwc.mode.nospam: true
-          lwc.mode.nolock: true
+    description: Gives you access to every mode, provided they are already disabled.
+    children:
+      lwc.mode.persist: true
+      lwc.mode.droptransfer: true
+      lwc.mode.nospam: true
+      lwc.mode.nolock: true
   lwc.mode.persist:
-      description: Allows you to use the persist flag, which allows you to use commands repeatably.
+    description: Allows you to use the persist flag, which allows you to use commands repeatably.
   lwc.mode.droptransfer:
-      description: Allows you to use the drop transfer flag, which allows you to "drop" items into your chest from far away.
-
+    description: Allows you to use the drop transfer flag, which allows you to "drop" items into your chest from far away.
+  
   lwc.autoprotect:
-      default: false
-      description: Allows you to auto protect LWC protections regardless of how LWC is configured
+    default: false
+    description: Allows you to auto protect LWC protections regardless of how LWC is configured
