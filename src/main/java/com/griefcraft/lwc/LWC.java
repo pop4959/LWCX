@@ -375,8 +375,9 @@ public class LWC {
 		if (protection == null || player == null) {
 			return true;
 		}
-
-		if (isAdmin(player)) {
+		System.out.println("has not this admin or bypass ");
+		if (isAdmin(player) || hasPermission(player, "lwc.administrate.protection")) {
+			System.out.println("has admin or bypass ");
 			return true;
 		}
 
@@ -724,7 +725,6 @@ public class LWC {
 		if (isAdmin(player)) {
 			return true;
 		}
-
 		if (isMod(player)) {
 			Player protectionOwner = protection.getBukkitOwner();
 
@@ -736,17 +736,7 @@ public class LWC {
 				return true;
 			}
 		}
-		if (!plugin.getLWC().hasPermission(player, "lwc.protect.bypass")) {
-			Player protectionOwner = protection.getBukkitOwner();
-
-			if (protectionOwner == null) {
-				return true;
-			}
-
-			if (!isAdmin(protectionOwner)) {
-				return true;
-			}
-		}
+		System.out.println("test " + hasPermission(player, "lwc.bypass.access.protection"));
 		// Their access level
 		Permission.Access access = Permission.Access.NONE;
 
@@ -810,7 +800,8 @@ public class LWC {
 		LWCAccessEvent event = new LWCAccessEvent(player, protection, access);
 		moduleLoader.dispatchEvent(event);
 
-		return event.getAccess() == Permission.Access.PLAYER || event.getAccess() == Permission.Access.ADMIN;
+
+		return hasPermission(player, "lwc.bypass.access.protection") || event.getAccess() == Permission.Access.PLAYER || event.getAccess() == Permission.Access.ADMIN;
 	}
 
 	/**
