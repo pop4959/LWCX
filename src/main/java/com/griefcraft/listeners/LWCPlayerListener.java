@@ -318,6 +318,7 @@ public class LWCPlayerListener implements Listener {
 			return;
 		}
 		Entity entity = (Entity) holder;
+
 		if (plugin.getLWC().isProtectable(entity.getType())) {
 			if (!plugin.getLWC().hasPermission(player, "lwc.protect")
 					&& plugin.getLWC().hasPermission(player, "lwc.deny") &&
@@ -584,6 +585,7 @@ public class LWCPlayerListener implements Listener {
 		BlockState state = block.getState();
 		// Prevent players with lwc.deny from interacting with blocks that have an inventory
 		if (state instanceof InventoryHolder && lwc.isProtectable(block)) {
+			
 			if (!lwc.hasPermission(player, "lwc.protect") && lwc.hasPermission(player, "lwc.deny")
 					&& !plugin.getLWC().hasPermission(player, "lwc.protect.bypass") && (!lwc.isAdmin(player) && !lwc.isMod(player))) {
 				if (usingMainHand) {

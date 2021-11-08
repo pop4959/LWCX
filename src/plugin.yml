@@ -110,6 +110,7 @@ permissions:
     children:
       lwc.protect.bypass: true
       lwc.allcommands: true
+      
       # description: allows you to remove protection
       lwc.admin.remove: true
       # description: allows you to open containers/inventorys
@@ -132,6 +133,7 @@ permissions:
     default: false
     children:
       lwc.protect.bypass: true
+
       # description: allows you to open containers/inventorys
       lwc.bypass.access.protection: true
   

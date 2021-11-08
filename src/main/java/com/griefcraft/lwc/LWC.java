@@ -375,12 +375,11 @@ public class LWC {
 		if (protection == null || player == null) {
 			return true;
 		}
-		System.out.println("has not this admin or bypass ");
+
 		if (isAdmin(player) || hasPermission(player, "lwc.administrate.protection")) {
-			System.out.println("has admin or bypass ");
 			return true;
 		}
-
+		
 		// Their access level
 		Permission.Access access = Permission.Access.NONE;
 
@@ -736,7 +735,6 @@ public class LWC {
 				return true;
 			}
 		}
-		System.out.println("test " + hasPermission(player, "lwc.bypass.access.protection"));
 		// Their access level
 		Permission.Access access = Permission.Access.NONE;
 
@@ -799,7 +797,6 @@ public class LWC {
 		// call the canAccessProtection hook
 		LWCAccessEvent event = new LWCAccessEvent(player, protection, access);
 		moduleLoader.dispatchEvent(event);
-
 
 		return hasPermission(player, "lwc.bypass.access.protection") || event.getAccess() == Permission.Access.PLAYER || event.getAccess() == Permission.Access.ADMIN;
 	}

@@ -478,7 +478,7 @@ public class PhysDB extends Database {
 
 		if (databaseVersion == 4) {
 			List<String> blacklistedBlocks = lwc.getConfiguration().getStringList("optional.blacklistedBlocks",
-                    new ArrayList<>());
+					new ArrayList<>());
 
 			if (!blacklistedBlocks.contains("hopper")) {
 				blacklistedBlocks.add(Material.HOPPER.name().toLowerCase());
@@ -911,14 +911,12 @@ public class PhysDB extends Database {
 		}
 	}
 
-
 	/**
 	 * Load a protection at the given coordinates
 	 *
 	 * @param location
 	 * @return the Protection object
 	 */
-
 	public Protection loadProtection(String worldName, Location location) {
 		return loadProtection(worldName, location.getBlockX(), location.getBlockY(), location.getBlockZ(), false);
 	}

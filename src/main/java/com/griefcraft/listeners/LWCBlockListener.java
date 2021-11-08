@@ -213,8 +213,6 @@ public class LWCBlockListener implements Listener {
 		boolean canAccess = lwc.canAccessProtection(player, protection);
 		boolean canAdmin = lwc.canAdminProtection(player, protection);
 
-		System.out.println("canAccess " + canAccess);
-		System.out.println("canAdmin " + canAdmin);
 		// when destroying a chest, it's possible they are also destroying a
 		// double chest
 		// in the event they're trying to destroy a double chest, we should just
@@ -253,9 +251,7 @@ public class LWCBlockListener implements Listener {
 			LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
 					LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION, canAccess, canAdmin);
 			lwc.getModuleLoader().dispatchEvent(evt);
-
-			System.out.println("evt is cansle " + evt.isCancelled());
-			System.out.println("evt is !canAccess " + !canAccess);
+			
 			if ((evt.isCancelled() || !canAccess) && !plugin.getLWC().hasPermission(player, "lwc.force.destroy.block")) {
 				event.setCancelled(true);
 			}
