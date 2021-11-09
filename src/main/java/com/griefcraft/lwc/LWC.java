@@ -377,7 +377,7 @@ public class LWC {
             return true;
         }
 
-        if (isAdmin(player)) {
+        if (isAdmin(player)|| hasPermission(player, "lwc.administrate.protection")) {
             return true;
         }
 
@@ -738,6 +738,18 @@ public class LWC {
                 return true;
             }
         }
+		if (hasPermission(player, "lwc.bypass.access.protection")) {
+			Player protectionOwner = protection.getBukkitOwner();
+
+			if (protectionOwner == null) {
+				return true;
+			}
+
+			if (!isAdmin(protectionOwner)) {
+				return true;
+			} else if (hasPermission(player, "lwc.bypass.access.only.admin"))
+				return true;
+		}
 
         // Their access level
         Permission.Access access = Permission.Access.NONE;

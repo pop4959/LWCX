@@ -168,12 +168,12 @@ public class FreeModule extends JavaModule {
                         event.getEvent().getRightClicked().getType().name());
             }
 
-            lwc.removeModes(player);
         } else {
             lwc.sendLocale(player, "protection.interact.error.notowner", "block",
                     event.getEvent().getRightClicked().getType().name());
-            lwc.removeModes(player);
+          
         }
+lwc.removeModes(player);
     }
 
     @Override
