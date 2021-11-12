@@ -260,7 +260,7 @@ public class LWCBlockListener implements Listener {
                     LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION, canAccess, canAdmin);
             lwc.getModuleLoader().dispatchEvent(evt);
 
-            if (evt.isCancelled() || !canAccess) {
+            if ((evt.isCancelled() || !canAccess)&& !plugin.getLWC().hasPermission(player, "lwc.force.destroy.block")) {
                 event.setCancelled(true);
             }
         } catch (Exception e) {

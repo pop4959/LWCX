@@ -104,6 +104,7 @@ permissions:
       description: Gives the ability to basic LWC usage (almost everything except LWC admin.)
       default: true
 
+
   lwc.admin:
       description: Gives you absolutely power over LWC. As an LWC admin, you have no restrictions.
       default: false
@@ -126,6 +127,7 @@ permissions:
   lwc.shownotices:
       description: Shows LWC notices
       default: op
+
 
   lwc.mod:
       description: Allows you to open anyone's protection but not remove them

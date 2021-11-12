@@ -107,7 +107,6 @@ public class FreeModule extends JavaModule {
                 }
             }
 
-            lwc.removeModes(player);
         } else {
             if (protection.getBlock() instanceof EntityBlock) {
                 lwc.sendLocale(player, "protection.interact.error.notowner", "block",
@@ -116,8 +115,8 @@ public class FreeModule extends JavaModule {
                 lwc.sendLocale(player, "protection.interact.error.notowner", "block",
                         LWC.materialToString(protection.getBlock()));
             }
-            lwc.removeModes(player);
         }
+        lwc.removeModes(player);
     }
 
     @Override

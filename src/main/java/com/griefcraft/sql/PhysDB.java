@@ -1364,16 +1364,15 @@ public class PhysDB extends Database {
 		return history;
 	}
 
-
-	/**
-	 * Load a protection at the given coordinates
-	 *
-	 * @param location if the locked block.
-	 * @return the Protection object
-	 */
-	public Protection loadProtection(String worldName, Location location) {
-		return loadProtection(worldName, location.getBlockX(), location.getBlockY(), location.getBlockZ(), false);
-	}
+    /**
+     * Load a protection at the given coordinates
+     *
+     * @param location if the locked block.
+     * @return the Protection object
+     */
+    public Protection loadProtection(String worldName, Location location) {
+        return loadProtection(worldName, location.getBlockX(), location.getBlockY(), location.getBlockZ(), false);
+    }
 
     /**
      * Load all of the History objects for a given protection

@@ -376,7 +376,6 @@ public class LWC {
         if (protection == null || player == null) {
             return true;
         }
-
         if (isAdmin(player)|| hasPermission(player, "lwc.administrate.protection")) {
             return true;
         }
@@ -738,6 +737,7 @@ public class LWC {
                 return true;
             }
         }
+
 		if (hasPermission(player, "lwc.bypass.access.protection")) {
 			Player protectionOwner = protection.getBukkitOwner();
 
