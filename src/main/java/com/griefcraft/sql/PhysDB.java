@@ -1361,8 +1361,8 @@ public class PhysDB extends Database {
         history.setMetaData(metadata);
         history.setTimestamp(timestamp);
 
-        return history;
-    }
+		return history;
+	}
 
 
 	/**
