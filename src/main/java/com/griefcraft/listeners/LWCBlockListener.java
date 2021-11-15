@@ -28,6 +28,7 @@
 
 package com.griefcraft.listeners;
 
+import com.google.common.collect.ImmutableSet;
 import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
@@ -45,29 +46,19 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Chest;
 import org.bukkit.block.data.type.Hopper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockMultiPlaceEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.BlockRedstoneEvent;
-import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class LWCBlockListener implements Listener {
 
@@ -88,6 +79,18 @@ public class LWCBlockListener implements Listener {
 
     public static final BlockFace[] POSSIBLE_FACES = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
             BlockFace.UP, BlockFace.DOWN};
+
+    private static final Set<Material> CAN_PLACE_AT_WALL_BLOCKS = ImmutableSet.of(
+            Material.WALL_TORCH,
+            Material.REDSTONE_WALL_TORCH,
+            Material.LEVER,
+            Material.ACACIA_BUTTON,
+            Material.BIRCH_BUTTON,
+            Material.CRIMSON_BUTTON,
+            Material.DARK_OAK_BUTTON,
+            Material.JUNGLE_BUTTON,
+            Material.SPRUCE_BUTTON
+    );
 
     @EventHandler
     public void onBlockRedstoneChange(BlockRedstoneEvent event) {
@@ -187,6 +190,25 @@ public class LWCBlockListener implements Listener {
         }
     }
 
+    private void handleBlockBreak(BlockBreakEvent event, Player player, Protection protection) {
+        LWC lwc = plugin.getLWC();
+        boolean canAccess = lwc.canAccessProtection(player, protection);
+        boolean canAdmin = lwc.canAdminProtection(player, protection);
+        try {
+            LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
+                    LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION, canAccess, canAdmin);
+            lwc.getModuleLoader().dispatchEvent(evt);
+
+            if (evt.isCancelled() || !canAccess) {
+                event.setCancelled(true);
+            }
+        } catch (Exception e) {
+            event.setCancelled(true);
+            lwc.sendLocale(player, "protection.internalerror", "id", "BLOCK_BREAK");
+            e.printStackTrace();
+        }
+    }
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if (!LWC.ENABLED || event.isCancelled()) {
@@ -212,14 +234,29 @@ public class LWCBlockListener implements Listener {
             cache.remove(cacheKey);
         }
 
+        for (BlockFace direction : POSSIBLE_FACES) {
+            Block aroundBlock = block.getLocation().add(direction.getDirection()).getBlock();
+            if (!CAN_PLACE_AT_WALL_BLOCKS.contains(aroundBlock.getType())) {
+                continue;
+            }
+
+            if (aroundBlock.getBlockData() instanceof Directional) {
+                if(((Directional) aroundBlock.getBlockData()).getFacing() != direction) {
+                    continue;
+                }
+            }
+            Protection aroundProtection = lwc.findProtection(aroundBlock);
+            if (aroundProtection == null) {
+                continue;
+            }
+            handleBlockBreak(event, player, aroundProtection);
+        }
+
         Protection protection = lwc.findProtection(block.getLocation());
 
         if (protection == null) {
             return;
         }
-
-        boolean canAccess = lwc.canAccessProtection(player, protection);
-        boolean canAdmin = lwc.canAdminProtection(player, protection);
 
         // when destroying a chest, it's possible they are also destroying a
         // double chest
@@ -255,19 +292,7 @@ public class LWCBlockListener implements Listener {
             }
         }
 
-        try {
-            LWCProtectionDestroyEvent evt = new LWCProtectionDestroyEvent(player, protection,
-                    LWCProtectionDestroyEvent.Method.BLOCK_DESTRUCTION, canAccess, canAdmin);
-            lwc.getModuleLoader().dispatchEvent(evt);
-
-            if (evt.isCancelled() || !canAccess) {
-                event.setCancelled(true);
-            }
-        } catch (Exception e) {
-            event.setCancelled(true);
-            lwc.sendLocale(player, "protection.internalerror", "id", "BLOCK_BREAK");
-            e.printStackTrace();
-        }
+        handleBlockBreak(event, player, protection);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -291,10 +316,43 @@ public class LWCBlockListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent event) {
         Block block = event.getBlock();
         LWC lwc = this.plugin.getLWC();
-        if (block.getType() == Material.WATER && lwc.isProtectable(event.getToBlock())) {
+        if (
+                (block.getType() == Material.WATER || block.getType() == Material.LAVA)
+                    && lwc.isProtectable(event.getToBlock())
+        ) {
             if (lwc.findProtection(event.getToBlock().getLocation()) != null) {
                 event.setCancelled(true);
                 return;
+            }
+        }
+    }
+
+    private void handlePiston(BlockPistonEvent event, List<Block> blocks) {
+        LWC lwc = plugin.getLWC();
+        Protection pistonProtection = lwc.findProtection(event.getBlock());
+        for(Block block : blocks) {
+            Protection protection = lwc.findProtection(block);
+            if (protection != null) {
+                if(pistonProtection == null || !pistonProtection.getOwner().equals(protection.getOwner())) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+            for (BlockFace direction : POSSIBLE_FACES) {
+                Block aroundBlock = block.getLocation().add(direction.getDirection()).getBlock();
+                if(!CAN_PLACE_AT_WALL_BLOCKS.contains(aroundBlock.getType())) {
+                    continue;
+                }
+                if(((Directional)aroundBlock.getBlockData()).getFacing() != direction) {
+                    continue;
+                }
+                Protection aroundProtection = lwc.findProtection(aroundBlock);
+                if(aroundProtection != null) {
+                    if(pistonProtection == null || !pistonProtection.getOwner().equals(aroundProtection.getOwner())) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
             }
         }
     }
@@ -304,16 +362,7 @@ public class LWCBlockListener implements Listener {
         if ((!LWC.ENABLED) || (event.isCancelled())) {
             return;
         }
-        LWC lwc = this.plugin.getLWC();
-        for (Block block : event.getBlocks()) {
-            Protection protection = lwc.findProtection(block);
-            if (protection != null) {
-                Protection pistonProtection = lwc.findProtection(event.getBlock());
-                if (pistonProtection == null || !pistonProtection.getOwner().equals(protection.getOwner())) {
-                    event.setCancelled(true);
-                }
-            }
-        }
+        handlePiston(event, event.getBlocks());
     }
 
     @EventHandler
@@ -321,16 +370,7 @@ public class LWCBlockListener implements Listener {
         if (!LWC.ENABLED || event.isCancelled()) {
             return;
         }
-        LWC lwc = this.plugin.getLWC();
-        for (Block block : event.getBlocks()) {
-            Protection protection = lwc.findProtection(block);
-            if (protection != null) {
-                Protection pistonProtection = lwc.findProtection(event.getBlock());
-                if (pistonProtection == null || !pistonProtection.getOwner().equals(protection.getOwner())) {
-                    event.setCancelled(true);
-                }
-            }
-        }
+        handlePiston(event, event.getBlocks());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
