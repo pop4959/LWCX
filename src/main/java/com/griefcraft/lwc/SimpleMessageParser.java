@@ -74,15 +74,16 @@ public class SimpleMessageParser implements MessageParser {
         key = StringUtil.fastReplace(key, ' ', '_');
 
         // For the bind cache
-        String cacheKey = key;
+        final StringBuilder cacheKeyBuilder = new StringBuilder(key);
 
         // add the arguments to the cache key
         if (args != null && args.length > 0) {
             for (Object argument : args) {
-                cacheKey += argument.toString();
+                cacheKeyBuilder.append(argument);
             }
         }
 
+        final String cacheKey = cacheKeyBuilder.toString();
         if (bindMessageCache.containsKey(cacheKey)) {
             ++bindMessageCacheHits;
             return bindMessageCache.get(cacheKey);
@@ -124,7 +125,7 @@ public class SimpleMessageParser implements MessageParser {
         for (String bindKey : bind.keySet()) {
             Object object = bind.get(bindKey);
 
-            value = StringUtil.fastReplace(value, "%" + bindKey + "%", object.toString());
+            value = StringUtil.fastReplace(value, "%" + bindKey + "%", String.valueOf(object));
         }
 
         // include the binds
