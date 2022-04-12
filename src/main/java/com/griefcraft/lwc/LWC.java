@@ -72,6 +72,7 @@ import com.griefcraft.modules.unlock.UnlockModule;
 import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.ModuleLoader;
 import com.griefcraft.scripting.event.LWCAccessEvent;
+import com.griefcraft.scripting.event.LWCFactionMatcherEvent;
 import com.griefcraft.scripting.event.LWCReloadEvent;
 import com.griefcraft.scripting.event.LWCSendLocaleEvent;
 import com.griefcraft.sql.Database;
@@ -791,6 +792,17 @@ public class LWC {
                             .ordinal()) {
                         return true;
                     }
+                }
+
+                break;
+            case FACTION:
+                // call the sameFaction hook
+                LWCFactionMatcherEvent event = new LWCFactionMatcherEvent(player, protection);
+                moduleLoader.dispatchEvent(event);
+
+                // Is the player in the same faction as the protection owner?
+                if (event.isSameFaction()) {
+                    return true;
                 }
 
                 break;

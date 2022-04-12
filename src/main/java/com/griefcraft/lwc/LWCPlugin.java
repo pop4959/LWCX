@@ -110,6 +110,9 @@ public class LWCPlugin extends JavaPlugin {
             } else if (commandName.equals("cprivate") || commandName.equals("lock")) {
                 aliasCommand = "create";
                 aliasArgs = ("private " + argString).split(" ");
+            } else if (commandName.equals("cfaction")) {
+                aliasCommand = "create";
+                aliasArgs = ("faction " + argString).split(" ");
             } else if (commandName.equals("cdonation")) {
                 aliasCommand = "create";
                 aliasArgs = ("donation " + argString).split(" ");

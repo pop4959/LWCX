@@ -2,7 +2,9 @@ package com.griefcraft.modules.pluginsupport;
 
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.JavaModule;
+import com.griefcraft.scripting.event.LWCFactionMatcherEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
+import com.griefcraft.util.UUIDRegistry;
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.FactionsPlugin;
@@ -13,7 +15,10 @@ import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 
 import java.util.Set;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 
 public class Factions extends JavaModule {
@@ -98,5 +103,20 @@ public class Factions extends JavaModule {
         }
 
         return false;
+    }
+
+    public void onMatchingFaction(LWCFactionMatcherEvent event) {
+        FPlayer fPlayer = FPlayers.getInstance().getByPlayer(event.getPlayer());
+        UUID uuid = UUIDRegistry.getUUID(event.getProtection().getOwner());
+
+        if (uuid == null) {
+            return;
+        }
+
+        FPlayer owner = FPlayers.getInstance().getById(uuid.toString());
+
+        if (fPlayer.getFactionId().equals(owner.getFactionId())) {
+            event.setSameFaction(true);
+        }
     }
 }

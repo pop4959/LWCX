@@ -36,6 +36,7 @@ import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCEntityInteractEvent;
 import com.griefcraft.scripting.event.LWCEvent;
+import com.griefcraft.scripting.event.LWCFactionMatcherEvent;
 import com.griefcraft.scripting.event.LWCMagnetPullEvent;
 import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEntityEvent;
@@ -150,7 +151,13 @@ public class ModuleLoader {
 
         MAGNET_PULL(1),
 
-        REGISTER_PROTECTION_ENTITY;
+        REGISTER_PROTECTION_ENTITY,
+
+        /**
+         * Called when a protection needs to be checked if a player is
+         * inside the same faction as the protection owner
+         */
+        FACTION_MATCHING(2);
 
         Event() {
         }
@@ -288,6 +295,8 @@ public class ModuleLoader {
                     event = Event.INTERACT_PROTECTION_ENTITY;
                 } else if (parameter == LWCProtectionRegisterEntityEvent.class) {
                     event = Event.REGISTER_PROTECTION_ENTITY;
+                } else if (parameter == LWCFactionMatcherEvent.class) {
+                    event = Event.FACTION_MATCHING;
                 }
 
                 // ok!
@@ -385,6 +394,8 @@ public class ModuleLoader {
                     module.onEntityInteractProtection((LWCProtectionInteractEntityEvent) event);
                 } else if (type == Event.REGISTER_PROTECTION_ENTITY) {
                     module.onRegisterEntity((LWCProtectionRegisterEntityEvent) event);
+                } else if (type == Event.FACTION_MATCHING) {
+                    module.onMatchingFaction((LWCFactionMatcherEvent) event);
                 }
             }
         } catch (Throwable throwable) {

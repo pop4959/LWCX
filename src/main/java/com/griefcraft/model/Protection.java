@@ -92,9 +92,11 @@ public class Protection {
         PRIVATE,
 
         /**
-         * Reserved / unused, to keep ordinal order
+         * The protection is only usable by players inside the same faction of the
+         * player who created it. Any Faction plugin can listen to the event and
+         * declare, whether this is the case or not.
          */
-        RESERVED1,
+        FACTION,
 
         /**
          * Reserved / unused, to keep ordinal order
