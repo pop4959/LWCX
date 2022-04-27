@@ -121,7 +121,7 @@ public class Factions extends JavaModule {
         }
 
         for (Permission permission : protection.getPermissions()) {
-            if (permission.getType() != Permission.Type.TOWN) {
+            if (permission.getType() != Permission.Type.FACTION) {
                 continue;
             }
 
