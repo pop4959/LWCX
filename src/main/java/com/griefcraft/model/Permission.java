@@ -183,7 +183,7 @@ public class Permission {
         StringBuilder builder = new StringBuilder();
         builder.append(Colors.Yellow);
         if (type == Type.PLAYER) {
-            builder.append(UUIDRegistry.formatPlayerName(getName()));
+            builder.append(UUIDRegistry.formatPlayerName(getName(), false));
         } else {
             builder.append(getName());
         }
