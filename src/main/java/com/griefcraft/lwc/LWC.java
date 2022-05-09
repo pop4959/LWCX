@@ -1976,6 +1976,16 @@ public class LWC {
                 value = value.substring(6);
             }
 
+            if (value.toLowerCase().startsWith("f:")) {
+                type = Permission.Type.FACTION;
+                value = value.substring(2);
+            }
+
+            if (value.toLowerCase().startsWith("faction:")) {
+                type = Permission.Type.FACTION;
+                value = value.substring(8);
+            }
+
             if (value.trim().isEmpty()) {
                 continue;
             }

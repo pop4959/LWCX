@@ -95,7 +95,12 @@ public class Permission {
         /**
          * Applies to members of a WorldGuard region
          */
-        REGION;
+        REGION,
+
+        /**
+         * Applies to members of a Factions faction
+         */
+        FACTION;
 
         @Override
         public String toString() {
