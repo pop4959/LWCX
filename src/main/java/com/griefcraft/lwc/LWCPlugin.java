@@ -136,6 +136,9 @@ public class LWCPlugin extends JavaPlugin {
             } else if (commandName.equals("cremoveall")) {
                 aliasCommand = "remove";
                 aliasArgs = new String[]{"allprotections"};
+            } else if (commandName.equals("cdefault")) {
+                aliasCommand = "default";
+                aliasArgs = new String[]{argString};
             }
 
             // Flag aliases
@@ -219,6 +222,7 @@ public class LWCPlugin extends JavaPlugin {
                                 break;
                             return Completions.cmodify(currentArg, sender, false);
                         case "modify":
+                        case "default":
                             if (args.length >= 2 && Completions.protectionTypes().contains(args[1].toLowerCase()))
                                 break;
                             return Completions.cmodify(currentArg, sender, args.length == 2);
@@ -266,6 +270,7 @@ public class LWCPlugin extends JavaPlugin {
                 }
                 break;
             case "cmodify":
+            case "cdefault":
                 if (args.length >= 1 && Completions.protectionTypes().contains(args[0].toLowerCase()))
                     break;
                 return Completions.cmodify(currentArg, sender, args.length == 1);

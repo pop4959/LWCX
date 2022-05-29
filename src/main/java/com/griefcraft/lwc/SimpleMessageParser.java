@@ -74,15 +74,16 @@ public class SimpleMessageParser implements MessageParser {
         key = StringUtil.fastReplace(key, ' ', '_');
 
         // For the bind cache
-        String cacheKey = key;
+        final StringBuilder cacheKeyBuilder = new StringBuilder(key);
 
         // add the arguments to the cache key
         if (args != null && args.length > 0) {
             for (Object argument : args) {
-                cacheKey += argument.toString();
+                cacheKeyBuilder.append(argument);
             }
         }
 
+        final String cacheKey = cacheKeyBuilder.toString();
         if (bindMessageCache.containsKey(cacheKey)) {
             ++bindMessageCacheHits;
             return bindMessageCache.get(cacheKey);
@@ -99,16 +100,10 @@ public class SimpleMessageParser implements MessageParser {
             value = locale.getString(key);
 
             // apply colors
-            for (String colorKey : Colors.localeColors.keySet()) {
-                String color = Colors.localeColors.get(colorKey);
-
-                if (value.contains(colorKey)) {
-                    value = StringUtil.fastReplace(value, colorKey, color);
-                }
-            }
+            value = Colors.apply(value);
 
             // Apply aliases
-            String[] aliasvars = new String[]{"cprivate", "cpublic", "cpassword", "cmodify", "cunlock", "cinfo", "cremove"};
+            String[] aliasvars = new String[]{"cprivate", "cpublic", "cpassword", "cmodify", "cdefault", "cunlock", "cinfo", "cremove"};
 
             // apply command name modification depending on menu style
             for (String alias : aliasvars) {
@@ -130,7 +125,7 @@ public class SimpleMessageParser implements MessageParser {
         for (String bindKey : bind.keySet()) {
             Object object = bind.get(bindKey);
 
-            value = StringUtil.fastReplace(value, "%" + bindKey + "%", object.toString());
+            value = StringUtil.fastReplace(value, "%" + bindKey + "%", String.valueOf(object));
         }
 
         // include the binds

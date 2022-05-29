@@ -28,6 +28,7 @@
 
 package com.griefcraft.lwc;
 
+import com.griefcraft.cache.DefaultsCache;
 import com.griefcraft.bukkit.EntityBlock;
 import com.griefcraft.cache.BlockCache;
 import com.griefcraft.cache.ProtectionCache;
@@ -60,6 +61,7 @@ import com.griefcraft.modules.limits.LimitsModule;
 import com.griefcraft.modules.limits.LimitsV2;
 import com.griefcraft.modules.modes.*;
 import com.griefcraft.modules.modify.ModifyModule;
+import com.griefcraft.modules.modifydefault.DefaultModule;
 import com.griefcraft.modules.owners.OwnersModule;
 import com.griefcraft.modules.pluginsupport.Factions;
 import com.griefcraft.modules.pluginsupport.Towny;
@@ -138,6 +140,11 @@ public class LWC {
     private final ProtectionCache protectionCache;
 
     /**
+     * The defaults cache
+     */
+    private final DefaultsCache defaultsCache;
+
+    /**
      * Physical database instance
      */
     private PhysDB physicalDatabase;
@@ -178,6 +185,7 @@ public class LWC {
         configuration = Configuration.load("core.yml");
         alternativeHoppers = configuration.getBoolean("optional.alternativeHopperProtection", false);
         protectionCache = new ProtectionCache(this);
+        defaultsCache = new DefaultsCache(this);
         backupManager = new BackupManager();
         moduleLoader = new ModuleLoader(this);
     }
@@ -225,7 +233,7 @@ public class LWC {
 
     /**
      * <p>Normalize a name to a more readable and usable form.</p>
-     * 
+     *
      * E.g sign_post/wall_sign = Sign, furnace/burning_furnace = Furnace,
      * iron_door_block = iron_door
      *
@@ -697,8 +705,9 @@ public class LWC {
                     sendLocaleToActionBar(player, "protection.general.locked.password", "block", materialToString(block), "owner",
                             protection.getOwner());
                 } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION || type == Protection.Type.DISPLAY) {
-                    sendLocaleToActionBar(player, "protection.general.locked.private", "block", materialToString(block), "owner",
-                            protection.getOwner());
+                    sendLocaleToActionBar(player, "protection.general.locked.private", "block", materialToString(block),
+                            "name", UUIDRegistry.isValidUUID(protection.getOwner()) ? UUIDRegistry.getName(UUID.fromString(protection.getOwner())) : protection.getOwner(),
+                            "owner", protection.getOwner());
                 }
             }
         }
@@ -1733,6 +1742,7 @@ public class LWC {
         registerModule(new LimitsModule());
         registerModule(new CreateModule());
         registerModule(new ModifyModule());
+        registerModule(new DefaultModule());
         registerModule(new DestroyModule());
         registerModule(new FreeModule());
         registerModule(new InfoModule());
@@ -1907,6 +1917,7 @@ public class LWC {
         for (String value : arguments) {
             boolean remove = false;
             boolean isAdmin = false;
+            boolean ownerChange = false;
             Permission.Type type = Permission.Type.PLAYER;
 
             // Gracefully ignore id
@@ -1959,11 +1970,30 @@ public class LWC {
                 value = value.substring(7);
             }
 
+            if (value.toLowerCase().startsWith("owner:")) {
+                type = Permission.Type.PLAYER;
+                ownerChange = true;
+                value = value.substring(6);
+            }
+
+            if (value.toLowerCase().startsWith("f:")) {
+                type = Permission.Type.FACTION;
+                value = value.substring(2);
+            }
+
+            if (value.toLowerCase().startsWith("faction:")) {
+                type = Permission.Type.FACTION;
+                value = value.substring(8);
+            }
+
             if (value.trim().isEmpty()) {
                 continue;
             }
 
             String localeChild = type.toString().toLowerCase();
+
+            // Store the original value (keep player name / original input)
+            final String originalValue = value;
 
             // If it's a player, convert it to UUID
             if (type == Permission.Type.PLAYER) {
@@ -1972,6 +2002,13 @@ public class LWC {
                 if (uuid != null) {
                     value = uuid.toString();
                 }
+            }
+
+            if (ownerChange) {
+                protection.setOwner(value);
+                protection.save();
+                sendLocale(sender, "protection.interact.forceowner.finalize", "player", UUIDRegistry.formatPlayerName(originalValue, false));
+                continue;
             }
 
             if (!remove) {
@@ -2003,6 +2040,28 @@ public class LWC {
                             isAdmin ? "[" + Colors.Dark_Red + "ADMIN" + Colors.Gold + "]" : "");
                 }
             }
+        }
+    }
+
+    public void processDefaultModifications(CommandSender sender, String data) {
+        String senderId = null;
+        UUID uuid = UUIDRegistry.getUUID(sender.getName());
+        if (uuid != null) {
+            senderId = uuid.toString();
+        } else {
+            sendLocale(sender, "lwc.defaults.error");
+            return;
+        }
+        Default defaults = new Default();
+        defaults.setOwner(senderId);
+        defaults.setData(data);
+        defaults.save();
+        if("-".equals(data)) {
+            defaultsCache.clear(sender);
+            sendLocale(sender, "lwc.defaults.cleared");
+        } else {
+            defaultsCache.set(sender, data);
+            sendLocale(sender, "lwc.defaults.saved");
         }
     }
 
@@ -2155,6 +2214,10 @@ public class LWC {
         return Double.parseDouble(plugin.getDescription().getVersion());
     }
 
+    public DefaultsCache getDefaultsCache() {
+        return defaultsCache;
+    }
+
     /**
      * @return true if history logging is enabled
      */
@@ -2243,8 +2306,9 @@ public class LWC {
                 sendLocaleToActionBar(player, "protection.general.locked.password", "block", blockName, "owner",
                         protection.getOwner());
             } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION) {
-                sendLocaleToActionBar(player, "protection.general.locked.private", "block", blockName, "owner",
-                        protection.getOwner());
+                sendLocaleToActionBar(player, "protection.general.locked.private", "block", blockName,
+                        "name", UUIDRegistry.isValidUUID(protection.getOwner()) ? UUIDRegistry.getName(UUID.fromString(protection.getOwner())) : protection.getOwner(),
+                        "owner", protection.getOwner());
             }
         }
 

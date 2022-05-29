@@ -28,8 +28,12 @@
 
 package com.griefcraft.util;
 
+import org.bukkit.ChatColor;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Colors {
 
@@ -58,6 +62,9 @@ public class Colors {
     public static final String Underline        = "\u00A7n";
     public static final String Italic           = "\u00A7o";
     public static final String Reset            = "\u00A7r";
+
+    // RGB pattern
+    public static final Pattern RGB_PATTERN     = Pattern.compile("%#[0-9a-fA-F]{6}%");
 
     // contains colors for locales
     public static final Map<String, String> localeColors = new HashMap<>();
@@ -89,4 +96,24 @@ public class Colors {
         localeColors.put("%reset%", Reset);
     }
 
+    public static String apply(String message) {
+        for (String colorKey : localeColors.keySet()) {
+            if (message.contains(colorKey)) {
+                message = StringUtil.fastReplace(message, colorKey, localeColors.get(colorKey));
+            }
+        }
+        Matcher rgbMatcher = RGB_PATTERN.matcher(message);
+        while (rgbMatcher.find()) {
+            String rgbMatch = rgbMatcher.group();
+            String rgbColor = String.valueOf(ChatColor.COLOR_CHAR) + 'x' +
+                    ChatColor.COLOR_CHAR + rgbMatch.charAt(2) +
+                    ChatColor.COLOR_CHAR + rgbMatch.charAt(3) +
+                    ChatColor.COLOR_CHAR + rgbMatch.charAt(4) +
+                    ChatColor.COLOR_CHAR + rgbMatch.charAt(5) +
+                    ChatColor.COLOR_CHAR + rgbMatch.charAt(6) +
+                    ChatColor.COLOR_CHAR + rgbMatch.charAt(7);
+            message = StringUtil.fastReplace(message, rgbMatch, rgbColor);
+        }
+        return message;
+    }
 }

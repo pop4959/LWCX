@@ -237,6 +237,12 @@ public class FreeModule extends JavaModule {
             player.disableAllModes();
             lwc.sendLocale(sender, "protection.remove.modes.finalize");
         } else if (type.equals("allprotections")) {
+            // Check for permission
+            if (!lwc.hasPermission(sender, "lwc.removeall")) {
+                lwc.sendLocale(sender, "protection.accessdenied");
+                return;
+            }
+
             // Prompt them for /lwc confirm
             lwc.sendLocale(player, "lwc.remove.allprotections");
 

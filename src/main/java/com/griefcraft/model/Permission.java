@@ -95,7 +95,12 @@ public class Permission {
         /**
          * Applies to members of a WorldGuard region
          */
-        REGION;
+        REGION,
+
+        /**
+         * Applies to members of a Factions faction
+         */
+        FACTION;
 
         @Override
         public String toString() {
@@ -183,7 +188,7 @@ public class Permission {
         StringBuilder builder = new StringBuilder();
         builder.append(Colors.Yellow);
         if (type == Type.PLAYER) {
-            builder.append(UUIDRegistry.formatPlayerName(getName()));
+            builder.append(UUIDRegistry.formatPlayerName(getName(), false));
         } else {
             builder.append(getName());
         }
