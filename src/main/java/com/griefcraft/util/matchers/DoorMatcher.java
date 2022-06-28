@@ -95,6 +95,15 @@ public class DoorMatcher implements ProtectionFinder.Matcher {
             PRESSURE_PLATES.addAll(EnumSet.of(Material.CRIMSON_PRESSURE_PLATE, Material.WARPED_PRESSURE_PLATE,
                     Material.POLISHED_BLACKSTONE_PRESSURE_PLATE));
         }
+        if (VersionUtil.getMinorVersion() > 18) {
+            PROTECTABLES_DOORS.add(Material.MANGROVE_DOOR);
+            WOODEN_DOORS.add(Material.MANGROVE_DOOR);
+            FENCE_GATES.add(Material.MANGROVE_FENCE_GATE);
+            WOODEN_FENCE_GATES.add(Material.MANGROVE_FENCE_GATE);
+            TRAP_DOORS.add(Material.MANGROVE_TRAPDOOR);
+            WOODEN_TRAP_DOORS.add(Material.MANGROVE_TRAPDOOR);
+            PRESSURE_PLATES.add(Material.MANGROVE_PRESSURE_PLATE);
+        }
     }
 
     public boolean matches(ProtectionFinder finder) {

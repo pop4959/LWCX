@@ -37,9 +37,13 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCBlockInteractEvent;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
+import com.griefcraft.util.UUIDRegistry;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class InfoModule extends JavaModule {
 
@@ -60,7 +64,10 @@ public class InfoModule extends JavaModule {
 
         String type = lwc.getPlugin().getMessageParser().parseMessage(protection.typeToString().toLowerCase());
 
-        lwc.sendLocale(player, "lwc.info", "owner", protection.getFormattedOwnerPlayerName(), "type", type);
+        lwc.sendLocale(player, "lwc.info",
+                "name", UUIDRegistry.isValidUUID(protection.getOwner()) ? UUIDRegistry.getName(UUID.fromString(protection.getOwner())) : protection.getOwner(),
+                "owner", protection.getOwner(),
+                "type", type);
 
         // If the event gives them admin permission, or they're already an admin or mod, allow them to view full info
         boolean canViewFullInfo = event.canAdmin() || lwc.isAdmin(player) || lwc.isMod(player);
@@ -74,7 +81,9 @@ public class InfoModule extends JavaModule {
                         break;
                     }
 
-                    player.sendMessage(permission.toString());
+                    final String name = Permission.Type.PLAYER == permission.getType() ? UUIDRegistry.formatPlayerName(permission.getName(), false) : permission.getName();
+                    final String admin = Permission.Access.ADMIN == permission.getAccess() ? Optional.ofNullable(lwc.getLocaleMessage(player, "lwc.acl.permission.admin")).map(message -> message[0]).orElse("") : "";
+                    lwc.sendLocale(player, "lwc.acl.permission", "name", name, "type", permission.getType(), "admin", admin);
                     index++;
                 }
 

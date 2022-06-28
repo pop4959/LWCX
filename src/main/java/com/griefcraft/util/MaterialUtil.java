@@ -427,7 +427,7 @@ public class MaterialUtil {
             case 207:
                 return Material.BEETROOTS;
             case 208:
-                return Material.GRASS_PATH;
+                return Material.getMaterial("GRASS_PATH") == null ? Material.DIRT_PATH : Material.getMaterial("GRASS_PATH");
             case 209:
                 return Material.END_GATEWAY;
             case 210:

@@ -64,7 +64,7 @@ public class AdminForceOwner extends JavaModule {
         protection.setOwner(newOwner);
         protection.save();
 
-        lwc.sendLocale(player, "protection.interact.forceowner.finalize", "player", protection.getFormattedOwnerPlayerName());
+        lwc.sendLocale(player, "protection.interact.forceowner.finalize", "player", UUIDRegistry.formatPlayerName(protection.getOwner(), false));
         lwc.removeModes(player);
         event.setResult(Result.CANCEL);
 

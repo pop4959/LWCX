@@ -67,6 +67,10 @@ public class GravityMatcher implements ProtectionFinder.Matcher {
                     Material.POLISHED_BLACKSTONE_BUTTON, Material.CRIMSON_PRESSURE_PLATE, Material.WARPED_PRESSURE_PLATE,
                     Material.POLISHED_BLACKSTONE_PRESSURE_PLATE, Material.CRIMSON_SIGN, Material.WARPED_SIGN));
         }
+        if (VersionUtil.getMinorVersion() > 18) {
+            PROTECTABLES_POSTS.addAll(EnumSet.of(Material.MANGROVE_BUTTON, Material.MANGROVE_PRESSURE_PLATE,
+                    Material.MANGROVE_SIGN));
+        }
     }
 
     public boolean matches(ProtectionFinder finder) {

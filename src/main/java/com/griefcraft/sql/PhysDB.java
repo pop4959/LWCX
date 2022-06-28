@@ -34,6 +34,7 @@ import com.griefcraft.cache.LRUCache;
 import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.BlockID;
+import com.griefcraft.model.Default;
 import com.griefcraft.model.Flag;
 import com.griefcraft.model.History;
 import com.griefcraft.model.Permission;
@@ -285,6 +286,7 @@ public class PhysDB extends Database {
             column = new Column("id");
             column.setType("INTEGER");
             column.setPrimary(true);
+            column.setAutoIncrement(true);
             protections.add(column);
 
             column = new Column("owner");
@@ -341,6 +343,7 @@ public class PhysDB extends Database {
             column = new Column("id");
             column.setType("INTEGER");
             column.setPrimary(true);
+            column.setAutoIncrement(true);
             history.add(column);
 
             column = new Column("protectionId");
@@ -385,7 +388,6 @@ public class PhysDB extends Database {
             column = new Column("name");
             column.setType("VARCHAR(40)");
             column.setPrimary(true);
-            column.setAutoIncrement(false);
             internal.add(column);
 
             column = new Column("value");
@@ -398,7 +400,6 @@ public class PhysDB extends Database {
             column = new Column("id");
             column.setType("INTEGER");
             column.setPrimary(true);
-            column.setAutoIncrement(false);
             blocks.add(column);
 
             column = new Column("name");
@@ -406,10 +407,23 @@ public class PhysDB extends Database {
             blocks.add(column);
         }
 
+        Table defaults = new Table(this, "defaults");
+        {
+            column = new Column("player");
+            column.setType("VARCHAR(36)");
+            column.setPrimary(true);
+            defaults.add(column);
+
+            column = new Column("defaultdata");
+            column.setType("VARCHAR(255)");
+            defaults.add(column);
+        }
+
         protections.execute();
         history.execute();
         internal.execute();
         blocks.execute();
+        defaults.execute();
 
         /**
          * Updates that alter or rename a table go here
@@ -2249,7 +2263,7 @@ public class PhysDB extends Database {
             statement = connection.createStatement();
             ResultSet test = statement.executeQuery("SELECT id FROM " + prefix + "blocks WHERE id = 0");
             try {
-                test.first(); // needed for MySQL
+                test.next(); // needed for MySQL
             } catch (SQLException e) {
             }
             test.getInt("id"); // this should throw an exception if there are no entries in blocks table
@@ -2327,7 +2341,7 @@ public class PhysDB extends Database {
             }
             ResultSet rs = statement.executeQuery("SELECT id FROM " + prefix + "blocks WHERE id = 0");
             try {
-                rs.first(); // needed for MySQL
+                rs.next(); // needed for MySQL
             } catch (SQLException e) {
             }
             rs.getInt("id"); // this should throw an exception if there are no entries in blocks table
@@ -2385,6 +2399,48 @@ public class PhysDB extends Database {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void clearDefault(String player) {
+        try {
+            PreparedStatement statement = prepare("DELETE FROM " + prefix
+                    + "defaults WHERE player=?");
+            statement.setString(1, player);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            printException(e);
+        }
+    }
+
+    public void saveDefault(Default defaults) {
+        if("-".equals(defaults.getData())) {
+            clearDefault(defaults.getOwner());
+            return;
+        }
+        try {
+            PreparedStatement statement = prepare("REPLACE INTO " + prefix
+                    + "defaults (player, defaultdata) VALUES (?, ?)");
+            statement.setString(1, defaults.getOwner());
+            statement.setString(2, defaults.getData());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            printException(e);
+        }
+    }
+
+    public String loadDefault(String player) {
+        try {
+            PreparedStatement statement = prepare("SELECT defaultdata FROM " + prefix + "defaults"
+                    + " WHERE player=?");
+            statement.setString(1, player);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()) {
+                return rs.getString("defaultdata");
+            }
+        } catch (SQLException e) {
+            printException(e);
+        }
+        return null;
     }
 
 }

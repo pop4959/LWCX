@@ -1,7 +1,9 @@
 package com.griefcraft.modules.pluginsupport;
 
 import com.griefcraft.lwc.LWC;
+import com.griefcraft.model.Permission;
 import com.griefcraft.scripting.JavaModule;
+import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCProtectionRegisterEvent;
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.Faction;
@@ -14,6 +16,7 @@ import com.massivecraft.factions.FPlayers;
 
 import java.util.Set;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class Factions extends JavaModule {
@@ -98,5 +101,44 @@ public class Factions extends JavaModule {
         }
 
         return false;
+    }
+
+    @Override
+    public void onAccessRequest(LWCAccessEvent event) {
+        Player player = event.getPlayer();
+        com.griefcraft.model.Protection protection = event.getProtection();
+
+        if (event.getAccess() != Permission.Access.NONE) {
+            return;
+        }
+
+        if (protection.getType() != com.griefcraft.model.Protection.Type.PRIVATE) {
+            return;
+        }
+
+        if (factions == null) {
+            return;
+        }
+
+        for (Permission permission : protection.getPermissions()) {
+            if (permission.getType() != Permission.Type.FACTION) {
+                continue;
+            }
+
+            FPlayer fPlayer = FPlayers.getInstance().getByPlayer(event.getPlayer());
+            Faction faction = com.massivecraft.factions.Factions.getInstance().getFactionById(permission.getName());
+
+            // Check if the player is a member of the faction
+            if (faction.getFPlayerAdmin().getName().equalsIgnoreCase(player.getName())) {
+                // Faction admin
+                event.setAccess(Permission.Access.ADMIN);
+            } else if (faction.getFPlayers().contains(fPlayer)) {
+                // Member of the faction
+                event.setAccess(Permission.Access.PLAYER);
+            } else {
+                // Doesn't meet any of the requirements.
+                event.setAccess(Permission.Access.NONE);
+            }
+        }
     }
 }

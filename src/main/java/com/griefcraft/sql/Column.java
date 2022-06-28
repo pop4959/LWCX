@@ -96,7 +96,6 @@ class Column {
 
     public void setPrimary(boolean primary) {
         this.primary = primary;
-        autoIncrement = primary;
     }
 
     public void setTable(Table table) {

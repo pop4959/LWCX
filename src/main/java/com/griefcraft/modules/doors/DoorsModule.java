@@ -133,16 +133,16 @@ public class DoorsModule extends JavaModule {
         boolean opensWhenClicked = (DoorMatcher.WOODEN_DOORS.contains(block.getType())
                 || DoorMatcher.WOODEN_FENCE_GATES.contains(block.getType())
                 || DoorMatcher.WOODEN_TRAP_DOORS.contains(block.getType()));
-        changeDoorStates(true, (opensWhenClicked ? null : block), doubleDoorBlock);
+
+        final Block finalBlock = block;
+        final Block finalDoubleDoorBlock = doubleDoorBlock;
+
+        // Schedule a task to "immediately" open the door, since another plugin might cancel the event later
+        lwc.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(lwc.getPlugin(), () -> {
+            changeDoorStates(event, true, (opensWhenClicked ? null : finalBlock), finalDoubleDoorBlock);
+        });
 
         if (action == Action.OPEN_AND_CLOSE || protection.hasFlag(Flag.Type.AUTOCLOSE)) {
-            // Abuse the fact that we still use final variables inside the task
-            // The double door block object is initially only assigned if we
-            // need
-            // it, so we just create a second variable ^^
-            final Block finalBlock = block;
-            final Block finalDoubleDoorBlock = doubleDoorBlock;
-
             // Calculate the wait time
             // This is basically Interval * TICKS_PER_SECOND
             int wait = getAutoCloseInterval() * TICKS_PER_SECOND;
@@ -155,7 +155,7 @@ public class DoorsModule extends JavaModule {
                 // Essentially all we need to do is reset the door
                 // states
                 // But DO NOT open the door if it's closed !
-                changeDoorStates(false, finalBlock, finalDoubleDoorBlock);
+                changeDoorStates(event, false, finalBlock, finalDoubleDoorBlock);
 
             }, wait);
         }
@@ -172,7 +172,11 @@ public class DoorsModule extends JavaModule {
      * @param allowDoorToOpen If FALSE, and the door is currently CLOSED, it will NOT be opened!
      * @param doors           Blocks given must be the bottom block of the door
      */
-    private void changeDoorStates(boolean allowDoorToOpen, Block... doors) {
+    private void changeDoorStates(LWCProtectionInteractEvent event, boolean allowDoorToOpen, Block... doors) {
+        if (event.getEvent().isCancelled()) {
+            return;
+        }
+
         for (Block door : doors) {
             if (door == null) {
                 continue;
