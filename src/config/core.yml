@@ -270,6 +270,8 @@ protections:
             enabled: true
         dark_oak_door:
             enabled: true
+        mangrove_door:
+            enabled: true
         crimson_door:
             enabled: true
         warped_door:
@@ -288,6 +290,8 @@ protections:
             enabled: true
         dark_oak_trapdoor:
             enabled: true
+        mangrove_trapdoor:
+            enabled: true
         crimson_trapdoor:
             enabled: true
         warped_trapdoor:
@@ -303,6 +307,8 @@ protections:
         acacia_fence_gate:
             enabled: true
         dark_oak_fence_gate:
+            enabled: true
+        mangrove_fence_gate:
             enabled: true
         crimson_fence_gate:
             enabled: true
