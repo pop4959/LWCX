@@ -114,6 +114,11 @@ database:
     # The interval between pinging the MySQL server to keep it alive (in seconds)
     ping_interval: 300
 
+    # If true, connections to the MySQL database will be encrypted
+    # If false, connections to the MySQL database won't be encrypted
+    # Only enable this if your 'host' actually requires an SSL connection
+    useSSL: false
+
 # The protections nodes allows you to define, remove and modify which blocks LWC is allowed to protect
 # This means that you could make any block you want protectable, or remove existing protectable blocks
 # (e.g trap doors, etc.)
