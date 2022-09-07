@@ -16,3 +16,8 @@ bin/
 .idea/
 *.iml
 target/
+
+# Gradle
+.gradle/
+.settings/
+build/

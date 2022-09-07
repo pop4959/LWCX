@@ -1,19 +1,19 @@
 pipeline {
     agent {
-        docker { image 'maven:latest' }
+        docker { image 'adoptopenjdk:17' }
     }
 
     stages {
         stage('Build') {
             steps {
-                sh 'mvn package'
+                sh './gradlew build'
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            archiveArtifacts artifacts: 'build/libs/*-all.jar', fingerprint: true
         }
     }
 }
