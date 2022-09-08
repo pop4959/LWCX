@@ -4,6 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     java
     jacoco
+    `maven-publish`
     id("org.ajoberstar.grgit") version "4.1.1"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -30,9 +31,6 @@ if (!project.hasProperty("gitCommitHash")) {
         "no.git.id"
     }
 }
-
-group = "com.griefcraft.lwc"
-version = "2.2.9-dev"
 
 repositories {
     mavenCentral()
@@ -99,4 +97,27 @@ tasks.named("assemble").configure {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+
+publishing {
+    repositories {
+        if (project.hasProperty("mavenUsername") && project.hasProperty("mavenPassword")) {
+            maven {
+                credentials {
+                    username = "${project.property("mavenUsername")}"
+                    password = "${project.property("mavenPassword")}"
+                }
+                url = uri("https://repo.codemc.io/repository/maven-releases/")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "${project.group}"
+            artifactId = project.name
+            version = "${project.version}"
+            from(components["java"])
+        }
+    }
 }
