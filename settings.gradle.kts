@@ -1,8 +1,1 @@
-rootProject.name = "LWCX"
-
-pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
+rootProject.name = "lwc"
