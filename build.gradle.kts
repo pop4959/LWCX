@@ -21,10 +21,6 @@ repositories {
     maven("https://jitpack.io")
 }
 
-configurations {
-    compileClasspath.get().extendsFrom(create("shadeOnly"))
-}
-
 dependencies {
     compileOnly(group = "org.spigotmc", name = "spigot-api", version = "1.19.2-R0.1-SNAPSHOT")
     compileOnly(group = "com.sk89q.worldedit", name = "worldedit-core", version = "7.1.0")
