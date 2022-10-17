@@ -38,13 +38,15 @@ import com.griefcraft.modules.pluginsupport.Towny;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.sql.Database;
 import com.griefcraft.util.Completions;
-import com.griefcraft.util.Metrics;
 import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.Updater;
 import com.griefcraft.util.VersionUtil;
 import com.griefcraft.util.locale.LWCResourceBundle;
 import com.griefcraft.util.locale.LocaleClassLoader;
 import com.griefcraft.util.locale.UTF8Control;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.AdvancedPie;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -364,9 +366,9 @@ public class LWCPlugin extends JavaPlugin {
             return;
         }
 
-        Metrics m = new Metrics(this);
+        Metrics m = new Metrics(this, 5180);
 
-        m.addCustomChart(new Metrics.AdvancedPie("protected_blocks", () -> {
+        m.addCustomChart(new AdvancedPie("protected_blocks", () -> {
             Map<String, Integer> map = new HashMap<String, Integer>();
 
             if (lwc.getPhysicalDatabase().getProtectionCount() >= 50000) {
@@ -386,9 +388,9 @@ public class LWCPlugin extends JavaPlugin {
             return map;
         }));
 
-        m.addCustomChart(new Metrics.SimplePie("used_language", this::getCurrentLocale));
+        m.addCustomChart(new SimplePie("used_language", this::getCurrentLocale));
 
-        m.addCustomChart(new Metrics.SimplePie("database_used", () -> {
+        m.addCustomChart(new SimplePie("database_used", () -> {
             String database = lwc.getConfiguration().getString("database.adapter");
             if (database.equalsIgnoreCase("mysql"))
                 return "MySQL";
