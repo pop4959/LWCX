@@ -45,8 +45,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
-import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -476,12 +476,12 @@ public class LWCPlayerListener implements Listener {
 
         Location location;
         InventoryHolder holder;
-        Location hopperLocation = null;
-        InventoryHolder hopperHolder;
+        Location initiatorLocation = null;
+        InventoryHolder initiatorHolder;
 
         try {
             holder = inventory.getHolder();
-            hopperHolder = initiator.getHolder();
+            initiatorHolder = initiator.getHolder();
         } catch (AbstractMethodError e) {
             return false;
         }
@@ -495,10 +495,10 @@ public class LWCPlayerListener implements Listener {
                 return false;
             }
 
-            if (hopperHolder instanceof Hopper) {
-                hopperLocation = ((Hopper) hopperHolder).getLocation();
-            } else if (hopperHolder instanceof HopperMinecart) {
-                hopperLocation = ((HopperMinecart) hopperHolder).getLocation();
+            if (initiatorHolder instanceof Container) {
+                initiatorLocation = ((Container) initiatorHolder).getLocation();
+            } else if (initiatorHolder instanceof HopperMinecart) {
+                initiatorLocation = ((HopperMinecart) initiatorHolder).getLocation();
             }
         } catch (Exception e) {
             return false;
@@ -517,15 +517,18 @@ public class LWCPlayerListener implements Listener {
             return false;
         }
 
-        if (hopperLocation != null
-                && Boolean.parseBoolean(lwc.resolveProtectionConfiguration(Material.HOPPER, "enabled"))) {
-            Protection hopperProtection = lwc.findProtection(hopperLocation);
+        if (initiatorLocation != null && initiatorHolder instanceof Container) {
+            Material initiatorType = ((Container) initiatorHolder).getType();
 
-            if (hopperProtection != null) {
-                // if they're owned by the same person then we can allow the
-                // move
-                if (protection.getOwner().equals(hopperProtection.getOwner())) {
-                    return false;
+            if (Boolean.parseBoolean(lwc.resolveProtectionConfiguration(initiatorType, "enabled"))) {
+                Protection initiatorProtection = lwc.findProtection(initiatorLocation);
+
+                if (initiatorProtection != null) {
+                    // if they're owned by the same person then we can allow the
+                    // move
+                    if (protection.getOwner().equals(initiatorProtection.getOwner())) {
+                        return false;
+                    }
                 }
             }
         }
