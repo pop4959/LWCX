@@ -759,8 +759,8 @@ public class LWCPlayerListener implements Listener {
             return;
         }
 
-        // If it's not a donation or display chest, ignore it
-        if (protection.getType() != Protection.Type.DONATION && protection.getType() != Protection.Type.DISPLAY) {
+        // If it's not a donation, supply or display chest, ignore it
+        if (protection.getType() != Protection.Type.DONATION && protection.getType() != Protection.Type.DISPLAY && protection.getType() != Protection.Type.SUPPLY) {
             return;
         }
 
@@ -795,6 +795,25 @@ public class LWCPlayerListener implements Listener {
             // and left clicking)
             if (player.getInventory().getItemInMainHand() == null && (!event.isRightClick() && !event.isShiftClick())) {
                 return;
+            }
+        } else if (protection.getType() == Protection.Type.SUPPLY) {
+            // If it's not a container, we don't want it
+            if (event.getSlotType() != InventoryType.SlotType.CONTAINER && event.getSlotType() != InventoryType.SlotType.QUICKBAR) {
+                return;
+            }
+
+            InventoryAction action = event.getAction();
+
+            // Check if the slot is from top inventory
+            if (event.getRawSlot() < event.getView().getTopInventory().getSize()) {
+                if (action != InventoryAction.PLACE_ALL && action != InventoryAction.PLACE_SOME &&
+                        action != InventoryAction.PLACE_ONE && action != InventoryAction.SWAP_WITH_CURSOR) {
+                    return;
+                }
+            } else {
+                if (action != InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                    return;
+                }
             }
         }
 
@@ -867,8 +886,9 @@ public class LWCPlayerListener implements Listener {
             return;
         }
 
-        // If it's not a display chest, ignore it
-        if (protection.getType() != Protection.Type.DISPLAY) {
+        // If it's not a display chest or a supply chest and modified it, ignore it
+        if (protection.getType() != Protection.Type.DISPLAY && (protection.getType() != Protection.Type.SUPPLY ||
+                event.getRawSlots().stream().noneMatch(s -> s < event.getView().getTopInventory().getSize()))) {
             return;
         }
 

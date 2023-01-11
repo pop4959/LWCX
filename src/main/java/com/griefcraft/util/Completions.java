@@ -14,7 +14,7 @@ public class Completions {
 
     private static final List<String> LWC = Arrays.asList("create", "modify", "default", "unlock", "info", "limits", "remove", "mode", "flag", "admin");
     private static final List<String> ADMIN = Arrays.asList("view", "find", "forceowner", "remove", "purge", "cleanup", "version", "update", "report", "clear");
-    private static final List<String> PROTECTION_TYPES = Arrays.asList("public", "private", "donation", "password", "display");
+    private static final List<String> PROTECTION_TYPES = Arrays.asList("public", "private", "donation", "password", "display", "supply");
     private static final List<String> TOGGLES = Arrays.asList("on", "off");
     private static final List<String> FLAGS = Arrays.asList("redstone", "magnet", "exemption", "autoclose", "allowexplosions", "hopper", "hopperin", "hopperout");
     private static final List<String> DROPTRANSFER = Arrays.asList("select", "on", "off", "status");

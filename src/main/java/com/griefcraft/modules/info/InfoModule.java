@@ -73,7 +73,8 @@ public class InfoModule extends JavaModule {
         boolean canViewFullInfo = event.canAdmin() || lwc.isAdmin(player) || lwc.isMod(player);
 
         if (canViewFullInfo) {
-            if (protection.getType() == Protection.Type.PRIVATE || protection.getType() == Protection.Type.DONATION || protection.getType() == Protection.Type.DISPLAY) {
+            if (protection.getType() == Protection.Type.PRIVATE || protection.getType() == Protection.Type.DONATION
+                    || protection.getType() == Protection.Type.DISPLAY || protection.getType() == Protection.Type.SUPPLY) {
                 lwc.sendLocale(player, "lwc.acl", "size", protection.getPermissions().size());
                 int index = 0;
                 for (Permission permission : protection.getPermissions()) {

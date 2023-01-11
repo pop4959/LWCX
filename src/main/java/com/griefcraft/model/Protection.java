@@ -109,7 +109,12 @@ public class Protection {
         /**
          * Allows players to look into but not take
          */
-        DISPLAY;
+        DISPLAY,
+
+        /**
+         * Allows players to take items from but not deposit
+         */
+        SUPPLY;
 
         /**
          * Match a protection type using its string form
