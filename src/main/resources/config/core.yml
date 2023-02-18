@@ -135,7 +135,7 @@ protections:
     # If false, hoppers will be enabled by DEFAULT and /chopper on will disable hopper use on them
     denyHoppers: true
 
-    # Settable to private, public, donation, supply, or off. It defines what protections are registered as when you place them
+    # Settable to private, public, donation, display, supply, or off. It defines what protections are registered as when you place them
     # on the ground
     autoRegister: off
 

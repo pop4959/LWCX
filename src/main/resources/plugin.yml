@@ -41,7 +41,7 @@ commands:
     description: Creates a chest that can be looked into, but only removed by player with access.
     usage: /<command>
   csupply:
-    description: Creates a chest that can be take from, but only removed by player with access.
+    description: Creates a chest that can be taken from, but only removed by player with access.
     usage: /<command>
   cmodify:
     description: Modify an existing private protection.
