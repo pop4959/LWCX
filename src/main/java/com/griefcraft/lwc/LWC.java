@@ -2308,7 +2308,7 @@ public class LWC {
             if (type == Protection.Type.PASSWORD) {
                 sendLocaleToActionBar(player, "protection.general.locked.password", "block", blockName, "owner",
                         protection.getOwner());
-            } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION || type == Protection.Type.SUPPLY) {
+            } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION) {
                 sendLocaleToActionBar(player, "protection.general.locked.private", "block", blockName,
                         "name", UUIDRegistry.isValidUUID(protection.getOwner()) ? UUIDRegistry.getName(UUID.fromString(protection.getOwner())) : protection.getOwner(),
                         "owner", protection.getOwner());
