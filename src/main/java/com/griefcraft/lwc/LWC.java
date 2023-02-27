@@ -410,6 +410,7 @@ public class LWC {
             case PRIVATE:
             case DONATION:
             case DISPLAY:
+            case SUPPLY:
                 if (protection.isOwner(player)) {
                     return true;
                 }
@@ -704,7 +705,8 @@ public class LWC {
                 if (type == Protection.Type.PASSWORD) {
                     sendLocaleToActionBar(player, "protection.general.locked.password", "block", materialToString(block), "owner",
                             protection.getOwner());
-                } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION || type == Protection.Type.DISPLAY) {
+                } else if (type == Protection.Type.PRIVATE || type == Protection.Type.DONATION
+                        || type == Protection.Type.DISPLAY || type == Protection.Type.SUPPLY) {
                     sendLocaleToActionBar(player, "protection.general.locked.private", "block", materialToString(block),
                             "name", UUIDRegistry.isValidUUID(protection.getOwner()) ? UUIDRegistry.getName(UUID.fromString(protection.getOwner())) : protection.getOwner(),
                             "owner", protection.getOwner());
@@ -755,6 +757,7 @@ public class LWC {
             case PUBLIC:
             case DONATION:
             case DISPLAY:
+            case SUPPLY:
                 return true;
 
             case PASSWORD:

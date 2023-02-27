@@ -385,7 +385,8 @@ public class LWCBlockListener implements Listener {
             for (Protection protection : lwc.findAdjacentProtectionsOnAllSides(block)) {
                 if (protection != null) {
                     if (!lwc.canAccessProtection(player, protection)
-                            || ((protection.getType() == Protection.Type.DONATION || protection.getType() == Protection.Type.DISPLAY)
+                            || ((protection.getType() == Protection.Type.DONATION || protection.getType() == Protection.Type.DISPLAY
+                            || protection.getType() == Protection.Type.SUPPLY)
                             && !lwc.canAdminProtection(player, protection))) {
                         // they can't access the protection ..
                         event.setCancelled(true);
@@ -470,7 +471,7 @@ public class LWCBlockListener implements Listener {
         String autoRegisterType = lwc.resolveProtectionConfiguration(block, "autoRegister");
 
         // is it auto protectable?
-        if (!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation") && !autoRegisterType.equalsIgnoreCase("display")) {
+        if (!autoRegisterType.equalsIgnoreCase("private") && !autoRegisterType.equalsIgnoreCase("public") && !autoRegisterType.equalsIgnoreCase("donation") && !autoRegisterType.equalsIgnoreCase("display") && !autoRegisterType.equalsIgnoreCase("supply")) {
             return;
         }
 
