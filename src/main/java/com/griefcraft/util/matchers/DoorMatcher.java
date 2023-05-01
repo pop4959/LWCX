@@ -104,6 +104,15 @@ public class DoorMatcher implements ProtectionFinder.Matcher {
             WOODEN_TRAP_DOORS.add(Material.MANGROVE_TRAPDOOR);
             PRESSURE_PLATES.add(Material.MANGROVE_PRESSURE_PLATE);
         }
+        if (VersionUtil.getMinorVersion() > 19) {
+            PROTECTABLES_DOORS.addAll(EnumSet.of(Material.BAMBOO_DOOR, Material.CHERRY_DOOR));
+            WOODEN_DOORS.addAll(EnumSet.of(Material.BAMBOO_DOOR, Material.CHERRY_DOOR));
+            FENCE_GATES.addAll(EnumSet.of(Material.BAMBOO_FENCE_GATE, Material.CHERRY_FENCE_GATE));
+            WOODEN_FENCE_GATES.addAll(EnumSet.of(Material.BAMBOO_FENCE_GATE, Material.CHERRY_FENCE_GATE));
+            TRAP_DOORS.addAll(EnumSet.of(Material.BAMBOO_TRAPDOOR, Material.CHERRY_TRAPDOOR));
+            WOODEN_TRAP_DOORS.addAll(EnumSet.of(Material.BAMBOO_TRAPDOOR, Material.CHERRY_TRAPDOOR));
+            PRESSURE_PLATES.addAll(EnumSet.of(Material.BAMBOO_PRESSURE_PLATE, Material.CHERRY_PRESSURE_PLATE));
+        }
     }
 
     public boolean matches(ProtectionFinder finder) {

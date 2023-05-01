@@ -71,6 +71,11 @@ public class GravityMatcher implements ProtectionFinder.Matcher {
             PROTECTABLES_POSTS.addAll(EnumSet.of(Material.MANGROVE_BUTTON, Material.MANGROVE_PRESSURE_PLATE,
                     Material.MANGROVE_SIGN));
         }
+        if (VersionUtil.getMinorVersion() > 19) {
+            PROTECTABLES_POSTS.addAll(EnumSet.of(Material.BAMBOO_BUTTON, Material.BAMBOO_PRESSURE_PLATE,
+                    Material.BAMBOO_SIGN, Material.CHERRY_BUTTON, Material.CHERRY_PRESSURE_PLATE,
+                    Material.CHERRY_SIGN));
+        }
     }
 
     public boolean matches(ProtectionFinder finder) {

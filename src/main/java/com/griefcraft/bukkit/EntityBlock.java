@@ -335,4 +335,9 @@ public class EntityBlock implements Block {
         // TODO Auto-generated method stub
 
     }
+
+    @Override
+    public String getTranslationKey() {
+        return null;
+    }
 }
