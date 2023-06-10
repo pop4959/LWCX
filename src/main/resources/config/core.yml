@@ -74,7 +74,7 @@ optional:
     # If true, LWC will show certain (not all) messages in the action bar instead of the chat.
     # Spigot or better is recommended. This option will have no effect on CraftBukkit servers.
     useActionBar: false
-    
+
     # This disables protection checks for any item moves except for hopper minecarts. Protection against
     # hoppers is now done by checking for protections of the containers that the hopper is pointing into
     # or that are above the hopper when the player places a hopper. If the player doesn't have access to
@@ -84,7 +84,7 @@ optional:
     # If true, LWC will format protection information for better readability. Otherwise, raw protection
     # information will be displayed instead (default in versions prior to 2.2.3).
     useFormattedInfo: true
-    
+
 # Database information for LWC
 database:
 
@@ -114,6 +114,11 @@ database:
     # The interval between pinging the MySQL server to keep it alive (in seconds)
     ping_interval: 300
 
+    # If true, connections to the MySQL database will be encrypted
+    # If false, connections to the MySQL database won't be encrypted
+    # Only enable this if your 'host' actually requires an SSL connection
+    useSSL: false
+
 # The protections nodes allows you to define, remove and modify which blocks LWC is allowed to protect
 # This means that you could make any block you want protectable, or remove existing protectable blocks
 # (e.g trap doors, etc.)
@@ -130,7 +135,7 @@ protections:
     # If false, hoppers will be enabled by DEFAULT and /chopper on will disable hopper use on them
     denyHoppers: true
 
-    # Settable to private, public, donation, or off. It defines what protections are registered as when you place them
+    # Settable to private, public, donation, display, supply, or off. It defines what protections are registered as when you place them
     # on the ground
     autoRegister: off
 
@@ -256,6 +261,28 @@ protections:
             autoRegister: private
         sign:
             enabled: true
+        oak_hanging_sign:
+            enabled: true
+        spruce_hanging_sign:
+            enabled: true
+        birch_hanging_sign:
+            enabled: true
+        jungle_hanging_sign:
+            enabled: true
+        acacia_hanging_sign:
+            enabled: true
+        dark_oak_hanging_sign:
+            enabled: true
+        mangrove_hanging_sign:
+            enabled: true
+        crimson_hanging_sign:
+            enabled: true
+        warped_hanging_sign:
+            enabled: true
+        bamboo_hanging_sign:
+            enabled: true
+        cherry_hanging_sign:
+            enabled: true
         iron_door:
             enabled: true
         oak_door:
@@ -275,6 +302,10 @@ protections:
         crimson_door:
             enabled: true
         warped_door:
+            enabled: true
+        bamboo_door:
+            enabled: true
+        cherry_door:
             enabled: true
         iron_trapdoor:
             enabled: true
@@ -296,6 +327,10 @@ protections:
             enabled: true
         warped_trapdoor:
             enabled: true
+        bamboo_trapdoor:
+            enabled: true
+        cherry_trapdoor:
+            enabled: true
         oak_fence_gate:
             enabled: true
         spruce_fence_gate:
@@ -313,6 +348,10 @@ protections:
         crimson_fence_gate:
             enabled: true
         warped_fence_gate:
+            enabled: true
+        bamboo_fence_gate:
+            enabled: true
+        cherry_fence_gate:
             enabled: true
         white_banner:
             enabled: true

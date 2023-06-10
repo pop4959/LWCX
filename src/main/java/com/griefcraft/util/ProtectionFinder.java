@@ -35,6 +35,7 @@ import com.griefcraft.util.matchers.BedMatcher;
 import com.griefcraft.util.matchers.DoorMatcher;
 import com.griefcraft.util.matchers.DoubleChestMatcher;
 import com.griefcraft.util.matchers.GravityMatcher;
+import com.griefcraft.util.matchers.HangingMatcher;
 import com.griefcraft.util.matchers.WallMatcher;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -194,11 +195,19 @@ public class ProtectionFinder {
             };
         }
 
+        // Hanging
+        else if (HangingMatcher.PROTECTABLES_HANGING.contains(material)) {
+            return new Matcher[]{
+                    new HangingMatcher()
+            };
+        }
+
         // Anything else
         else {
             return new Matcher[]{
                     new DoorMatcher(),
                     new GravityMatcher(),
+                    new HangingMatcher(),
                     new WallMatcher()
             };
         }

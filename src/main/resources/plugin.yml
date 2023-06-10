@@ -1,7 +1,7 @@
 name: LWC
 main: com.griefcraft.lwc.LWCPlugin
-version: ${project.version}-${git.commit.id.describe-short}
-api-version: 1.13
+version: ${version}
+api-version: '1.18'
 author: Hidendra
 authors: [pop4959, Me_Goes_RAWR]
 website: https://www.spigotmc.org/resources/lwc-extended.69551/
@@ -39,6 +39,9 @@ commands:
     usage: /<command>
   cdisplay:
     description: Creates a chest that can be looked into, but only removed by player with access.
+    usage: /<command>
+  csupply:
+    description: Creates a chest that can be taken from, but only removed by player with access.
     usage: /<command>
   cmodify:
     description: Modify an existing private protection.
@@ -136,6 +139,7 @@ permissions:
           lwc.create.private: true
           lwc.create.donation: true
           lwc.create.display: true
+          lwc.create.supply: true
   lwc.create.public:
       description: Allows you to create a public protection.
   lwc.create.password:
@@ -146,6 +150,8 @@ permissions:
     description: Allows you to create a donation protection.
   lwc.create.display:
     description: Allows you to create a display protection.
+  lwc.create.supply:
+    description: Allows you to create a supply protection.
 
   lwc.modify:
       description: Allows you to modify protections you own, and use the default command.

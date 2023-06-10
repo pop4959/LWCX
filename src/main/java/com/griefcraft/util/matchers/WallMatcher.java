@@ -70,6 +70,9 @@ public class WallMatcher implements ProtectionFinder.Matcher {
         if (VersionUtil.getMinorVersion() > 18) {
             PROTECTABLES_WALL.add(Material.MANGROVE_WALL_SIGN);
         }
+        if (VersionUtil.getMinorVersion() > 19) {
+            PROTECTABLES_WALL.addAll(EnumSet.of(Material.BAMBOO_WALL_SIGN, Material.CHERRY_WALL_SIGN));
+        }
     }
 
     /**

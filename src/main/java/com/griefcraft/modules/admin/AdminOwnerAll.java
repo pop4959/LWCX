@@ -60,7 +60,7 @@ public class AdminOwnerAll extends JavaModule {
             return;
         }
 
-        if (args.length < 2) {
+        if (args.length < 3) {
             lwc.sendSimpleUsage(sender,
                     "/lwc admin forceownerall <OldPlayer> <NewPlayer>");
             return;
