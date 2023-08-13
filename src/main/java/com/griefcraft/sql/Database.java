@@ -210,7 +210,9 @@ public abstract class Database {
             properties.put("user", lwc.getConfiguration().getString("database.username"));
             properties.put("password", lwc.getConfiguration().getString("database.password"));
             properties.put("useSSL", lwc.getConfiguration().getString("database.useSSL", "false"));
-            properties.put("allowPublicKeyRetrieval", lwc.getConfiguration().getString("database.allowPublicKeyRetrieval", "true"));
+            if (lwc.getConfiguration().getBoolean("database.allowPublicKeyRetrieval", false)) {
+                properties.put("allowPublicKeyRetrieval", "true");
+            }
         }
 
         // Connect to the database
