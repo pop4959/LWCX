@@ -45,6 +45,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.ChiseledBookshelf;
 import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Entity;
@@ -71,10 +72,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.Set;
 
 public class LWCPlayerListener implements Listener {
+    private static final Material CHISELED_BOOKSHELF = Material.getMaterial("CHISELED_BOOKSHELF");
 
     /**
      * The plugin instance
@@ -602,6 +605,26 @@ public class LWCPlayerListener implements Listener {
             Module.Result result = Module.Result.DEFAULT;
             Protection protection = lwc.findProtection(block.getLocation());
             boolean canAccess = lwc.canAccessProtection(player, protection);
+
+            if (canAccess && CHISELED_BOOKSHELF != null && CHISELED_BOOKSHELF.equals(block.getType()) && block.getState() instanceof ChiseledBookshelf && block.getBlockData() instanceof org.bukkit.block.data.type.ChiseledBookshelf) {
+                final ChiseledBookshelf chiseledBookshelf = (ChiseledBookshelf) block.getState();
+                final org.bukkit.block.data.type.ChiseledBookshelf chiseledBookshelfBlockData = (org.bukkit.block.data.type.ChiseledBookshelf) block.getBlockData();
+                if (chiseledBookshelfBlockData.getFacing() == event.getBlockFace()) {
+                    final Vector clickedPosition = event.getClickedPosition();
+                    if (clickedPosition != null) {
+                        final int slot = chiseledBookshelf.getSlot(clickedPosition);
+                        final boolean isOccupied = chiseledBookshelfBlockData.isSlotOccupied(slot);
+                        if (protection != null && !protection.isOwner(event.getPlayer()) && protection.getType() != Protection.Type.PUBLIC && !lwc.canAdminProtection(player, protection)) {
+                            final Protection.Type type = protection.getType();
+                            if (isOccupied) {
+                                canAccess = Protection.Type.SUPPLY.equals(type);
+                            } else {
+                                canAccess = Protection.Type.DONATION.equals(type);
+                            }
+                        }
+                    }
+                }
+            }
 
             if (usingMainHand) {
                 if (event.getAction() == Action.LEFT_CLICK_BLOCK) {

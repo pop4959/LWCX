@@ -119,6 +119,9 @@ database:
     # Only enable this if your 'host' actually requires an SSL connection
     useSSL: false
 
+    # If true, the MySQL server's public key may be requested automatically
+    allowPublicKeyRetrieval: false
+
 # The protections nodes allows you to define, remove and modify which blocks LWC is allowed to protect
 # This means that you could make any block you want protectable, or remove existing protectable blocks
 # (e.g trap doors, etc.)

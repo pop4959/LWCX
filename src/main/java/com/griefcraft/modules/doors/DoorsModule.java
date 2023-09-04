@@ -35,8 +35,8 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import com.griefcraft.util.config.Configuration;
 import com.griefcraft.util.matchers.DoorMatcher;
-import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Openable;
 import org.bukkit.entity.Player;
@@ -210,12 +210,12 @@ public class DoorsModule extends JavaModule {
                 case JUNGLE_DOOR:
                 case ACACIA_DOOR:
                 case DARK_OAK_DOOR:
-                    door.getWorld().playEffect(door.getLocation(),
-                            doorIsOpen ? Effect.DOOR_CLOSE : Effect.DOOR_TOGGLE, 0);
+                    door.getWorld().playSound(door.getLocation(),
+                            doorIsOpen ? Sound.BLOCK_WOODEN_DOOR_CLOSE : Sound.BLOCK_WOODEN_DOOR_OPEN, 1, 1);
                     break;
                 case IRON_DOOR:
-                    door.getWorld().playEffect(door.getLocation(),
-                            doorIsOpen ? Effect.IRON_DOOR_CLOSE : Effect.IRON_DOOR_TOGGLE, 0);
+                    door.getWorld().playSound(door.getLocation(),
+                            doorIsOpen ? Sound.BLOCK_IRON_DOOR_CLOSE : Sound.BLOCK_IRON_DOOR_OPEN, 1, 1);
                     break;
                 case OAK_TRAPDOOR:
                 case SPRUCE_TRAPDOOR:
@@ -223,12 +223,12 @@ public class DoorsModule extends JavaModule {
                 case JUNGLE_TRAPDOOR:
                 case ACACIA_TRAPDOOR:
                 case DARK_OAK_TRAPDOOR:
-                    door.getWorld().playEffect(door.getLocation(),
-                            doorIsOpen ? Effect.TRAPDOOR_CLOSE : Effect.TRAPDOOR_TOGGLE, 0);
+                    door.getWorld().playSound(door.getLocation(),
+                            doorIsOpen ? Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE : Sound.BLOCK_WOODEN_TRAPDOOR_OPEN, 1, 1);
                     break;
                 case IRON_TRAPDOOR:
-                    door.getWorld().playEffect(door.getLocation(),
-                            doorIsOpen ? Effect.IRON_TRAPDOOR_CLOSE : Effect.IRON_TRAPDOOR_TOGGLE, 0);
+                    door.getWorld().playSound(door.getLocation(),
+                            doorIsOpen ? Sound.BLOCK_IRON_TRAPDOOR_CLOSE : Sound.BLOCK_IRON_TRAPDOOR_OPEN, 1, 1);
                     break;
                 case OAK_FENCE_GATE:
                 case SPRUCE_FENCE_GATE:
@@ -236,8 +236,8 @@ public class DoorsModule extends JavaModule {
                 case JUNGLE_FENCE_GATE:
                 case ACACIA_FENCE_GATE:
                 case DARK_OAK_FENCE_GATE:
-                    door.getWorld().playEffect(door.getLocation(),
-                            doorIsOpen ? Effect.FENCE_GATE_CLOSE : Effect.FENCE_GATE_TOGGLE, 0);
+                    door.getWorld().playSound(door.getLocation(),
+                            doorIsOpen ? Sound.BLOCK_FENCE_GATE_CLOSE : Sound.BLOCK_FENCE_GATE_OPEN, 1, 1);
                     break;
                 default:
                     break;
