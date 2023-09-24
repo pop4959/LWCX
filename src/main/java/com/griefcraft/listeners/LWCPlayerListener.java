@@ -888,7 +888,7 @@ public class LWCPlayerListener implements Listener {
         // Can they admin it?
         boolean canAdmin = lwc.canAdminProtection(player, protection);
         // Can they access it? (using getAccess instead of canAccessProtection since that is only for opening)
-        boolean canAccess = false;
+        boolean canAccess = lwc.isMod(player);
         if (protection.getAccess(player.getUniqueId().toString(), Permission.Type.PLAYER) == Permission.Access.PLAYER) {
             canAccess = true;
         } else if (protection.getAccess(player.getName(), Permission.Type.PLAYER) == Permission.Access.PLAYER) {
@@ -957,10 +957,11 @@ public class LWCPlayerListener implements Listener {
         // If it's a display chest, check permission.
         if (protection.getType() == Protection.Type.DISPLAY) {
             // Can they admin it? (remove items/etc)
+            boolean canMod = lwc.isMod(player);
             boolean canAdmin = lwc.canAdminProtection(player, protection);
 
             // nope.avi
-            if (!canAdmin) {
+            if (!canMod && !canAdmin) {
                 event.setCancelled(true);
             }
 
@@ -968,10 +969,11 @@ public class LWCPlayerListener implements Listener {
         } else if (protection.getType() == Protection.Type.SUPPLY &&
                 event.getRawSlots().stream().anyMatch(slot -> isRawSlotInTopInventory(event.getView(), slot))) {
             // Can they admin it? (remove items/etc)
+            boolean canMod = lwc.isMod(player);
             boolean canAdmin = lwc.canAdminProtection(player, protection);
 
             // nope.avi
-            if (!canAdmin) {
+            if (!canMod && !canAdmin) {
                 event.setCancelled(true);
             }
         }
