@@ -1,6 +1,6 @@
 # LWC Extended
 
-The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from the [Spigot resource page](https://www.spigotmc.org/resources/lwc-extended.69551/) or development versions from our [build server](https://ci.codemc.io/job/pop4959/job/LWC-Dev-Builds/).
+The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from the [Spigot resource page](https://www.spigotmc.org/resources/lwc-extended.69551/) or development versions from our [build server](https://ci.codemc.io/view/Author/job/pop4959/job/LWC/).
 
 ### Contributors
   * Hidendra - Original LWC author
