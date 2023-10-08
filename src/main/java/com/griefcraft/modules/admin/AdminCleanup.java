@@ -183,7 +183,7 @@ public class AdminCleanup extends JavaModule {
                 Statement resultStatement = database.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY,
                         ResultSet.CONCUR_READ_ONLY);
 
-                if (lwc.getPhysicalDatabase().getType() == Database.Type.MySQL) {
+                if (lwc.getPhysicalDatabase().getType().isMysqlBased()) {
                     resultStatement.setFetchSize(Integer.MIN_VALUE);
                 }
 

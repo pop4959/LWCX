@@ -46,9 +46,20 @@ import java.util.concurrent.TimeUnit;
 public abstract class Database {
 
     public enum Type {
-        MySQL,
-        SQLite,
-        NONE;
+        MySQL(true),
+        SQLite(false),
+        MariaDB(true),
+        NONE(false);
+
+        private final boolean mysqlBased;
+
+        Type(boolean mysqlBased) {
+            this.mysqlBased = mysqlBased;
+        }
+
+        public boolean isMysqlBased() {
+            return mysqlBased;
+        }
 
         /**
          * Match the given string to a database type
@@ -204,7 +215,7 @@ public abstract class Database {
         Properties properties = new Properties();
 
         // if we're using MySQL, append the database info
-        if (currentType == Type.MySQL) {
+        if (currentType.isMysqlBased()) {
             LWC lwc = LWC.getInstance();
             properties.put("autoReconnect", "true");
             properties.put("user", lwc.getConfiguration().getString("database.username"));
@@ -272,7 +283,7 @@ public abstract class Database {
     public String getDatabasePath() {
         Configuration lwcConfiguration = LWC.getInstance().getConfiguration();
 
-        if (currentType == Type.MySQL) {
+        if (currentType.isMysqlBased()) {
             return "//" + lwcConfiguration.getString("database.host") + "/"
                     + lwcConfiguration.getString("database.database");
         }

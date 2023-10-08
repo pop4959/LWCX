@@ -107,7 +107,7 @@ public class Table {
                 buffer.append("PRIMARY KEY ");
             }
 
-            if (column.shouldAutoIncrement() && database.getType() == Type.MySQL) {
+            if (column.shouldAutoIncrement() && database.getType().isMysqlBased()) {
                 buffer.append("AUTO_INCREMENT ");
             }
 
@@ -128,7 +128,7 @@ public class Table {
         buffer.append(" ) ");
 
         // if we're using mysql, check if we're in memory
-        if (memory && database.getType() == Type.MySQL) {
+        if (memory && database.getType().isMysqlBased()) {
             buffer.append("ENGINE = MEMORY");
         }
 

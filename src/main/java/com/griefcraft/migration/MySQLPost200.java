@@ -49,7 +49,7 @@ public class MySQLPost200 implements MigrationUtility {
 
         // this patcher only does something exciting if you have mysql enabled
         // :-)
-        if (physicalDatabase.getType() != Type.MySQL) {
+        if (!physicalDatabase.getType().isMysqlBased()) {
             return;
         }
 

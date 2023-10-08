@@ -1112,7 +1112,7 @@ public class LWC {
             Statement resultStatement = physicalDatabase.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY,
                     ResultSet.CONCUR_READ_ONLY);
 
-            if (physicalDatabase.getType() == Database.Type.MySQL) {
+            if (physicalDatabase.getType().isMysqlBased()) {
                 resultStatement.setFetchSize(Integer.MIN_VALUE);
             }
 
