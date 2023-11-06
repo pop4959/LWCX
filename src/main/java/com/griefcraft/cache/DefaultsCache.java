@@ -26,6 +26,9 @@ public class DefaultsCache {
      * @return
      */
     public String getOrLoad(CommandSender sender) {
+        if (sender == null) {
+            return null;
+        }
         if(cache.containsKey(sender)) {
             return cache.get(sender);
         }
