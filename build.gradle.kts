@@ -1,7 +1,9 @@
+import java.util.*
+
 plugins {
     id("java-library")
     id("maven-publish")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 java {
@@ -22,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(group = "org.spigotmc", name = "spigot-api", version = "1.20.1-R0.1-SNAPSHOT")
+    compileOnly(group = "org.spigotmc", name = "spigot-api", version = "1.20.4-R0.1-SNAPSHOT")
     compileOnly(group = "com.sk89q.worldedit", name = "worldedit-core", version = "7.1.0")
     compileOnly(group = "com.sk89q.worldguard", name = "worldguard-bukkit", version = "7.0.0")
     compileOnly(group = "com.palmergames.bukkit.towny", name = "towny", version = "0.98.2.0")
@@ -31,7 +33,7 @@ dependencies {
     }
     compileOnly(group = "com.github.MilkBowl", name = "VaultAPI", version = "1.7.1")
     compileOnly(group = "com.google.guava", name = "guava", version = "23.0")
-    implementation(group = "org.bstats", name = "bstats-bukkit", version = "3.0.0")
+    implementation(group = "org.bstats", name = "bstats-bukkit", version = "3.0.2")
 }
 
 tasks {
@@ -50,7 +52,7 @@ tasks {
     }
     shadowJar {
         archiveClassifier.set("")
-        archiveFileName.set("${rootProject.name.toUpperCase()}-${project.version}.jar")
+        archiveFileName.set("${rootProject.name.uppercase(Locale.getDefault())}-${project.version}.jar")
         relocate("org.bstats", "${project.group}.${rootProject.name}.lib.bstats")
     }
     build {

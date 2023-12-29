@@ -15,7 +15,7 @@ public class MaterialUtil {
             case 1:
                 return Material.STONE;
             case 2:
-                return Material.GRASS;
+                return Material.GRASS_BLOCK;
             case 3:
                 return Material.DIRT;
             case 4:
