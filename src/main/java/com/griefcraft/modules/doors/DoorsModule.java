@@ -203,44 +203,21 @@ public class DoorsModule extends JavaModule {
             door.setBlockData(doorBlockData);
 
             // make the correct door sound
-            switch (door.getType()) {
-                case OAK_DOOR:
-                case SPRUCE_DOOR:
-                case BIRCH_DOOR:
-                case JUNGLE_DOOR:
-                case ACACIA_DOOR:
-                case DARK_OAK_DOOR:
-                    door.getWorld().playSound(door.getLocation(),
-                            doorIsOpen ? Sound.BLOCK_WOODEN_DOOR_CLOSE : Sound.BLOCK_WOODEN_DOOR_OPEN, 1, 1);
-                    break;
-                case IRON_DOOR:
-                    door.getWorld().playSound(door.getLocation(),
-                            doorIsOpen ? Sound.BLOCK_IRON_DOOR_CLOSE : Sound.BLOCK_IRON_DOOR_OPEN, 1, 1);
-                    break;
-                case OAK_TRAPDOOR:
-                case SPRUCE_TRAPDOOR:
-                case BIRCH_TRAPDOOR:
-                case JUNGLE_TRAPDOOR:
-                case ACACIA_TRAPDOOR:
-                case DARK_OAK_TRAPDOOR:
-                    door.getWorld().playSound(door.getLocation(),
-                            doorIsOpen ? Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE : Sound.BLOCK_WOODEN_TRAPDOOR_OPEN, 1, 1);
-                    break;
-                case IRON_TRAPDOOR:
-                    door.getWorld().playSound(door.getLocation(),
-                            doorIsOpen ? Sound.BLOCK_IRON_TRAPDOOR_CLOSE : Sound.BLOCK_IRON_TRAPDOOR_OPEN, 1, 1);
-                    break;
-                case OAK_FENCE_GATE:
-                case SPRUCE_FENCE_GATE:
-                case BIRCH_FENCE_GATE:
-                case JUNGLE_FENCE_GATE:
-                case ACACIA_FENCE_GATE:
-                case DARK_OAK_FENCE_GATE:
-                    door.getWorld().playSound(door.getLocation(),
-                            doorIsOpen ? Sound.BLOCK_FENCE_GATE_CLOSE : Sound.BLOCK_FENCE_GATE_OPEN, 1, 1);
-                    break;
-                default:
-                    break;
+            if (DoorMatcher.WOODEN_DOORS.contains(door.getType())) {
+                door.getWorld().playSound(door.getLocation(),
+                        doorIsOpen ? Sound.BLOCK_WOODEN_DOOR_CLOSE : Sound.BLOCK_WOODEN_DOOR_OPEN, 1, 1);
+            } else if (Material.IRON_DOOR.equals(door.getType())) {
+                door.getWorld().playSound(door.getLocation(),
+                        doorIsOpen ? Sound.BLOCK_IRON_DOOR_CLOSE : Sound.BLOCK_IRON_DOOR_OPEN, 1, 1);
+            } else if (DoorMatcher.WOODEN_TRAP_DOORS.contains(door.getType())) {
+                door.getWorld().playSound(door.getLocation(),
+                        doorIsOpen ? Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE : Sound.BLOCK_WOODEN_TRAPDOOR_OPEN, 1, 1);
+            } else if (Material.IRON_TRAPDOOR.equals(door.getType())) {
+                door.getWorld().playSound(door.getLocation(),
+                        doorIsOpen ? Sound.BLOCK_IRON_TRAPDOOR_CLOSE : Sound.BLOCK_IRON_TRAPDOOR_OPEN, 1, 1);
+            } else if (DoorMatcher.FENCE_GATES.contains(door.getType())) {
+                door.getWorld().playSound(door.getLocation(),
+                        doorIsOpen ? Sound.BLOCK_FENCE_GATE_CLOSE : Sound.BLOCK_FENCE_GATE_OPEN, 1, 1);
             }
         }
     }
