@@ -52,6 +52,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
@@ -113,6 +114,29 @@ public class LWCBlockListener implements Listener {
 
         if (evt.isCancelled()) {
             event.setNewCurrent(event.getOldCurrent());
+        }
+    }
+
+    @EventHandler
+    public void onBlockDispense(BlockDispenseEvent event) {
+        if (!LWC.ENABLED) {
+            return;
+        }
+
+        LWC lwc = plugin.getLWC();
+        Block block = event.getBlock();
+
+        Protection protection = lwc.findProtection(block.getLocation());
+
+        if (protection == null) {
+            return;
+        }
+
+        LWCRedstoneEvent evt = new LWCRedstoneEvent(null, protection);
+        lwc.getModuleLoader().dispatchEvent(evt);
+
+        if (evt.isCancelled()) {
+            event.setCancelled(true);
         }
     }
 
