@@ -152,6 +152,11 @@ public class EntityBlockState implements BlockState {
     }
 
     @Override
+    public BlockState copy(Location l) {
+        return null;
+    }
+
+    @Override
     public void setBlockData(BlockData arg0) {
         // TODO Auto-generated method stub
 
