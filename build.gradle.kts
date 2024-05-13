@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(group = "org.spigotmc", name = "spigot-api", version = "1.20.4-R0.1-SNAPSHOT")
+    compileOnly(group = "org.spigotmc", name = "spigot-api", version = "1.20.6-R0.1-SNAPSHOT")
     compileOnly(group = "com.sk89q.worldedit", name = "worldedit-core", version = "7.1.0")
     compileOnly(group = "com.sk89q.worldguard", name = "worldguard-bukkit", version = "7.0.0")
     compileOnly(group = "com.palmergames.bukkit.towny", name = "towny", version = "0.98.2.0")

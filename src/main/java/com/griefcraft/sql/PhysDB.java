@@ -260,17 +260,6 @@ public class PhysDB extends Database {
     }
 
     /**
-     * Get the menu style for a player
-     *
-     * @param player
-     * @return
-     * @deprecated
-     */
-    public String getMenuStyle(String player) {
-        return "basic";
-    }
-
-    /**
      * Load the database and do any updating required or create the tables
      */
     @Override

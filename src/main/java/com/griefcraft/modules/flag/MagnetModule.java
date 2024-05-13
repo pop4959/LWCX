@@ -235,7 +235,7 @@ public class MagnetModule extends JavaModule {
 
     public static boolean isDisplay(Entity entity) {
         try {
-            if (entity.getType() == EntityType.DROPPED_ITEM) {
+            if (entity.getType() == EntityType.ITEM) {
                 ItemMeta itemMeta = ((Item) entity).getItemStack().getItemMeta();
                 if (itemMeta != null && containsLocation(itemMeta.getDisplayName())) {
                     return true;
