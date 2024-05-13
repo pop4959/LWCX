@@ -54,6 +54,9 @@ tasks {
         archiveClassifier.set("")
         archiveFileName.set("${rootProject.name.uppercase(Locale.getDefault())}-${project.version}.jar")
         relocate("org.bstats", "${project.group}.${rootProject.name}.lib.bstats")
+        manifest {
+            attributes("paperweight-mappings-namespace" to "mojang")
+        }
     }
     build {
         dependsOn(shadowJar)
