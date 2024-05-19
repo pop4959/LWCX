@@ -33,6 +33,7 @@ import com.griefcraft.model.Flag;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCMagnetPullEvent;
+import com.griefcraft.util.EnumUtil;
 import com.griefcraft.util.config.Configuration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -54,6 +55,10 @@ import java.util.Map;
 import java.util.Queue;
 
 public class MagnetModule extends JavaModule {
+    @SuppressWarnings("ExcessiveLambdaUsage")
+    private static final EntityType ITEM_ENTITY_TYPE = EnumUtil
+            .valueOf(EntityType.class, "DROPPED_ITEM") // 1.20.4 and prior
+            .orElseGet(() -> EntityType.ITEM); // 1.20.5 and above
 
     private Configuration configuration = Configuration.load("magnet.yml");
 
@@ -235,7 +240,7 @@ public class MagnetModule extends JavaModule {
 
     public static boolean isDisplay(Entity entity) {
         try {
-            if (entity.getType() == EntityType.ITEM) {
+            if (entity.getType() == ITEM_ENTITY_TYPE) {
                 ItemMeta itemMeta = ((Item) entity).getItemStack().getItemMeta();
                 if (itemMeta != null && containsLocation(itemMeta.getDisplayName())) {
                     return true;
