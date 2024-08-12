@@ -39,6 +39,7 @@ import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.event.*;
+import com.griefcraft.util.InvHolderUtil;
 import com.griefcraft.util.UUIDRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -316,7 +317,7 @@ public class LWCPlayerListener implements Listener {
 
     @EventHandler
     public void storageMinecraftInventoryOpen(InventoryOpenEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
+        InventoryHolder holder = InvHolderUtil.get(event.getInventory());
         Player player = (Player) event.getPlayer();
         if ((!(holder instanceof StorageMinecart)) && (!(holder instanceof HopperMinecart))) {
             return;
@@ -446,8 +447,12 @@ public class LWCPlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onMoveItem(InventoryMoveItemEvent event) {
-        if (plugin.getLWC().useAlternativeHopperProtection()
-                && !(event.getSource().getHolder() instanceof HopperMinecart || event.getDestination().getHolder() instanceof HopperMinecart)) {
+        // The InventoryHolder checks below will still get called if not put in another if statement check.
+        // Moved into else-if to prevent wasted resources when the configuration is set to use the alternative hopper protection.
+        if (plugin.getLWC().useAlternativeHopperProtection()) {
+            return;
+        } else if (!(InvHolderUtil.get(event.getSource()) instanceof HopperMinecart ||
+                InvHolderUtil.get(event.getDestination()) instanceof HopperMinecart)) {
             return;
         }
 
@@ -484,8 +489,8 @@ public class LWCPlayerListener implements Listener {
         InventoryHolder initiatorHolder;
 
         try {
-            holder = inventory.getHolder();
-            initiatorHolder = initiator.getHolder();
+            holder = InvHolderUtil.get(inventory);
+            initiatorHolder = InvHolderUtil.get(initiator);
         } catch (AbstractMethodError e) {
             return false;
         }
@@ -756,7 +761,7 @@ public class LWCPlayerListener implements Listener {
         InventoryHolder holder = null;
 
         try {
-            holder = event.getInventory().getHolder();
+            holder = InvHolderUtil.get(event.getInventory());
         } catch (AbstractMethodError e) {
             e.printStackTrace();
             return;
@@ -927,7 +932,7 @@ public class LWCPlayerListener implements Listener {
         InventoryHolder holder = null;
 
         try {
-            holder = event.getInventory().getHolder();
+            holder = InvHolderUtil.get(event.getInventory());
         } catch (AbstractMethodError e) {
             e.printStackTrace();
             return;

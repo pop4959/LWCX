@@ -1,5 +1,6 @@
 package com.griefcraft.bukkit;
 
+import com.griefcraft.util.InvHolderUtil;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.minecart.StorageMinecart;
 
@@ -12,7 +13,7 @@ public class StoreageMinecartBlock extends EntityBlock {
     }
 
     public BlockState getState() {
-        return (BlockState) this.minecart.getInventory().getHolder();
+        return (BlockState) InvHolderUtil.get(this.minecart.getInventory());
     }
 
     public StorageMinecart getMinecart() {

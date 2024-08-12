@@ -1,4 +1,5 @@
-import java.util.*
+import java.util.Locale
+
 
 plugins {
     id("java-library")
@@ -24,16 +25,15 @@ repositories {
 }
 
 dependencies {
-    compileOnly(group = "org.spigotmc", name = "spigot-api", version = "1.20.6-R0.1-SNAPSHOT")
-    compileOnly(group = "com.sk89q.worldedit", name = "worldedit-core", version = "7.1.0")
-    compileOnly(group = "com.sk89q.worldguard", name = "worldguard-bukkit", version = "7.0.0")
-    compileOnly(group = "com.palmergames.bukkit.towny", name = "towny", version = "0.98.2.0")
-    compileOnly(group = "com.massivecraft", name = "Factions", version = "1.6.9.5-U0.4.9") {
-        isTransitive = false
-    }
-    compileOnly(group = "com.github.MilkBowl", name = "VaultAPI", version = "1.7.1")
-    compileOnly(group = "com.google.guava", name = "guava", version = "23.0")
-    implementation(group = "org.bstats", name = "bstats-bukkit", version = "3.0.2")
+    compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
+    compileOnly("com.sk89q.worldedit:worldedit-core:7.1.0")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0")
+    compileOnly("com.palmergames.bukkit.towny:towny:0.98.2.0")
+    compileOnly("com.massivecraft:Factions:1.6.9.5-U0.4.9") { isTransitive = false }
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+    compileOnly("com.google.guava:guava:23.0")
+    implementation("com.github.PaperMC:PaperLib:v1.0.8")
+    implementation("org.bstats:bstats-bukkit:3.0.2")
 }
 
 tasks {
@@ -54,6 +54,7 @@ tasks {
         archiveClassifier.set("")
         archiveFileName.set("${rootProject.name.uppercase(Locale.getDefault())}-${project.version}.jar")
         relocate("org.bstats", "${project.group}.${rootProject.name}.lib.bstats")
+        relocate("io.papermc.lib", "${project.group}.${rootProject.name}.lib.paperlib")
         manifest {
             attributes("paperweight-mappings-namespace" to "mojang")
         }

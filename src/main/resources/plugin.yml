@@ -8,7 +8,7 @@ website: https://www.spigotmc.org/resources/lwc-extended.69551/
 description: >
              Inventory protection & management utilizing SQLite or MySQL as its backend
              Other blocks can also be protected individually, if configured.
-load: startup
+load: STARTUP
 softdepend: [Vault, WorldEdit, WorldGuard, Towny, Factions]
 
 commands:

@@ -38,16 +38,19 @@ import com.griefcraft.modules.pluginsupport.Towny;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.sql.Database;
 import com.griefcraft.util.Completions;
+import com.griefcraft.util.InvHolderUtil;
 import com.griefcraft.util.StringUtil;
 import com.griefcraft.util.Updater;
 import com.griefcraft.util.VersionUtil;
 import com.griefcraft.util.locale.LWCResourceBundle;
 import com.griefcraft.util.locale.LocaleClassLoader;
 import com.griefcraft.util.locale.UTF8Control;
+import io.papermc.lib.PaperLib;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -103,83 +106,108 @@ public class LWCPlugin extends JavaPlugin {
             String aliasCommand = null;
             String[] aliasArgs = new String[0];
 
-            if (commandName.equals("cpublic")) {
-                aliasCommand = "create";
-                aliasArgs = new String[]{"public"};
-            } else if (commandName.equals("cpassword")) {
-                aliasCommand = "create";
-                aliasArgs = ("password " + argString).split(" ");
-            } else if (commandName.equals("cprivate") || commandName.equals("lock")) {
-                aliasCommand = "create";
-                aliasArgs = ("private " + argString).split(" ");
-            } else if (commandName.equals("cdonation")) {
-                aliasCommand = "create";
-                aliasArgs = ("donation " + argString).split(" ");
-            } else if (commandName.equals("cdisplay")) {
-                aliasCommand = "create";
-                aliasArgs = ("display " + argString).split(" ");
-            } else if (commandName.equals("csupply")) {
-                aliasCommand = "create";
-                aliasArgs = ("supply " + argString).split(" ");
-            } else if (commandName.equals("cmodify")) {
-                aliasCommand = "modify";
-                aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
-            } else if (commandName.equals("cinfo")) {
-                aliasCommand = "info";
-            } else if (commandName.equals("cunlock")) {
-                aliasCommand = "unlock";
-                aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
-            } else if (commandName.equals("cremove") || commandName.equals("unlock")) {
-                aliasCommand = "remove";
-                aliasArgs = new String[]{"protection"};
-            } else if (commandName.equals("climits")) {
-                aliasCommand = "limits";
-                aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
-            } else if (commandName.equals("cadmin")) {
-                aliasCommand = "admin";
-                aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
-            } else if (commandName.equals("cremoveall")) {
-                aliasCommand = "remove";
-                aliasArgs = new String[]{"allprotections"};
-            } else if (commandName.equals("cdefault")) {
-                aliasCommand = "default";
-                aliasArgs = new String[]{argString};
+            switch (commandName) {
+                case "cpublic" -> {
+                    aliasCommand = "create";
+                    aliasArgs = new String[]{"public"};
+                }
+                case "cpassword" -> {
+                    aliasCommand = "create";
+                    aliasArgs = ("password " + argString).split(" ");
+                }
+                case "cprivate", "lock" -> {
+                    aliasCommand = "create";
+                    aliasArgs = ("private " + argString).split(" ");
+                }
+                case "cdonation" -> {
+                    aliasCommand = "create";
+                    aliasArgs = ("donation " + argString).split(" ");
+                }
+                case "cdisplay" -> {
+                    aliasCommand = "create";
+                    aliasArgs = ("display " + argString).split(" ");
+                }
+                case "csupply" -> {
+                    aliasCommand = "create";
+                    aliasArgs = ("supply " + argString).split(" ");
+                }
+                case "cmodify" -> {
+                    aliasCommand = "modify";
+                    aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
+                }
+                case "cinfo" -> aliasCommand = "info";
+                case "cunlock" -> {
+                    aliasCommand = "unlock";
+                    aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
+                }
+                case "cremove", "unlock" -> {
+                    aliasCommand = "remove";
+                    aliasArgs = new String[]{"protection"};
+                }
+                case "climits" -> {
+                    aliasCommand = "limits";
+                    aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
+                }
+                case "cadmin" -> {
+                    aliasCommand = "admin";
+                    aliasArgs = argString.isEmpty() ? new String[0] : argString.split(" ");
+                }
+                case "cremoveall" -> {
+                    aliasCommand = "remove";
+                    aliasArgs = new String[]{"allprotections"};
+                }
+                case "cdefault" -> {
+                    aliasCommand = "default";
+                    aliasArgs = new String[]{argString};
+                }
             }
 
             // Flag aliases
-            if (commandName.equals("credstone")) {
-                aliasCommand = "flag";
-                aliasArgs = ("redstone " + argString).split(" ");
-            } else if (commandName.equals("cmagnet")) {
-                aliasCommand = "flag";
-                aliasArgs = ("magnet " + argString).split(" ");
-            } else if (commandName.equals("cexempt")) {
-                aliasCommand = "flag";
-                aliasArgs = ("exemption " + argString).split(" ");
-            } else if (commandName.equals("cautoclose")) {
-                aliasCommand = "flag";
-                aliasArgs = ("autoclose " + argString).split(" ");
-            } else if (commandName.equals("callowexplosions") || commandName.equals("ctnt")) {
-                aliasCommand = "flag";
-                aliasArgs = ("allowexplosions " + argString).split(" ");
-            } else if (commandName.equals("chopper")) {
-                aliasCommand = "flag";
-                aliasArgs = ("hopper " + argString).split(" ");
+            switch (commandName) {
+                case "credstone" -> {
+                    aliasCommand = "flag";
+                    aliasArgs = ("redstone " + argString).split(" ");
+                }
+                case "cmagnet" -> {
+                    aliasCommand = "flag";
+                    aliasArgs = ("magnet " + argString).split(" ");
+                }
+                case "cexempt" -> {
+                    aliasCommand = "flag";
+                    aliasArgs = ("exemption " + argString).split(" ");
+                }
+                case "cautoclose" -> {
+                    aliasCommand = "flag";
+                    aliasArgs = ("autoclose " + argString).split(" ");
+                }
+                case "callowexplosions", "ctnt" -> {
+                    aliasCommand = "flag";
+                    aliasArgs = ("allowexplosions " + argString).split(" ");
+                }
+                case "chopper" -> {
+                    aliasCommand = "flag";
+                    aliasArgs = ("hopper " + argString).split(" ");
+                }
             }
 
             // Mode aliases
-            if (commandName.equals("cdroptransfer")) {
-                aliasCommand = "mode";
-                aliasArgs = ("droptransfer " + argString).split(" ");
-            } else if (commandName.equals("cpersist")) {
-                aliasCommand = "mode";
-                aliasArgs = ("persist " + argString).split(" ");
-            } else if (commandName.equals("cnospam")) {
-                aliasCommand = "mode";
-                aliasArgs = ("nospam " + argString).split(" ");
-            } else if (commandName.equals("cnolock")) {
-                aliasCommand = "mode";
-                aliasArgs = ("nolock " + argString).split(" ");
+            switch (commandName) {
+                case "cdroptransfer" -> {
+                    aliasCommand = "mode";
+                    aliasArgs = ("droptransfer " + argString).split(" ");
+                }
+                case "cpersist" -> {
+                    aliasCommand = "mode";
+                    aliasArgs = ("persist " + argString).split(" ");
+                }
+                case "cnospam" -> {
+                    aliasCommand = "mode";
+                    aliasArgs = ("nospam " + argString).split(" ");
+                }
+                case "cnolock" -> {
+                    aliasCommand = "mode";
+                    aliasArgs = ("nolock " + argString).split(" ");
+                }
             }
 
             if (aliasCommand != null) {
@@ -372,7 +400,7 @@ public class LWCPlugin extends JavaPlugin {
         Metrics m = new Metrics(this, 5180);
 
         m.addCustomChart(new AdvancedPie("protected_blocks", () -> {
-            Map<String, Integer> map = new HashMap<String, Integer>();
+            Map<String, Integer> map = new HashMap<>();
 
             if (lwc.getPhysicalDatabase().getProtectionCount() >= 50000) {
                 map.put("Over 50k", 1);
@@ -410,6 +438,14 @@ public class LWCPlugin extends JavaPlugin {
         // Load the rest of LWC
         lwc.load();
         registerEvents();
+    
+
+        if (PaperLib.isPaper()) {
+            InvHolderUtil.setOptionalSnapshots(true);
+        } else {
+            getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[LWC] LWCX will perform better when running Paper (or forks of Paper)!");
+            getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[LWC] Consider checking out the PaperMC server software: " + ChatColor.GOLD + "https://papermc.io");
+        }
     }
 
     /**
