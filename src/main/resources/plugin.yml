@@ -1,7 +1,7 @@
 name: LWC
 main: com.griefcraft.lwc.LWCPlugin
 version: ${version}
-api-version: '1.18'
+api-version: "1.20.6"
 author: Hidendra
 authors: [pop4959, Me_Goes_RAWR]
 website: https://www.spigotmc.org/resources/lwc-extended.69551/
