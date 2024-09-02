@@ -113,6 +113,24 @@ public class DoorMatcher implements ProtectionFinder.Matcher {
             WOODEN_TRAP_DOORS.addAll(EnumSet.of(Material.BAMBOO_TRAPDOOR, Material.CHERRY_TRAPDOOR));
             PRESSURE_PLATES.addAll(EnumSet.of(Material.BAMBOO_PRESSURE_PLATE, Material.CHERRY_PRESSURE_PLATE));
         }
+        if (VersionUtil.getMinorVersion() > 20) {
+            PROTECTABLES_DOORS.addAll(EnumSet.of(Material.COPPER_DOOR, Material.EXPOSED_COPPER_DOOR,
+                    Material.OXIDIZED_COPPER_DOOR, Material.WAXED_COPPER_DOOR, Material.WEATHERED_COPPER_DOOR,
+                    Material.WAXED_EXPOSED_COPPER_DOOR, Material.WAXED_OXIDIZED_COPPER_DOOR,
+                    Material.WAXED_WEATHERED_COPPER_DOOR));
+            WOODEN_DOORS.addAll(EnumSet.of(Material.COPPER_DOOR, Material.EXPOSED_COPPER_DOOR,
+                    Material.OXIDIZED_COPPER_DOOR, Material.WAXED_COPPER_DOOR, Material.WEATHERED_COPPER_DOOR,
+                    Material.WAXED_EXPOSED_COPPER_DOOR, Material.WAXED_OXIDIZED_COPPER_DOOR,
+                    Material.WAXED_WEATHERED_COPPER_DOOR));
+            TRAP_DOORS.addAll(EnumSet.of(Material.COPPER_TRAPDOOR, Material.EXPOSED_COPPER_TRAPDOOR,
+                    Material.OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_COPPER_TRAPDOOR,
+                    Material.WEATHERED_COPPER_TRAPDOOR, Material.WAXED_EXPOSED_COPPER_TRAPDOOR,
+                    Material.WAXED_OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_WEATHERED_COPPER_TRAPDOOR));
+            WOODEN_TRAP_DOORS.addAll(EnumSet.of(Material.COPPER_TRAPDOOR, Material.EXPOSED_COPPER_TRAPDOOR,
+                    Material.OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_COPPER_TRAPDOOR,
+                    Material.WEATHERED_COPPER_TRAPDOOR, Material.WAXED_EXPOSED_COPPER_TRAPDOOR,
+                    Material.WAXED_OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_WEATHERED_COPPER_TRAPDOOR));
+        }
     }
 
     public boolean matches(ProtectionFinder finder) {

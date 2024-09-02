@@ -310,6 +310,22 @@ protections:
             enabled: true
         cherry_door:
             enabled: true
+        copper_door:
+            enabled: true
+        exposed_copper_door:
+            enabled: true
+        oxidized_copper_door:
+            enabled: true
+        weathered_copper_door:
+            enabled: true
+        waxed_copper_door:
+            enabled: true
+        waxed_exposed_copper_door:
+            enabled: true
+        waxed_oxidized_copper_door:
+            enabled: true
+        waxed_weathered_copper_door:
+            enabled: true
         iron_trapdoor:
             enabled: true
         oak_trapdoor:
@@ -333,6 +349,22 @@ protections:
         bamboo_trapdoor:
             enabled: true
         cherry_trapdoor:
+            enabled: true
+        copper_trapdoor:
+            enabled: true
+        exposed_copper_trapdoor:
+            enabled: true
+        oxidized_copper_trapdoor:
+            enabled: true
+        weathered_copper_trapdoor:
+            enabled: true
+        waxed_copper_trapdoor:
+            enabled: true
+        waxed_exposed_copper_trapdoor:
+            enabled: true
+        waxed_oxidized_copper_trapdoor:
+            enabled: true
+        waxed_weathered_copper_trapdoor:
             enabled: true
         oak_fence_gate:
             enabled: true
