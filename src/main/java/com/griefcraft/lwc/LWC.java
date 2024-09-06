@@ -92,11 +92,14 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Furnace;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.type.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -443,64 +446,203 @@ public class LWC {
     }
 
     /**
-     * Deposit items into an inventory chest Works with double chests.
-     *
-     * @param block
-     * @param itemStack
-     * @return remaining items (if any)
+     * Calculate The number of items that can be deposit in a furnace-like.
+     * 
+     * Fuel slot allows only fuel items.
+     * Result slot does not allow deposits.
+     * 
+     * @param furnaceLike (Not Null) Furnace-like block.
+     * @param itemStack (Not Null) Item stack for deposit.
+     * @return Number of items that can be deposit.
      */
-    public Map<Integer, ItemStack> depositItems(Block block, ItemStack itemStack) {
-        BlockState blockState;
+    public int getMaxDepositAmount(Furnace furnaceLike, ItemStack itemStack) {
+        FurnaceInventory inventory = furnaceLike.getInventory();
+        ItemStack sourceSlot = inventory.getSmelting();
+        ItemStack fuelSlot = inventory.getFuel();
 
-        if ((blockState = block.getState()) != null && (blockState instanceof InventoryHolder)) {
-            Block doubleChestBlock = null;
-            InventoryHolder holder = (InventoryHolder) blockState;
+        // source slot is empty, can deposit
+        if (sourceSlot == null) {
+            return itemStack.getAmount();
+        }
 
-            if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
-                doubleChestBlock = findAdjacentDoubleChest(block);
-            } else if (block.getType() == Material.FURNACE) {
-                Inventory inventory = holder.getInventory();
+        boolean isItemStackFuel = itemStack.getType().isFuel();
 
-                if (inventory.getItem(0) != null && inventory.getItem(1) != null) {
-                    if (inventory.getItem(0).getType() == itemStack.getType()
-                            && inventory.getItem(0)
-                            .getMaxStackSize() >= (inventory.getItem(0).getAmount() + itemStack.getAmount())) {
-                        // ItemStack fits on Slot 0
-                    } else if (inventory.getItem(1).getType() == itemStack.getType()
-                            && inventory.getItem(1)
-                            .getMaxStackSize() >= (inventory.getItem(1).getAmount() + itemStack.getAmount())) {
-                        // ItemStack fits on Slot 1
-                    } else {
-                        return null;
-                    }
-                }
-            }
-
-            if (itemStack.getAmount() <= 0) {
-                return new HashMap<Integer, ItemStack>();
-            }
-
-            Map<Integer, ItemStack> remaining = holder.getInventory().addItem(itemStack);
-
-            // we have remainders, deal with it
-            if (remaining.size() > 0) {
-                int key = remaining.keySet().iterator().next();
-                ItemStack remainingItemStack = remaining.get(key);
-
-                // is it a double chest ?????
-                if (doubleChestBlock != null) {
-                    InventoryHolder holder2 = (InventoryHolder) doubleChestBlock.getState();
-                    remaining = holder2.getInventory().addItem(remainingItemStack);
-                }
-
-                // recheck remaining in the event of double chest being used
-                if (remaining.size() > 0) {
-                    return remaining;
-                }
+        // source slot not empty, but can stack deposit
+        if (sourceSlot.getAmount() < sourceSlot.getMaxStackSize()) {
+            if (itemStack.isSimilar(sourceSlot)) {
+                return Math.min(
+                    sourceSlot.getMaxStackSize() - sourceSlot.getAmount(),
+                    itemStack.getAmount()
+                );
             }
         }
 
-        return new HashMap<Integer, ItemStack>();
+        // can't stack deposit to source slot or source slot is full
+        // mean the same thing
+        if (fuelSlot == null) {
+            if (isItemStackFuel) {
+                return itemStack.getAmount();
+            }
+            return 0;
+        }
+        if (fuelSlot.getAmount() < fuelSlot.getMaxStackSize()) {
+            if (itemStack.isSimilar(fuelSlot)) {
+                return Math.min(
+                    fuelSlot.getMaxStackSize() - fuelSlot.getAmount(),
+                    itemStack.getAmount()
+                );
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Calculate The number of items that can be deposit in a container.
+     * 
+     * @param block (Not Null) Container block has inventory.
+     * @param itemStack (Not Null) Item stack for container deposit.
+     * @return Number of items that can be deposit.
+     */
+    public int getMaxDepositAmount(Block block, ItemStack itemStack) {
+        BlockState blockState = block.getState();
+
+        // this block has neither block status nor inventory
+        if (blockState == null || !(blockState instanceof InventoryHolder)) {
+            return 0;
+        }
+
+        // nesting is forbidden on shulker boxes
+        if (blockState instanceof ShulkerBox && itemStack.getType().toString().endsWith("SHULKER_BOX")) {
+            return 0;
+        }
+
+        Inventory inventory = ((InventoryHolder) blockState).getInventory();
+
+        // for Furnace-like blocks
+        if (blockState instanceof Furnace) {
+            return this.getMaxDepositAmount((Furnace) blockState, itemStack);
+        }
+
+        // has empty slot, can deposit?
+        if (inventory.firstEmpty() != -1) {
+            return itemStack.getAmount();
+        }
+
+        // has no empty slot, but can stack deposit?
+        if (itemStack.getMaxStackSize() == 1) {
+            // non-stackable items
+            return 0;
+        }
+        Map<Integer, ? extends ItemStack> sameTypeItemStacks = inventory.all(itemStack.getType());
+        for (ItemStack sameItemStack : sameTypeItemStacks.values()) {
+            if (sameItemStack.getAmount() >= sameItemStack.getMaxStackSize()) {
+                continue;
+            }
+            if (itemStack.isSimilar(sameItemStack)) {
+                return Math.min(
+                    sameItemStack.getMaxStackSize() - sameItemStack.getAmount(),
+                    itemStack.getAmount()
+                );
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Deposit items into an inventory chest Works with double chests.
+     * 
+     * NOTE: Returns empty map if the entire item is deposit,
+     * non-empty map if a partial amount of items is deposit,
+     * null if item can't be deposit.
+     * 
+     * @param block
+     * @param itemStack
+     * @return (Nullable) remaining items.
+     */
+    public Map<Integer, ItemStack> depositItems(Block block, ItemStack itemStack) {
+        BlockState blockState = block.getState();
+        // not a container, leave the item intact
+        if (blockState == null || !(blockState instanceof InventoryHolder)) {
+            return null;
+        }
+
+        Block doubleChestBlock = null;
+        if (DoubleChestMatcher.PROTECTABLES_CHESTS.contains(block.getType())) {
+            doubleChestBlock = findAdjacentDoubleChest(block);
+        }
+
+        Map<Integer, ItemStack> empty = new HashMap<>();
+        int itemStackAmount = itemStack.getAmount();
+
+        // remove unreasonable item
+        if (itemStackAmount <= 0) {
+            return empty;
+        }
+
+        // reached deposit limit, leave the item intact
+        int canDepositAmount = getMaxDepositAmount(block, itemStack);
+        if (canDepositAmount == 0) {
+            return null;
+        }
+
+        Inventory inventory = ((InventoryHolder) blockState).getInventory();
+        Map<Integer, ItemStack> remaining;
+
+        // furnace-like is special, we don't want to handle it to addItem method directly
+        if (blockState instanceof Furnace) {
+            // for furnace-like blocks
+            Furnace furnaceLike = (Furnace) blockState;
+            FurnaceInventory snapshotInventory = furnaceLike.getSnapshotInventory();
+
+            ItemStack resultSlotBackup = snapshotInventory.getResult();
+            // avoid addItem method stack deposit into result slot
+            snapshotInventory.setResult(null);
+
+            // can't deposit them all
+            if (canDepositAmount < itemStackAmount) {
+                // split item stack into 2 parts
+                int restAmount = itemStackAmount - canDepositAmount;
+                ItemStack canDepositPart = itemStack.clone();
+                ItemStack theRestPart = itemStack.clone();
+
+                canDepositPart.setAmount(canDepositAmount);
+                theRestPart.setAmount(restAmount);
+                // deposit can deposit part, drop the rest part into item
+                remaining = snapshotInventory.addItem(canDepositPart);
+                remaining.put(-1, theRestPart);
+                itemStack.setAmount(restAmount);
+            } else {
+                remaining = snapshotInventory.addItem(itemStack);
+            }
+
+            // restore backup and commit update
+            snapshotInventory.setResult(resultSlotBackup);
+            furnaceLike.update(true, false);
+        } else {
+            // other container block
+            remaining = inventory.addItem(itemStack);
+        }
+
+        // we have remainders, deal with it
+        if (remaining.size() > 0) {
+            int key = remaining.keySet().iterator().next();
+            ItemStack remainingItemStack = remaining.get(key);
+        
+            // is it a double chest ?????
+            if (doubleChestBlock != null) {
+                InventoryHolder holder2 = (InventoryHolder) doubleChestBlock.getState();
+                remaining = holder2.getInventory().addItem(remainingItemStack);
+            }
+        
+            // recheck remaining in the event of double chest being used
+            if (remaining.size() > 0) {
+                return remaining;
+            }
+        }
+
+        return empty;
     }
 
     /**

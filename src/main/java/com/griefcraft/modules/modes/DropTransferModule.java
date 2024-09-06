@@ -40,6 +40,7 @@ import com.griefcraft.scripting.event.LWCDropItemEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
@@ -161,11 +162,12 @@ public class DropTransferModule extends JavaModule {
         if (!canAccess) {
             lwc.sendLocale(player, "protection.interact.dropxfer.noaccess");
         } else {
-            if (event.getEvent().getClickedBlock() instanceof Container) {
+            Block clickedBlock = event.getEvent().getClickedBlock();
+            BlockState blockState = clickedBlock.getState();
+            if (!(blockState instanceof Container)) {
                 lwc.sendLocale(player, "protection.interact.dropxfer.notchest");
                 player.removeAllActions();
                 event.setResult(Result.CANCEL);
-
                 return;
             }
 
