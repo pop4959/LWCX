@@ -37,6 +37,7 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCBlockInteractEvent;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCDropItemEvent;
+import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -110,10 +111,12 @@ public class DropTransferModule extends JavaModule {
         }
 
         Protection protection = lwc.getPhysicalDatabase().loadProtection(protectionId);
+        boolean isRealOwner = protection.isRealOwner(bPlayer);
 
-        if (protection == null) {
+        if (protection == null || !isRealOwner) {
             lwc.sendLocale(player, "lwc.nolongerexists");
-            player.disableMode(player.getMode("dropTransfer"));
+            lwc.sendLocale(player, "protection.modes.dropxfer.off.finalize");
+            player.disableMode(player.getMode("+dropTransfer"));
             return;
         }
 
@@ -143,6 +146,21 @@ public class DropTransferModule extends JavaModule {
 
         bPlayer.updateInventory(); // if they're in the chest and dropping items, this is required
         item.remove();
+    }
+
+    @Override
+    public void onDestroyProtection(LWCProtectionDestroyEvent event) {
+        // turn off droptransfer if status is on when destroy bind target.
+        Player player = event.getPlayer();
+        LWCPlayer lwcPlayer = LWCPlayer.getPlayer(player);
+        int target = getPlayerDropTransferTarget(lwcPlayer);
+
+        if (target == -1 || !isPlayerDropTransferring(lwcPlayer)) {
+            return;
+        }
+
+        lwcPlayer.disableMode(lwcPlayer.getMode("+dropTransfer"));
+        lwc.sendLocale(player, "protection.modes.dropxfer.off.finalize");
     }
 
     @Override
@@ -182,6 +200,7 @@ public class DropTransferModule extends JavaModule {
             player.enableMode(mode);
 
             lwc.sendLocale(player, "protection.interact.dropxfer.finalize");
+            event.getEvent().setCancelled(true);
         }
 
         player.removeAllActions(); // ignore the persist mode

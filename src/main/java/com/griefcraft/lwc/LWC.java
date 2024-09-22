@@ -203,35 +203,28 @@ public class LWC {
     }
 
     /**
-     * Get a string representation of a block type
-     *
-     * @param id
-     * @return
-     */
-
-    /**
      * Get a string representation of a block material
      *
      * @param material
      * @return
      */
     public static String materialToString(Material material) {
-        if (material != null) {
-            String materialName = normalizeMaterialName(material);
-
-            // attempt to match the locale
-            String locale = LWC.getInstance().getPlugin().getMessageParser().parseMessage(materialName.toLowerCase());
-
-            // if it starts with UNKNOWN_LOCALE, use the default material name
-            if (locale == null) {
-                locale = materialName;
-            }
-
-            locale = locale.replace('_', ' ');
-            return StringUtil.capitalizeFirstLetter(locale);
+        if (material == null) {
+            return "";
         }
 
-        return "";
+        String materialName = normalizeMaterialName(material);
+
+        // attempt to match the locale
+        String locale = LWC.getInstance().getPlugin().getMessageParser().parseMessage(materialName.toLowerCase());
+
+        // if it starts with UNKNOWN_LOCALE, use the default material name
+        if (locale == null) {
+            locale = materialName;
+        }
+
+        locale = locale.replace('_', ' ');
+        return StringUtil.capitalizeFirstLetter(locale);
     }
 
     /**
@@ -249,10 +242,6 @@ public class LWC {
         // some name normalizations
         if (name.contains("sign")) {
             name = "Sign";
-        }
-
-        if (name.contains("furnace")) {
-            name = "furnace";
         }
 
         if (name.endsWith("_")) {
