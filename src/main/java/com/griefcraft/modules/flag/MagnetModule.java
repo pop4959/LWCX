@@ -41,6 +41,7 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -154,27 +155,34 @@ public class MagnetModule extends JavaModule {
                         List<Protection> protections = lwc.getPhysicalDatabase().loadProtections(world.getName(), x, y,
                                 z, radius);
                         for (Protection protection : protections) {
-                            if (protection.hasFlag(Flag.Type.MAGNET)) {
-
-                                if (protection.getBukkitWorld().getName() != item.getWorld().getName())
-                                    continue;
-
-                                // we only want inventory blocks
-                                if (!(protection.getBlock().getState() instanceof InventoryHolder)) {
-                                    continue;
-                                }
-
-                                // never allow a shulker box to enter another shulker box
-                                if (item.getItemStack().getType().toString().contains("SHULKER_BOX") && protection.getBlock().getType().toString().contains("SHULKER_BOX")) {
-                                    continue;
-                                }
-
-                                MagnetNode node = new MagnetNode();
-                                node.item = item;
-                                node.protection = protection;
-                                items.offer(node);
-                                break;
+                            if (!protection.hasFlag(Flag.Type.MAGNET)) {
+                                continue;
                             }
+
+                            if (protection.getBukkitWorld().getName() != item.getWorld().getName())
+                                continue;
+
+                            // we only want container blocks
+                            if (!(protection.getBlock().getState() instanceof Container)) {
+                                continue;
+                            }
+
+                            // never allow a shulker box to enter another shulker box
+                            if (item.getItemStack().getType().toString().contains("SHULKER_BOX") && protection.getBlock().getType().toString().contains("SHULKER_BOX")) {
+                                continue;
+                            }
+
+                            // don't try to enter a full container
+                            boolean isFull = lwc.getMaxDepositAmount(protection.getBlock(), stack) == 0;
+                            if (isFull) {
+                                continue;
+                            }
+
+                            MagnetNode node = new MagnetNode();
+                            node.item = item;
+                            node.protection = protection;
+                            items.offer(node);
+                            break;
                         }
                     }
                 }
@@ -206,7 +214,7 @@ public class MagnetModule extends JavaModule {
                     return;
                 }
 
-                // we cancelled the item drop for some reason
+                // reached deposit limit, leave the item intact
                 if (remaining == null) {
                     continue;
                 }

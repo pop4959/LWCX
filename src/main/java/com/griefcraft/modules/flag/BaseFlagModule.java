@@ -38,6 +38,9 @@ import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import com.griefcraft.util.Colors;
 import com.griefcraft.util.StringUtil;
+
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.command.CommandSender;
 
 public class BaseFlagModule extends JavaModule {
@@ -83,6 +86,16 @@ public class BaseFlagModule extends JavaModule {
 
         if (flag == null) {
             flag = new Flag(type);
+        }
+
+        // magnet flag can't use on non-container block.
+        if (flag.getType() == Flag.Type.MAGNET) {
+            BlockState targetBlockState = protection.getBlock().getState();
+            if (!(targetBlockState instanceof Container)) {
+                lwc.sendLocale(player, "protection.interact.flag.magnet.notcontainer", "flag", StringUtil.capitalizeFirstLetter(flagName));
+                lwc.removeModes(player);
+                return;
+            }
         }
 
         if (shouldAdd) {

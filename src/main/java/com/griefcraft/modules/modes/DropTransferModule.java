@@ -37,9 +37,11 @@ import com.griefcraft.scripting.JavaModule;
 import com.griefcraft.scripting.event.LWCBlockInteractEvent;
 import com.griefcraft.scripting.event.LWCCommandEvent;
 import com.griefcraft.scripting.event.LWCDropItemEvent;
+import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import com.griefcraft.scripting.event.LWCProtectionInteractEvent;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
@@ -109,10 +111,12 @@ public class DropTransferModule extends JavaModule {
         }
 
         Protection protection = lwc.getPhysicalDatabase().loadProtection(protectionId);
+        boolean isRealOwner = protection.isRealOwner(bPlayer);
 
-        if (protection == null) {
+        if (protection == null || !isRealOwner) {
             lwc.sendLocale(player, "lwc.nolongerexists");
-            player.disableMode(player.getMode("dropTransfer"));
+            lwc.sendLocale(player, "protection.modes.dropxfer.off.finalize");
+            player.disableMode(player.getMode("+dropTransfer"));
             return;
         }
 
@@ -145,6 +149,21 @@ public class DropTransferModule extends JavaModule {
     }
 
     @Override
+    public void onDestroyProtection(LWCProtectionDestroyEvent event) {
+        // turn off droptransfer if status is on when destroy bind target.
+        Player player = event.getPlayer();
+        LWCPlayer lwcPlayer = LWCPlayer.getPlayer(player);
+        int target = getPlayerDropTransferTarget(lwcPlayer);
+
+        if (target == -1 || !isPlayerDropTransferring(lwcPlayer)) {
+            return;
+        }
+
+        lwcPlayer.disableMode(lwcPlayer.getMode("+dropTransfer"));
+        lwc.sendLocale(player, "protection.modes.dropxfer.off.finalize");
+    }
+
+    @Override
     public void onProtectionInteract(LWCProtectionInteractEvent event) {
         LWC lwc = event.getLWC();
         Protection protection = event.getProtection();
@@ -161,11 +180,12 @@ public class DropTransferModule extends JavaModule {
         if (!canAccess) {
             lwc.sendLocale(player, "protection.interact.dropxfer.noaccess");
         } else {
-            if (event.getEvent().getClickedBlock() instanceof Container) {
+            Block clickedBlock = event.getEvent().getClickedBlock();
+            BlockState blockState = clickedBlock.getState();
+            if (!(blockState instanceof Container)) {
                 lwc.sendLocale(player, "protection.interact.dropxfer.notchest");
                 player.removeAllActions();
                 event.setResult(Result.CANCEL);
-
                 return;
             }
 
@@ -180,6 +200,7 @@ public class DropTransferModule extends JavaModule {
             player.enableMode(mode);
 
             lwc.sendLocale(player, "protection.interact.dropxfer.finalize");
+            event.getEvent().setCancelled(true);
         }
 
         player.removeAllActions(); // ignore the persist mode
