@@ -37,6 +37,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -130,6 +131,14 @@ public class DoorMatcher implements ProtectionFinder.Matcher {
                     Material.OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_COPPER_TRAPDOOR,
                     Material.WEATHERED_COPPER_TRAPDOOR, Material.WAXED_EXPOSED_COPPER_TRAPDOOR,
                     Material.WAXED_OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_WEATHERED_COPPER_TRAPDOOR));
+            // Added in 1.21.4
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_DOOR")).ifPresent(PROTECTABLES_DOORS::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_DOOR")).ifPresent(WOODEN_DOORS::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_FENCE_GATE")).ifPresent(FENCE_GATES::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_FENCE_GATE")).ifPresent(WOODEN_FENCE_GATES::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_TRAPDOOR")).ifPresent(TRAP_DOORS::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_TRAPDOOR")).ifPresent(WOODEN_TRAP_DOORS::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_PRESSURE_PLATE")).ifPresent(PRESSURE_PLATES::add);
         }
     }
 

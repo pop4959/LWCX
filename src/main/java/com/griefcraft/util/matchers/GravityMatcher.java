@@ -35,6 +35,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -75,6 +76,12 @@ public class GravityMatcher implements ProtectionFinder.Matcher {
             PROTECTABLES_POSTS.addAll(EnumSet.of(Material.BAMBOO_BUTTON, Material.BAMBOO_PRESSURE_PLATE,
                     Material.BAMBOO_SIGN, Material.CHERRY_BUTTON, Material.CHERRY_PRESSURE_PLATE,
                     Material.CHERRY_SIGN));
+        }
+        if (VersionUtil.getMinorVersion() > 20) {
+            // Added in 1.21.4
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_BUTTON")).ifPresent(PROTECTABLES_POSTS::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_PRESSURE_PLATE")).ifPresent(PROTECTABLES_POSTS::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_SIGN")).ifPresent(PROTECTABLES_POSTS::add);
         }
     }
 

@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -21,6 +22,10 @@ public class HangingMatcher implements ProtectionFinder.Matcher {
                     Material.SPRUCE_HANGING_SIGN, Material.JUNGLE_HANGING_SIGN, Material.ACACIA_HANGING_SIGN,
                     Material.DARK_OAK_HANGING_SIGN, Material.CRIMSON_HANGING_SIGN, Material.WARPED_HANGING_SIGN,
                     Material.MANGROVE_HANGING_SIGN, Material.BAMBOO_HANGING_SIGN, Material.CHERRY_HANGING_SIGN));
+        }
+        if (VersionUtil.getMinorVersion() > 20) {
+            // Added in 1.21.4
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_HANGING_SIGN")).ifPresent(PROTECTABLES_HANGING::add);
         }
     }
 
