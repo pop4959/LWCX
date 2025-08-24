@@ -204,20 +204,51 @@ public class DoorsModule extends JavaModule {
 
             // make the correct door sound
             if (DoorMatcher.WOODEN_DOORS.contains(door.getType())) {
-                door.getWorld().playSound(door.getLocation(),
-                        doorIsOpen ? Sound.BLOCK_WOODEN_DOOR_CLOSE : Sound.BLOCK_WOODEN_DOOR_OPEN, 1, 1);
+                door.getWorld().playSound(door.getLocation(), switch (door.getType()) {
+                    case CHERRY_DOOR ->
+                            doorIsOpen ? Sound.BLOCK_CHERRY_WOOD_DOOR_CLOSE : Sound.BLOCK_CHERRY_WOOD_DOOR_OPEN;
+                    case BAMBOO_DOOR ->
+                            doorIsOpen ? Sound.BLOCK_BAMBOO_WOOD_DOOR_CLOSE : Sound.BLOCK_BAMBOO_WOOD_DOOR_OPEN;
+                    case CRIMSON_DOOR, WARPED_DOOR ->
+                            doorIsOpen ? Sound.BLOCK_NETHER_WOOD_DOOR_CLOSE : Sound.BLOCK_NETHER_WOOD_DOOR_OPEN;
+                    case IRON_DOOR -> doorIsOpen ? Sound.BLOCK_IRON_DOOR_CLOSE : Sound.BLOCK_IRON_DOOR_OPEN;
+                    case COPPER_DOOR, EXPOSED_COPPER_DOOR, WEATHERED_COPPER_DOOR, OXIDIZED_COPPER_DOOR,
+                         WAXED_COPPER_DOOR, WAXED_EXPOSED_COPPER_DOOR, WAXED_WEATHERED_COPPER_DOOR,
+                         WAXED_OXIDIZED_COPPER_DOOR ->
+                            doorIsOpen ? Sound.BLOCK_COPPER_DOOR_CLOSE : Sound.BLOCK_COPPER_DOOR_OPEN;
+                    default -> doorIsOpen ? Sound.BLOCK_WOODEN_DOOR_CLOSE : Sound.BLOCK_WOODEN_DOOR_OPEN;
+                }, 1, 1);
             } else if (Material.IRON_DOOR.equals(door.getType())) {
                 door.getWorld().playSound(door.getLocation(),
                         doorIsOpen ? Sound.BLOCK_IRON_DOOR_CLOSE : Sound.BLOCK_IRON_DOOR_OPEN, 1, 1);
             } else if (DoorMatcher.WOODEN_TRAP_DOORS.contains(door.getType())) {
-                door.getWorld().playSound(door.getLocation(),
-                        doorIsOpen ? Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE : Sound.BLOCK_WOODEN_TRAPDOOR_OPEN, 1, 1);
+                door.getWorld().playSound(door.getLocation(), switch (door.getType()) {
+                    case CHERRY_TRAPDOOR ->
+                            doorIsOpen ? Sound.BLOCK_CHERRY_WOOD_TRAPDOOR_CLOSE : Sound.BLOCK_CHERRY_WOOD_TRAPDOOR_OPEN;
+                    case BAMBOO_TRAPDOOR ->
+                            doorIsOpen ? Sound.BLOCK_BAMBOO_WOOD_TRAPDOOR_CLOSE : Sound.BLOCK_BAMBOO_WOOD_TRAPDOOR_OPEN;
+                    case CRIMSON_TRAPDOOR, WARPED_TRAPDOOR ->
+                            doorIsOpen ? Sound.BLOCK_NETHER_WOOD_TRAPDOOR_CLOSE : Sound.BLOCK_NETHER_WOOD_TRAPDOOR_OPEN;
+                    case IRON_TRAPDOOR -> doorIsOpen ? Sound.BLOCK_IRON_TRAPDOOR_CLOSE : Sound.BLOCK_IRON_TRAPDOOR_OPEN;
+                    case COPPER_TRAPDOOR, EXPOSED_COPPER_TRAPDOOR, WEATHERED_COPPER_TRAPDOOR, OXIDIZED_COPPER_TRAPDOOR,
+                         WAXED_COPPER_TRAPDOOR, WAXED_EXPOSED_COPPER_TRAPDOOR, WAXED_WEATHERED_COPPER_TRAPDOOR,
+                         WAXED_OXIDIZED_COPPER_TRAPDOOR ->
+                            doorIsOpen ? Sound.BLOCK_COPPER_TRAPDOOR_CLOSE : Sound.BLOCK_COPPER_TRAPDOOR_OPEN;
+                    default -> doorIsOpen ? Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE : Sound.BLOCK_WOODEN_TRAPDOOR_OPEN;
+                }, 1, 1);
             } else if (Material.IRON_TRAPDOOR.equals(door.getType())) {
                 door.getWorld().playSound(door.getLocation(),
                         doorIsOpen ? Sound.BLOCK_IRON_TRAPDOOR_CLOSE : Sound.BLOCK_IRON_TRAPDOOR_OPEN, 1, 1);
             } else if (DoorMatcher.FENCE_GATES.contains(door.getType())) {
-                door.getWorld().playSound(door.getLocation(),
-                        doorIsOpen ? Sound.BLOCK_FENCE_GATE_CLOSE : Sound.BLOCK_FENCE_GATE_OPEN, 1, 1);
+                door.getWorld().playSound(door.getLocation(), switch (door.getType()) {
+                    case CHERRY_FENCE_GATE ->
+                            doorIsOpen ? Sound.BLOCK_CHERRY_WOOD_FENCE_GATE_CLOSE : Sound.BLOCK_CHERRY_WOOD_FENCE_GATE_OPEN;
+                    case BAMBOO_FENCE_GATE ->
+                            doorIsOpen ? Sound.BLOCK_BAMBOO_WOOD_FENCE_GATE_CLOSE : Sound.BLOCK_BAMBOO_WOOD_FENCE_GATE_OPEN;
+                    case CRIMSON_FENCE_GATE, WARPED_FENCE_GATE ->
+                            doorIsOpen ? Sound.BLOCK_NETHER_WOOD_FENCE_GATE_CLOSE : Sound.BLOCK_NETHER_WOOD_FENCE_GATE_OPEN;
+                    default -> doorIsOpen ? Sound.BLOCK_FENCE_GATE_CLOSE : Sound.BLOCK_FENCE_GATE_OPEN;
+                }, 1, 1);
             }
         }
     }
