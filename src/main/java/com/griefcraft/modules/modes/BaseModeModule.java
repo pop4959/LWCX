@@ -60,11 +60,9 @@ public class BaseModeModule extends JavaModule {
         String mode = args[0].toLowerCase();
         Player player = (Player) sender;
 
-        if (!lwc.isModeWhitelisted(player, mode)) {
-            if (!lwc.isAdmin(sender) && !lwc.isModeEnabled(mode)) {
-                lwc.sendLocale(player, "protection.modes.disabled");
-                return;
-            }
+        if (!lwc.isModeEnabled(mode) || (!lwc.isModeWhitelisted(player, mode) && !lwc.isAdmin(sender))) {
+            lwc.sendLocale(player, "protection.modes.disabled");
+            return;
         }
 
         event.setCancelled(false);
