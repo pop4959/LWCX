@@ -471,6 +471,14 @@ public class LWCBlockListener implements Listener {
         Protection current = lwc.findProtection(block.getLocation());
         if (current != null) {
             if (!current.isBlockInWorld()) {
+                // Try updating the protection if the player is admin
+                if (lwc.canAdminProtection(player, current)) {
+                    // Update the protection, this block is being replaced
+                    BlockCache blockCache = BlockCache.getInstance();
+                    current.setBlockId(blockCache.getBlockId(event.getBlock()));
+                    current.save();
+                    return;
+                }
                 // Removing corrupted protection
                 current.remove();
             } else {
