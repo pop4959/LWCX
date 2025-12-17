@@ -74,7 +74,7 @@ public class UnlockModule extends JavaModule {
 
         LWCPlayer player = lwc.wrapPlayer(sender);
         String password = join(args, 0);
-        password = encrypt(password);
+        password = encrypt(password.toLowerCase()); // added to remove case sensitivity
 
         // see if they have the protection interaction action
         Action action = player.getAction("interacted");
