@@ -74,6 +74,7 @@ public class UnlockModule extends JavaModule {
 
         LWCPlayer player = lwc.wrapPlayer(sender);
         String password = join(args, 0);
+        String casedPassword = encrypt(password); // save to match cased password for old locks
         password = encrypt(password.toLowerCase()); // added to remove case sensitivity
 
         // see if they have the protection interaction action
@@ -94,7 +95,8 @@ public class UnlockModule extends JavaModule {
                 return;
             }
 
-            if (protection.getPassword().equals(password)) {
+            // add check for old cased passwords
+            if (protection.getPassword().equals(password) || protection.getPassword().equals(casedPassword)) {
                 player.addAccessibleProtection(protection);
                 player.removeAction(action);
                 lwc.sendLocale(player, "protection.unlock.password.valid");
