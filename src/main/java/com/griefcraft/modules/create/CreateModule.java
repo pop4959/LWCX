@@ -180,7 +180,7 @@ public class CreateModule extends JavaModule {
             }
 
             lwc.sendLocale(player, "protection.interact.create.finalize");
-           lwc.processRightsModifications(player, protection, rights);
+            lwc.processRightsModifications(player, protection, rights);
         }
 
         // tell the modules that a protection was registered
