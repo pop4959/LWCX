@@ -85,6 +85,9 @@ optional:
     # information will be displayed instead (default in versions prior to 2.2.3).
     useFormattedInfo: true
 
+  # Password locks are case sensitive
+    useCaseSensitivePasswordsInLocks: true
+
 # Database information for LWC
 database:
 

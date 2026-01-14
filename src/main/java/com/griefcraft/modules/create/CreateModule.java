@@ -152,7 +152,8 @@ public class CreateModule extends JavaModule {
             }
             lwc.sendLocale(player, "protection.interact.create.finalize");
         } else if (protectionType.equals("password")) {
-            String password = lwc.encrypt(protectionData.toLowerCase()); // added to remove case sensitivity
+            boolean isCaseEnabled = LWC.getInstance().getConfiguration().getBoolean("optional.useCaseSensitivePasswordsInLocks", true);
+            String password = isCaseEnabled ? lwc.encrypt(protectionData) : lwc.encrypt(protectionData.toLowerCase());
 
             if (block instanceof EntityBlock) {
                 protection = physDb.registerProtection(EntityBlock.ENTITY_BLOCK_ID, Protection.Type.PASSWORD,
