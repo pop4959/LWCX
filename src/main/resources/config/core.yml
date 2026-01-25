@@ -190,6 +190,30 @@ protections:
         trapped_chest:
             enabled: true
             autoRegister: private
+        copper_chest:
+            enabled: true
+            autoRegister: private
+        waxed_copper_chest:
+            enabled: true
+            autoRegister: private
+        exposed_copper_chest:
+            enabled: true
+            autoRegister: private
+        waxed_exposed_copper_chest:
+            enabled: true
+            autoRegister: private
+        weathered_copper_chest:
+            enabled: true
+            autoRegister: private
+        waxed_weathered_copper_chest:
+            enabled: true
+            autoRegister: private
+        oxidized_copper_chest:
+            enabled: true
+            autoRegister: private
+        waxed_oxidized_copper_chest:
+            enabled: true
+            autoRegister: private
         furnace:
             enabled: true
             autoRegister: private
