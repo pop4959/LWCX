@@ -29,6 +29,7 @@
 package com.griefcraft.util.matchers;
 
 import com.griefcraft.util.ProtectionFinder;
+import com.griefcraft.util.VersionUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -36,6 +37,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.type.Chest;
 
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -46,7 +48,23 @@ public class DoubleChestMatcher implements ProtectionFinder.Matcher {
     /**
      * Blocks that act like double chests
      */
-    public static final Set<Material> PROTECTABLES_CHESTS = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST);
+    public static final Set<Material> PROTECTABLES_CHESTS = EnumSet.of(
+            Material.CHEST,
+            Material.TRAPPED_CHEST
+    );
+
+    static {
+        if (VersionUtil.getMinorVersion() > 20) {
+            Optional.ofNullable(Material.getMaterial("COPPER_CHEST")).ifPresent(PROTECTABLES_CHESTS::add);
+            Optional.ofNullable(Material.getMaterial("EXPOSED_COPPER_CHEST")).ifPresent(PROTECTABLES_CHESTS::add);
+            Optional.ofNullable(Material.getMaterial("WEATHERED_COPPER_CHEST")).ifPresent(PROTECTABLES_CHESTS::add);
+            Optional.ofNullable(Material.getMaterial("OXIDIZED_COPPER_CHEST")).ifPresent(PROTECTABLES_CHESTS::add);
+            Optional.ofNullable(Material.getMaterial("WAXED_COPPER_CHEST")).ifPresent(PROTECTABLES_CHESTS::add);
+            Optional.ofNullable(Material.getMaterial("WAXED_EXPOSED_COPPER_CHEST")).ifPresent(PROTECTABLES_CHESTS::add);
+            Optional.ofNullable(Material.getMaterial("WAXED_WEATHERED_COPPER_CHEST")).ifPresent(PROTECTABLES_CHESTS::add);
+            Optional.ofNullable(Material.getMaterial("WAXED_OXIDIZED_COPPER_CHEST")).ifPresent(PROTECTABLES_CHESTS::add);
+        }
+    }
 
     /**
      * Possible faces around the base block that protections could be at
