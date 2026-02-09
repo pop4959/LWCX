@@ -130,22 +130,39 @@ public abstract class Database {
      * Ping the database to keep the connection alive
      */
     public void pingDatabase() {
-        Statement stmt = null;
-        try {
-            stmt = connection.createStatement();
-            stmt.executeQuery("SELECT 1;");
-            stmt.close();
-        } catch (SQLException e) {
-            log("Keepalive packet (ping) failed!");
-            e.printStackTrace();
-        } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-            }
+        if (!isConnectionValid()) {
+            reconnect();
+            return;
         }
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeQuery("SELECT 1;");
+        } catch (SQLException e) {
+            log("Keepalive packet (ping) failed: " + e.getMessage());
+            reconnect();
+        }
+    }
+
+    /**
+     * Attempt to re-establish the database connection.
+     * Invalidates statement cache and resets connection state before reconnecting.
+     *
+     * @return true if reconnection was successful
+     */
+    private boolean reconnect() {
+        log("Attempting to reconnect to database...");
+        statementCache.invalidateAll();
+        connection = null;
+        try {
+            if (connect()) {
+                log("Database reconnection successful.");
+                return true;
+            }
+            log("Database reconnection failed.");
+        } catch (SQLException e) {
+            log("Database reconnection error: " + e.getMessage());
+        }
+        return false;
     }
 
     /**
@@ -190,8 +207,8 @@ public abstract class Database {
      *
      * @return if the connection was successful
      */
-    public boolean connect() throws Exception {
-        if (connection != null && !connection.isClosed() && connection.isValid(1)) {
+    public boolean connect() throws SQLException {
+        if (isConnectionValid()) {
             return true;
         }
 
@@ -319,11 +336,11 @@ public abstract class Database {
      * @return {@code PreparedStatement} prepared SQL statement
      */
     public PreparedStatement prepare(String sql, boolean returnGeneratedKeys) {
-        if (connection == null) {
-            return null;
-        }
-
         try {
+            if (!isConnectionValid() && !reconnect()) {
+                return null;
+            }
+
             if (useStatementCache) {
                 Statistics.addQuery();
                 return statementCache.get(sql, () -> prepareInternal(sql, returnGeneratedKeys));
@@ -428,6 +445,19 @@ public abstract class Database {
      */
     public boolean isConnected() {
         return connected;
+    }
+
+    /**
+     * Check if the current database connection is valid and usable.
+     *
+     * @return true if connection is non-null, open, and valid
+     */
+    private boolean isConnectionValid() {
+        try {
+            return connection != null && !connection.isClosed() && connection.isValid(1);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
