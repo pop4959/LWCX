@@ -521,9 +521,7 @@ public class LWCPlugin extends JavaPlugin {
         if (VersionUtil.isAtLeast(1, 14)) {
             pluginManager.registerEvents(new LWC114Listener(), this);
         }
-        if (VersionUtil.isAtLeast(1, 21, 11)) {
-            pluginManager.registerEvents(new LWC12111Listener(), this);
-        }
+        LWC12111Listener.register(this);
         if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
             pluginManager.registerEvents(new Towny(), this);
         }
