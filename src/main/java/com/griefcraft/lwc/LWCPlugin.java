@@ -527,7 +527,7 @@ public class LWCPlugin extends JavaPlugin {
                 pluginManager.registerEvents(new LWC12111Listener(), this);
             } catch (ClassNotFoundException exception) {
                 getLogger().log(Level.WARNING, "You seem to be running the Spigot build on Paper. Please consider" +
-                        " using the paper build instead: https://modrinth.com/plugin/lwc");
+                        " using the Paper build instead: https://modrinth.com/plugin/lwc");
             }
         }
         if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
