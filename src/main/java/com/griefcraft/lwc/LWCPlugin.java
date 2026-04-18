@@ -526,9 +526,8 @@ public class LWCPlugin extends JavaPlugin {
                 Class.forName("EntityTargetBlockEvent");
                 pluginManager.registerEvents(new LWC12111Listener(), this);
             } catch (ClassNotFoundException exception) {
-                getLogger().log(Level.WARNING, "You seem to be using the Spigot build on an outdated Spigot server " +
-                        "version, or on paper. Please switch your version to the correct one for your platform: Paper: " +
-                        "https://modrinth.com/plugin/lwc Spigot: https://www.spigotmc.org/resources/lwc-extended.69551/");
+                getLogger().log(Level.WARNING, "You seem to be running the Spigot build on Paper. Please consider" +
+                        " using the paper build instead: https://modrinth.com/plugin/lwc");
             }
         }
         if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
