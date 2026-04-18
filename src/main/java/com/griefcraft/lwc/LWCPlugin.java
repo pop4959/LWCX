@@ -522,7 +522,13 @@ public class LWCPlugin extends JavaPlugin {
             pluginManager.registerEvents(new LWC114Listener(), this);
         }
         if (VersionUtil.isAtLeast(1, 21, 11)) {
-            pluginManager.registerEvents(new LWC12111Listener(), this);
+            try {
+                Class.forName("EntityTargetBlockEvent");
+                pluginManager.registerEvents(new LWC12111Listener(), this);
+            } catch (ClassNotFoundException exception) {
+                getLogger().log(Level.WARNING, "You seem to be running the Spigot build on Paper. Please consider" +
+                        " using the Paper build instead: https://modrinth.com/plugin/lwc");
+            }
         }
         if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
             pluginManager.registerEvents(new Towny(), this);
