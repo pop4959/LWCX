@@ -80,12 +80,12 @@ public class AdminView extends JavaModule {
 
         Block block = world.getBlockAt(protection.getX(), protection.getY(), protection.getZ());
 
-        if (!(block.getState() instanceof InventoryHolder)) {
+        if (!(block.getState(false) instanceof InventoryHolder holder)) {
             lwc.sendLocale(sender, "protection.admin.view.noinventory");
             return;
         }
 
-        player.openInventory(((InventoryHolder) block.getState()).getInventory());
+        player.openInventory(holder.getInventory());
 
         lwc.sendLocale(sender, "protection.admin.view.viewing", "id", protectionId);
     }

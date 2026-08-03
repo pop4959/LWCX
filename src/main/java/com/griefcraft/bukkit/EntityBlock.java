@@ -307,7 +307,7 @@ public class EntityBlock implements Block {
 
     @Override
     public @NotNull BlockState getState(boolean b) {
-        return null;
+        return new EntityBlockState(this);
     }
 
     @Override
