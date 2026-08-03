@@ -101,12 +101,12 @@ public class RestorableBlock implements Restorable {
                 block.setType(blockCache.getBlockType(id));
 
                 if (items.size() > 0) {
-                    if (!(block.getState() instanceof InventoryHolder)) {
+                    if (!(block.getState(false) instanceof InventoryHolder)) {
                         lwc.log(String.format("The block at [%d, %d, %d] has backed up items but no longer supports them. Why? %s", x, y, z, block.toString()));
                     }
 
                     // Get the block's inventory
-                    Inventory inventory = ((InventoryHolder) block.getState()).getInventory();
+                    Inventory inventory = ((InventoryHolder) block.getState(false)).getInventory();
 
                     // Set all of the items to it
                     for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
@@ -144,7 +144,7 @@ public class RestorableBlock implements Restorable {
         rblock.y = block.getY();
         rblock.z = block.getZ();
 
-        BlockState state = block.getState();
+        BlockState state = block.getState(false);
 
         // Does it have an inventory? ^^
         if (state instanceof InventoryHolder) {

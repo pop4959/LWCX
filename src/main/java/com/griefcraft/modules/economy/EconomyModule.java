@@ -86,7 +86,7 @@ public class EconomyModule extends JavaModule {
             return;
 
         // is it actually a container? :p
-        if (!(protection.getBlock().getState() instanceof InventoryHolder))
+        if (!(protection.getBlock().getState(false) instanceof InventoryHolder))
             return;
 
         // Are they right clicking the chest (aka open) ?
