@@ -452,7 +452,7 @@ public class LWCPlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onMoveItem(InventoryMoveItemEvent event) {
         if (plugin.getLWC().useAlternativeHopperProtection()
-                && !(event.getSource().getHolder(false) instanceof HopperMinecart || event.getDestination().getHolder(false) instanceof HopperMinecart)) {
+                && !(isHopperMinecart(event.getSource()) || isHopperMinecart(event.getDestination()))) {
             return;
         }
 
@@ -469,6 +469,16 @@ public class LWCPlayerListener implements Listener {
         if (result) {
             event.setCancelled(true);
         }
+    }
+
+    /**
+     * Check if the inventory is provided by a Hopper Minecart.
+     *
+     * @param inventory The inventory to check
+     * @return true if specified inventory is provided by a Hopper Minecart.
+     */
+    private static boolean isHopperMinecart(Inventory inventory) {
+        return inventory.getType() == InventoryType.HOPPER && inventory.getHolder(false) instanceof HopperMinecart;
     }
 
     /**
