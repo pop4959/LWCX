@@ -32,7 +32,9 @@ import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.griefcraft.sql.Database;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -135,22 +137,36 @@ public class DatabaseThread implements Runnable {
      * Flush the protections to the database
      */
     private void flushDatabase() {
-        if (!updateQueue.isEmpty()) {
-            Database database = lwc.getPhysicalDatabase();
+        Database database = lwc.getPhysicalDatabase();
+        if (!updateQueue.isEmpty() && database.isConnectionUsable()) {
+            List<Protection> saved = new ArrayList<>();
             database.setAutoCommit(false);
             database.setUseStatementCache(false);
 
-            // Begin iterating through the queue
-            Iterator<Protection> iter = updateQueue.iterator();
-            while (iter.hasNext()) {
-                Protection protection = iter.next();
-                iter.remove();
-                protection.saveNow();
+            try {
+                // Begin iterating through the queue
+                Iterator<Protection> iter = updateQueue.iterator();
+                while (iter.hasNext()) {
+                    Protection protection = iter.next();
+                    try {
+                        protection.saveNow();
+                        saved.add(protection);
+                    } catch (RuntimeException e) {
+                        if (!database.isConnectionUsable()) {
+                            lwc.log("Database unavailable, " + updateQueue.size() + " protection updates will be retried");
+                            break;
+                        }
+                        lwc.log("Failed to save protection " + protection.getId() + ": " + e.getMessage());
+                    }
+                    iter.remove();
+                }
+            } finally {
+                // Commit the changes to the database
+                database.setUseStatementCache(true);
+                if (!database.setAutoCommit(true)) {
+                    requeue(saved);
+                }
             }
-
-            // Commit the changes to the database
-            database.setUseStatementCache(true);
-            database.setAutoCommit(true);
         }
 
         // update the time we last flushed at
@@ -159,6 +175,14 @@ public class DatabaseThread implements Runnable {
         if (System.currentTimeMillis() > nextKeepalivePacket && lwc.getPhysicalDatabase().isConnected()) {
             nextKeepalivePacket = System.currentTimeMillis() + (pingInterval * 1000);
             lwc.getPhysicalDatabase().pingDatabase();
+        }
+    }
+
+    private void requeue(List<Protection> protections) {
+        for (Protection protection : protections) {
+            if (!updateQueue.contains(protection)) {
+                updateQueue.offer(protection);
+            }
         }
     }
 
@@ -174,9 +198,15 @@ public class DatabaseThread implements Runnable {
             long currentTime = System.currentTimeMillis();
             long intervalMilliseconds = interval * 1000L;
 
-            // compare the current time to the last flush
-            if (currentTime - lastFlush > intervalMilliseconds) {
-                flushDatabase();
+            try {
+                lwc.getPhysicalDatabase().maintainConnection();
+
+                // compare the current time to the last flush
+                if (currentTime - lastFlush > intervalMilliseconds) {
+                    flushDatabase();
+                }
+            } catch (RuntimeException e) {
+                lwc.log("Database thread error: " + e.getMessage());
             }
 
             try {
