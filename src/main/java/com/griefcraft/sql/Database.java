@@ -81,10 +81,22 @@ public abstract class Database {
     private Cache<String, PreparedStatement> statementCache = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES).build();
 
+    private static final long VALIDATE_INTERVAL = TimeUnit.SECONDS.toMillis(30);
+
+    private static final long RECONNECT_INTERVAL = TimeUnit.SECONDS.toMillis(10);
+
+    private final Object connectionLock = new Object();
+
+    private volatile boolean connectionBroken = false;
+
+    private long lastValidation = 0;
+
+    private long lastReconnectAttempt = 0;
+
     /**
      * The connection to the database
      */
-    protected Connection connection = null;
+    protected volatile Connection connection = null;
 
     /**
      * The default database engine being used. This is set via config
@@ -131,7 +143,7 @@ public abstract class Database {
      */
     public void pingDatabase() {
         if (!isConnectionValid()) {
-            reconnect();
+            connectionBroken = true;
             return;
         }
 
@@ -139,29 +151,96 @@ public abstract class Database {
             stmt.executeQuery("SELECT 1;");
         } catch (SQLException e) {
             log("Keepalive packet (ping) failed: " + e.getMessage());
-            reconnect();
+            connectionBroken = true;
         }
     }
 
+    public void maintainConnection() {
+        if (connection == null) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+
+        if (!connectionBroken && now - lastValidation < VALIDATE_INTERVAL) {
+            return;
+        }
+
+        lastValidation = now;
+        if (isConnectionValid()) {
+            connectionBroken = false;
+            return;
+        }
+
+        if (!connectionBroken) {
+            log("Lost connection to the database");
+            connectionBroken = true;
+        }
+
+        if (now - lastReconnectAttempt < RECONNECT_INTERVAL) {
+            return;
+        }
+
+        lastReconnectAttempt = now;
+        reconnect();
+    }
+
     /**
-     * Attempt to re-establish the database connection.
-     * Invalidates statement cache and resets connection state before reconnecting.
+     * Open a new database connection and swap it in, closing the old one.
      *
      * @return true if reconnection was successful
      */
     private boolean reconnect() {
         log("Attempting to reconnect to database...");
-        statementCache.invalidateAll();
-        connection = null;
-        try {
-            if (connect()) {
-                log("Database reconnection successful.");
-                return true;
-            }
-            log("Database reconnection failed.");
-        } catch (SQLException e) {
-            log("Database reconnection error: " + e.getMessage());
+        Connection newConnection = openConnection();
+        if (newConnection == null) {
+            log("Database reconnection failed, retrying in " + TimeUnit.MILLISECONDS.toSeconds(RECONNECT_INTERVAL) + " seconds");
+            return false;
         }
+
+        Connection oldConnection;
+        synchronized (connectionLock) {
+            oldConnection = connection;
+            connection = newConnection;
+            statementCache.invalidateAll();
+            connectionBroken = false;
+        }
+
+        try {
+            if (oldConnection != null) {
+                oldConnection.close();
+            }
+        } catch (SQLException ignored) {
+        }
+
+        log("Database reconnection successful.");
+        return true;
+    }
+
+    public boolean isConnectionUsable() {
+        return connection != null && !connectionBroken;
+    }
+
+    private void markIfConnectionError(Throwable throwable) {
+        if (!connectionBroken && isConnectionError(throwable)) {
+            log("Database connection error detected, reconnecting in the background");
+            connectionBroken = true;
+        }
+    }
+
+    private static boolean isConnectionError(Throwable throwable) {
+        Throwable current = throwable;
+        for (int depth = 0; current != null && depth < 10; depth++) {
+            if (current instanceof SQLException) {
+                String state = ((SQLException) current).getSQLState();
+                if (state != null && state.startsWith("08")) {
+                    return true;
+                }
+            }
+
+            current = current.getCause();
+        }
+
         return false;
     }
 
@@ -181,6 +260,7 @@ public abstract class Database {
             connection.setAutoCommit(autoCommit);
             return true;
         } catch (SQLException e) {
+            markIfConnectionError(e);
             e.printStackTrace();
             return false;
         }
@@ -199,6 +279,7 @@ public abstract class Database {
      * @param exception
      */
     protected void printException(Exception exception) {
+        markIfConnectionError(exception);
         throw new ModuleException(exception);
     }
 
@@ -212,9 +293,23 @@ public abstract class Database {
             return true;
         }
 
+        Connection newConnection = openConnection();
+        if (newConnection == null) {
+            return false;
+        }
+
+        synchronized (connectionLock) {
+            connection = newConnection;
+            connectionBroken = false;
+        }
+        connected = true;
+        return true;
+    }
+
+    private Connection openConnection() {
         if (currentType == null || currentType == Type.NONE) {
             log("Invalid database engine");
-            return false;
+            return null;
         }
 
         // Create the properties to pass to the driver
@@ -224,6 +319,7 @@ public abstract class Database {
         if (currentType == Type.MySQL) {
             LWC lwc = LWC.getInstance();
             properties.put("autoReconnect", "true");
+            properties.put("connectTimeout", "10000");
             properties.put("user", lwc.getConfiguration().getString("database.username"));
             properties.put("password", lwc.getConfiguration().getString("database.password"));
             properties.put("useSSL", lwc.getConfiguration().getString("database.useSSL", "false"));
@@ -234,17 +330,15 @@ public abstract class Database {
 
         // Connect to the database
         try {
-            connection = DriverManager.getConnection("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
+            return DriverManager.getConnection("jdbc:" + currentType.toString().toLowerCase() + ":" + getDatabasePath(),
                     properties);
-            connected = true;
-            return true;
         } catch (SQLException e) {
             log("Failed to connect to " + currentType + ": " + e.getErrorCode() + " - " + e.getMessage());
 
             if (e.getCause() != null) {
                 log("Connection failure cause: " + e.getCause().getMessage());
             }
-            return false;
+            return null;
         }
     }
 
@@ -336,18 +430,25 @@ public abstract class Database {
      * @return {@code PreparedStatement} prepared SQL statement
      */
     public PreparedStatement prepare(String sql, boolean returnGeneratedKeys) {
+        if (connection == null) {
+            return null;
+        }
+
+        if (connectionBroken) {
+            throw new RuntimeException("Database connection unavailable, cannot prepare statement " + sql);
+        }
+
         try {
-            if (!isConnectionValid() && !reconnect()) {
-                return null;
-            }
+            synchronized (connectionLock) {
+                if (useStatementCache) {
+                    Statistics.addQuery();
+                    return statementCache.get(sql, () -> prepareInternal(sql, returnGeneratedKeys));
+                }
 
-            if (useStatementCache) {
-                Statistics.addQuery();
-                return statementCache.get(sql, () -> prepareInternal(sql, returnGeneratedKeys));
+                return prepareInternal(sql, returnGeneratedKeys);
             }
-
-            return prepareInternal(sql, returnGeneratedKeys);
         } catch (Throwable ex) {
+            markIfConnectionError(ex);
             throw new RuntimeException("Failed to prepare statement " + sql, ex);
         }
     }
