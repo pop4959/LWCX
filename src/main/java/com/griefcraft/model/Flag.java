@@ -78,7 +78,12 @@ public class Flag {
         /**
          * Controls whether or not hoppers can be used on a protection to take items out
          */
-        HOPPEROUT;
+        HOPPEROUT,
+
+        /**
+         * Controls whether or not a copper golem can remove items from a protection
+         */
+        GOLEM;
 
         Type() {
             this(false);

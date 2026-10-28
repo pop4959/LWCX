@@ -39,10 +39,13 @@ import com.griefcraft.model.Permission;
 import com.griefcraft.model.Protection;
 import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.event.*;
+import com.griefcraft.util.ConnectedShelves;
 import com.griefcraft.util.UUIDRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ChiseledBookshelf;
@@ -74,10 +77,12 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.List;
 import java.util.Set;
 
 public class LWCPlayerListener implements Listener {
     private static final Material CHISELED_BOOKSHELF = Material.getMaterial("CHISELED_BOOKSHELF");
+    private static final Tag<Material> WOODEN_SHELVES = Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft("wooden_shelves"), Material.class);
 
     /**
      * The plugin instance
@@ -625,6 +630,23 @@ public class LWCPlayerListener implements Listener {
                     }
                 }
             }
+            try {
+                if (WOODEN_SHELVES != null && WOODEN_SHELVES.isTagged(block.getType()) && ConnectedShelves.canUse()) {
+                    final List<Block> connected = ConnectedShelves.connectedShelves(block);
+                    for (Block shelf : connected) {
+                        final Protection shelfProtection = lwc.findProtection(shelf);
+                        if (shelfProtection != null && !shelfProtection.isOwner(event.getPlayer()) && shelfProtection.getType() != Protection.Type.PUBLIC && !lwc.canAdminProtection(player, shelfProtection)) {
+                            canAccess = false;
+                        }
+                    }
+                }
+            } catch (NoClassDefFoundError e) {
+                plugin.getLogger().severe("Missing API. This is usually caused by running the wrong plugin version.");
+                plugin.getLogger().severe("Please ensure you have downloaded the correct version from SpigotMC (for Spigot) or Modrinth (for Paper).");
+                lwc.sendLocale(player, "protection.internalerror", "id", "Missing API");
+                e.printStackTrace();
+            }
+
 
             if (usingMainHand) {
                 if (event.getAction() == Action.LEFT_CLICK_BLOCK) {

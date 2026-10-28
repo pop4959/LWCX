@@ -75,7 +75,7 @@ public class WallMatcher implements ProtectionFinder.Matcher {
             PROTECTABLES_WALL.addAll(EnumSet.of(Material.BAMBOO_WALL_SIGN, Material.CHERRY_WALL_SIGN));
         }
         if (VersionUtil.isAtLeast(1, 21, 4)) {
-            Optional.ofNullable(Material.getMaterial("PALE_OAK_SIGN")).ifPresent(PROTECTABLES_WALL::add);
+            Optional.ofNullable(Material.getMaterial("PALE_OAK_WALL_SIGN")).ifPresent(PROTECTABLES_WALL::add);
         }
     }
 

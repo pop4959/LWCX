@@ -30,6 +30,7 @@ package com.griefcraft.lwc;
 
 import com.griefcraft.cache.BlockCache;
 import com.griefcraft.listeners.LWC114Listener;
+import com.griefcraft.listeners.LWC12111Listener;
 import com.griefcraft.listeners.LWCBlockListener;
 import com.griefcraft.listeners.LWCEntityListener;
 import com.griefcraft.listeners.LWCPlayerListener;
@@ -519,6 +520,9 @@ public class LWCPlugin extends JavaPlugin {
         pluginManager.registerEvents(new LWCServerListener(this), this);
         if (VersionUtil.isAtLeast(1, 14)) {
             pluginManager.registerEvents(new LWC114Listener(), this);
+        }
+        if (VersionUtil.isAtLeast(1, 21, 11)) {
+            pluginManager.registerEvents(new LWC12111Listener(), this);
         }
         if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
             pluginManager.registerEvents(new Towny(), this);
