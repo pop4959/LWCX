@@ -1,6 +1,16 @@
 # LWC Extended
 
-The unofficial continuation of LWC, supporting newer versions of Minecraft. You can download stable releases of the plugin from the [Spigot resource page](https://www.spigotmc.org/resources/lwc-extended.69551/) or development versions from our [build server](https://ci.codemc.io/view/Author/job/pop4959/job/LWC/).
+The unofficial continuation of LWC, supporting newer versions of Minecraft.
+
+### Downloads
+LWCX has separate builds for Paper and Spigot. Make sure to use the one that matches your server:
+
+| Server | Stable releases | Development builds |
+|---|---|---|
+| **Paper** (and forks) | [Modrinth](https://modrinth.com/plugin/lwc) | [CodeMC – LWC Paper](https://ci.codemc.io/view/Author/job/pop4959/job/LWC%20Paper/) |
+| **Spigot** / CraftBukkit | [SpigotMC](https://www.spigotmc.org/resources/lwc-extended.69551/) | [CodeMC – LWC](https://ci.codemc.io/view/Author/job/pop4959/job/LWC/) |
+
+On Paper 1.21.11 and newer, the Spigot build will log an error on startup and some features (such as copper golem protection and shelves) won't work. See the [installation guide](https://github.com/pop4959/LWCX/wiki/Installation) for builds for older Minecraft versions.
 
 ### Contributors
   * Hidendra - Original LWC author
