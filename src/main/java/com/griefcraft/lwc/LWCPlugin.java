@@ -349,6 +349,20 @@ public class LWCPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        String buildPlatform = getBuildPlatform();
+        boolean paper = isPaper();
+        if (buildPlatform != null && paper != buildPlatform.equals("paper")) {
+            if (paper) {
+                getLogger().severe("This is the Spigot build of LWC, which does not support Paper servers.");
+                getLogger().severe("Please download the Paper build from https://modrinth.com/plugin/lwc");
+            } else {
+                getLogger().severe("This is the Paper build of LWC, which requires a Paper server.");
+                getLogger().severe("Please download the Spigot build from https://www.spigotmc.org/resources/lwc-extended.69551/");
+            }
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         lwc = new LWC(this);
         preload();
 
@@ -490,6 +504,23 @@ public class LWCPlugin extends JavaPlugin {
 
         // create the message parser
         messageParser = new SimpleMessageParser(locale);
+    }
+
+    private static boolean isPaper() {
+        try {
+            Class.forName("io.papermc.paper.configuration.Configuration");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private String getBuildPlatform() {
+        try (JarFile jar = new JarFile(getFile())) {
+            return jar.getManifest() == null ? null : jar.getManifest().getMainAttributes().getValue("lwc-platform");
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     /**

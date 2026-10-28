@@ -66,7 +66,10 @@ tasks {
         archiveFileName.set("${rootProject.name.uppercase(Locale.getDefault())}-${project.version}.jar")
         relocate("org.bstats", "${project.group}.${rootProject.name}.lib.bstats")
         manifest {
-            attributes("paperweight-mappings-namespace" to "mojang")
+            attributes(
+                "paperweight-mappings-namespace" to "mojang",
+                "lwc-platform" to if (project.configurations.getByName("compileOnly").dependencies.any { it.group == "io.papermc.paper" }) "paper" else "spigot",
+            )
         }
     }
     build {
