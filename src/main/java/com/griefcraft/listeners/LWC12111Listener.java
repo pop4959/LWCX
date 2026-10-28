@@ -20,7 +20,11 @@ public class LWC12111Listener implements Listener {
         }
         LWC lwc = LWC.getInstance();
         Protection protection = lwc.findProtection(target);
-        if (protection == null || protection.getType() == Protection.Type.PUBLIC || protection.hasFlag(Flag.Type.GOLEM)) {
+        if (protection == null || protection.getType() == Protection.Type.PUBLIC) {
+            return;
+        }
+        boolean denyGolems = Boolean.parseBoolean(lwc.resolveProtectionConfiguration(target, "denyGolems"));
+        if (denyGolems == protection.hasFlag(Flag.Type.GOLEM)) {
             return;
         }
         event.setCancelled(true);

@@ -138,6 +138,10 @@ protections:
     # If false, hoppers will be enabled by DEFAULT and /chopper on will disable hopper use on them
     denyHoppers: true
 
+    # If true, copper golems will be blocked by DEFAULT and /cflag golem on will allow golems to take items
+    # If false, copper golems will be allowed by DEFAULT and /cflag golem on will block golems from taking items
+    denyGolems: true
+
     # Settable to private, public, donation, display, supply, or off. It defines what protections are registered as when you place them
     # on the ground
     autoRegister: off
