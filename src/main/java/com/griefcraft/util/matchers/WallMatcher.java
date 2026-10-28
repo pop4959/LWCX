@@ -77,6 +77,9 @@ public class WallMatcher implements ProtectionFinder.Matcher {
         if (VersionUtil.isAtLeast(1, 21, 4)) {
             Optional.ofNullable(Material.getMaterial("PALE_OAK_WALL_SIGN")).ifPresent(PROTECTABLES_WALL::add);
         }
+        if (VersionUtil.isAtLeast(26, 3)) {
+            Optional.ofNullable(Material.getMaterial("POPLAR_WALL_SIGN")).ifPresent(PROTECTABLES_WALL::add);
+        }
     }
 
     /**

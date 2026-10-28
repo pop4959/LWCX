@@ -26,6 +26,9 @@ public class HangingMatcher implements ProtectionFinder.Matcher {
         if (VersionUtil.isAtLeast(1, 21, 4)) {
             Optional.ofNullable(Material.getMaterial("PALE_OAK_HANGING_SIGN")).ifPresent(PROTECTABLES_HANGING::add);
         }
+        if (VersionUtil.isAtLeast(26, 3)) {
+            Optional.ofNullable(Material.getMaterial("POPLAR_HANGING_SIGN")).ifPresent(PROTECTABLES_HANGING::add);
+        }
     }
 
     @Override

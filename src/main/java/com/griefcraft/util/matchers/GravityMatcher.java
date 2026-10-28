@@ -82,6 +82,11 @@ public class GravityMatcher implements ProtectionFinder.Matcher {
             Optional.ofNullable(Material.getMaterial("PALE_OAK_PRESSURE_PLATE")).ifPresent(PROTECTABLES_POSTS::add);
             Optional.ofNullable(Material.getMaterial("PALE_OAK_SIGN")).ifPresent(PROTECTABLES_POSTS::add);
         }
+        if (VersionUtil.isAtLeast(26, 3)) {
+            Optional.ofNullable(Material.getMaterial("POPLAR_BUTTON")).ifPresent(PROTECTABLES_POSTS::add);
+            Optional.ofNullable(Material.getMaterial("POPLAR_PRESSURE_PLATE")).ifPresent(PROTECTABLES_POSTS::add);
+            Optional.ofNullable(Material.getMaterial("POPLAR_SIGN")).ifPresent(PROTECTABLES_POSTS::add);
+        }
     }
 
     public boolean matches(ProtectionFinder finder) {

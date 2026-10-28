@@ -275,6 +275,9 @@ protections:
         pale_oak_shelf:
             enabled: true
             autoRegister: private
+        poplar_shelf:
+            enabled: true
+            autoRegister: private
         spruce_shelf:
             enabled: true
             autoRegister: private
@@ -357,6 +360,8 @@ protections:
         cherry_hanging_sign:
             enabled: true
         pale_oak_hanging_sign:
+            enabled: true
+        poplar_hanging_sign:
             enabled: true
         iron_door:
             enabled: true
