@@ -3,12 +3,12 @@ import java.util.*
 plugins {
     id("java-library")
     id("maven-publish")
-    id("io.github.goooler.shadow") version "8.1.7"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
     withSourcesJar()
 }
@@ -24,40 +24,45 @@ repositories {
 }
 
 dependencies {
-    compileOnly(group = "org.spigotmc", name = "spigot-api", version = "1.21.11-R0.2-SNAPSHOT")
-    compileOnly(group = "com.sk89q.worldedit", name = "worldedit-core", version = "7.1.0")
-    compileOnly(group = "com.sk89q.worldguard", name = "worldguard-bukkit", version = "7.0.0")
-    compileOnly(group = "com.palmergames.bukkit.towny", name = "towny", version = "0.98.2.0")
-    compileOnly(group = "com.massivecraft", name = "Factions", version = "1.6.9.5-U0.4.9") {
+    compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
+    compileOnly("com.sk89q.worldedit:worldedit-core:7.1.0")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0")
+    compileOnly("com.palmergames.bukkit.towny:towny:0.98.2.0")
+    compileOnly("com.massivecraft:Factions:1.6.9.5-U0.4.9") {
         isTransitive = false
     }
-    compileOnly(group = "com.github.MilkBowl", name = "VaultAPI", version = "1.7.1")
-    compileOnly(group = "com.google.guava", name = "guava", version = "23.0")
-    implementation(group = "org.bstats", name = "bstats-bukkit", version = "3.0.2")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+    compileOnly("com.google.guava:guava:23.0")
+    implementation("org.bstats:bstats-bukkit:3.2.1")
 }
+
+val paperBuild = configurations.compileOnly.get().dependencies.any { it.group == "io.papermc.paper" }
 
 tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
+        options.release = 25
     }
     jar {
         archiveClassifier.set("noshade")
     }
     processResources {
+        val properties = mapOf(
+            "version" to project.version,
+        )
+        inputs.properties(properties)
         filesMatching("plugin.yml") {
-            expand(
-                "version" to project.version,
-            )
+            expand(properties)
         }
     }
     shadowJar {
         archiveClassifier.set("")
-        archiveFileName.set("${rootProject.name.uppercase(Locale.getDefault())}-${project.version}.jar")
+        archiveFileName.set("${rootProject.name.uppercase(Locale.getDefault())}-${if (paperBuild) "Paper" else "Bukkit"}-${project.version}.jar")
         relocate("org.bstats", "${project.group}.${rootProject.name}.lib.bstats")
         manifest {
             attributes(
                 "paperweight-mappings-namespace" to "mojang",
-                "lwc-platform" to if (project.configurations.getByName("compileOnly").dependencies.any { it.group == "io.papermc.paper" }) "paper" else "spigot",
+                "lwc-platform" to if (paperBuild) "paper" else "spigot",
             )
         }
     }
