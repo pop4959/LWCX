@@ -384,6 +384,8 @@ protections:
             enabled: true
         pale_oak_door:
             enabled: true
+        poplar_door:
+            enabled: true
         copper_door:
             enabled: true
         exposed_copper_door:
@@ -426,6 +428,8 @@ protections:
             enabled: true
         pale_oak_trapdoor:
             enabled: true
+        poplar_trapdoor:
+            enabled: true
         copper_trapdoor:
             enabled: true
         exposed_copper_trapdoor:
@@ -465,6 +469,8 @@ protections:
         cherry_fence_gate:
             enabled: true
         pale_oak_fence_gate:
+            enabled: true
+        poplar_fence_gate:
             enabled: true
         white_banner:
             enabled: true

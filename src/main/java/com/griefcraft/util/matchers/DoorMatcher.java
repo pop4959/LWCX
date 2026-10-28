@@ -66,20 +66,14 @@ public class DoorMatcher implements ProtectionFinder.Matcher {
             BlockFace.SOUTH};
 
     static {
-        PROTECTABLES_DOORS = EnumSet.of(Material.OAK_DOOR, Material.SPRUCE_DOOR,
-                Material.BIRCH_DOOR, Material.ACACIA_DOOR, Material.JUNGLE_DOOR, Material.DARK_OAK_DOOR,
-                Material.IRON_DOOR);
+        PROTECTABLES_DOORS = EnumSet.of(Material.IRON_DOOR);
         WOODEN_DOORS = EnumSet.of(Material.OAK_DOOR, Material.SPRUCE_DOOR,
                 Material.BIRCH_DOOR, Material.ACACIA_DOOR, Material.JUNGLE_DOOR, Material.DARK_OAK_DOOR);
-        FENCE_GATES = EnumSet.of(Material.OAK_FENCE_GATE, Material.SPRUCE_FENCE_GATE,
-                Material.BIRCH_FENCE_GATE, Material.JUNGLE_FENCE_GATE, Material.ACACIA_FENCE_GATE,
-                Material.DARK_OAK_FENCE_GATE);
+        FENCE_GATES = EnumSet.noneOf(Material.class);
         WOODEN_FENCE_GATES = EnumSet.of(Material.OAK_FENCE_GATE, Material.SPRUCE_FENCE_GATE,
                 Material.BIRCH_FENCE_GATE, Material.JUNGLE_FENCE_GATE, Material.ACACIA_FENCE_GATE,
                 Material.DARK_OAK_FENCE_GATE);
-        TRAP_DOORS = EnumSet.of(Material.OAK_TRAPDOOR, Material.SPRUCE_TRAPDOOR,
-                Material.BIRCH_TRAPDOOR, Material.JUNGLE_TRAPDOOR, Material.ACACIA_TRAPDOOR, Material.DARK_OAK_TRAPDOOR,
-                Material.IRON_TRAPDOOR);
+        TRAP_DOORS = EnumSet.of(Material.IRON_TRAPDOOR);
         WOODEN_TRAP_DOORS = EnumSet.of(Material.OAK_TRAPDOOR, Material.SPRUCE_TRAPDOOR,
                 Material.BIRCH_TRAPDOOR, Material.JUNGLE_TRAPDOOR, Material.ACACIA_TRAPDOOR, Material.DARK_OAK_TRAPDOOR);
         PRESSURE_PLATES = EnumSet.of(Material.OAK_PRESSURE_PLATE,
@@ -87,60 +81,49 @@ public class DoorMatcher implements ProtectionFinder.Matcher {
                 Material.ACACIA_PRESSURE_PLATE, Material.DARK_OAK_PRESSURE_PLATE, Material.STONE_PRESSURE_PLATE,
                 Material.LIGHT_WEIGHTED_PRESSURE_PLATE, Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
         if (VersionUtil.isAtLeast(1, 16)) {
-            PROTECTABLES_DOORS.addAll(EnumSet.of(Material.CRIMSON_DOOR, Material.WARPED_DOOR));
             WOODEN_DOORS.addAll(EnumSet.of(Material.CRIMSON_DOOR, Material.WARPED_DOOR));
-            FENCE_GATES.addAll(EnumSet.of(Material.CRIMSON_FENCE_GATE, Material.WARPED_FENCE_GATE));
             WOODEN_FENCE_GATES.addAll(EnumSet.of(Material.CRIMSON_FENCE_GATE, Material.WARPED_FENCE_GATE));
-            TRAP_DOORS.addAll(EnumSet.of(Material.CRIMSON_TRAPDOOR, Material.WARPED_TRAPDOOR));
             WOODEN_TRAP_DOORS.addAll(EnumSet.of(Material.CRIMSON_TRAPDOOR, Material.WARPED_TRAPDOOR));
             PRESSURE_PLATES.addAll(EnumSet.of(Material.CRIMSON_PRESSURE_PLATE, Material.WARPED_PRESSURE_PLATE,
                     Material.POLISHED_BLACKSTONE_PRESSURE_PLATE));
         }
         if (VersionUtil.isAtLeast(1, 19)) {
-            PROTECTABLES_DOORS.add(Material.MANGROVE_DOOR);
             WOODEN_DOORS.add(Material.MANGROVE_DOOR);
-            FENCE_GATES.add(Material.MANGROVE_FENCE_GATE);
             WOODEN_FENCE_GATES.add(Material.MANGROVE_FENCE_GATE);
-            TRAP_DOORS.add(Material.MANGROVE_TRAPDOOR);
             WOODEN_TRAP_DOORS.add(Material.MANGROVE_TRAPDOOR);
             PRESSURE_PLATES.add(Material.MANGROVE_PRESSURE_PLATE);
         }
         if (VersionUtil.isAtLeast(1, 20)) {
-            PROTECTABLES_DOORS.addAll(EnumSet.of(Material.BAMBOO_DOOR, Material.CHERRY_DOOR));
             WOODEN_DOORS.addAll(EnumSet.of(Material.BAMBOO_DOOR, Material.CHERRY_DOOR));
-            FENCE_GATES.addAll(EnumSet.of(Material.BAMBOO_FENCE_GATE, Material.CHERRY_FENCE_GATE));
             WOODEN_FENCE_GATES.addAll(EnumSet.of(Material.BAMBOO_FENCE_GATE, Material.CHERRY_FENCE_GATE));
-            TRAP_DOORS.addAll(EnumSet.of(Material.BAMBOO_TRAPDOOR, Material.CHERRY_TRAPDOOR));
             WOODEN_TRAP_DOORS.addAll(EnumSet.of(Material.BAMBOO_TRAPDOOR, Material.CHERRY_TRAPDOOR));
             PRESSURE_PLATES.addAll(EnumSet.of(Material.BAMBOO_PRESSURE_PLATE, Material.CHERRY_PRESSURE_PLATE));
         }
         if (VersionUtil.isAtLeast(1, 21)) {
-            PROTECTABLES_DOORS.addAll(EnumSet.of(Material.COPPER_DOOR, Material.EXPOSED_COPPER_DOOR,
-                    Material.OXIDIZED_COPPER_DOOR, Material.WAXED_COPPER_DOOR, Material.WEATHERED_COPPER_DOOR,
-                    Material.WAXED_EXPOSED_COPPER_DOOR, Material.WAXED_OXIDIZED_COPPER_DOOR,
-                    Material.WAXED_WEATHERED_COPPER_DOOR));
             WOODEN_DOORS.addAll(EnumSet.of(Material.COPPER_DOOR, Material.EXPOSED_COPPER_DOOR,
                     Material.OXIDIZED_COPPER_DOOR, Material.WAXED_COPPER_DOOR, Material.WEATHERED_COPPER_DOOR,
                     Material.WAXED_EXPOSED_COPPER_DOOR, Material.WAXED_OXIDIZED_COPPER_DOOR,
                     Material.WAXED_WEATHERED_COPPER_DOOR));
-            TRAP_DOORS.addAll(EnumSet.of(Material.COPPER_TRAPDOOR, Material.EXPOSED_COPPER_TRAPDOOR,
-                    Material.OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_COPPER_TRAPDOOR,
-                    Material.WEATHERED_COPPER_TRAPDOOR, Material.WAXED_EXPOSED_COPPER_TRAPDOOR,
-                    Material.WAXED_OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_WEATHERED_COPPER_TRAPDOOR));
             WOODEN_TRAP_DOORS.addAll(EnumSet.of(Material.COPPER_TRAPDOOR, Material.EXPOSED_COPPER_TRAPDOOR,
                     Material.OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_COPPER_TRAPDOOR,
                     Material.WEATHERED_COPPER_TRAPDOOR, Material.WAXED_EXPOSED_COPPER_TRAPDOOR,
                     Material.WAXED_OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_WEATHERED_COPPER_TRAPDOOR));
             if (VersionUtil.isAtLeast(1, 21, 4)) {
-                Optional.ofNullable(Material.getMaterial("PALE_OAK_DOOR")).ifPresent(PROTECTABLES_DOORS::add);
                 Optional.ofNullable(Material.getMaterial("PALE_OAK_DOOR")).ifPresent(WOODEN_DOORS::add);
-                Optional.ofNullable(Material.getMaterial("PALE_OAK_FENCE_GATE")).ifPresent(FENCE_GATES::add);
                 Optional.ofNullable(Material.getMaterial("PALE_OAK_FENCE_GATE")).ifPresent(WOODEN_FENCE_GATES::add);
-                Optional.ofNullable(Material.getMaterial("PALE_OAK_TRAPDOOR")).ifPresent(TRAP_DOORS::add);
                 Optional.ofNullable(Material.getMaterial("PALE_OAK_TRAPDOOR")).ifPresent(WOODEN_TRAP_DOORS::add);
                 Optional.ofNullable(Material.getMaterial("PALE_OAK_PRESSURE_PLATE")).ifPresent(PRESSURE_PLATES::add);
             }
         }
+        if (VersionUtil.isAtLeast(26, 3)) {
+            Optional.ofNullable(Material.getMaterial("POPLAR_DOOR")).ifPresent(WOODEN_DOORS::add);
+            Optional.ofNullable(Material.getMaterial("POPLAR_FENCE_GATE")).ifPresent(WOODEN_FENCE_GATES::add);
+            Optional.ofNullable(Material.getMaterial("POPLAR_TRAPDOOR")).ifPresent(WOODEN_TRAP_DOORS::add);
+            Optional.ofNullable(Material.getMaterial("POPLAR_PRESSURE_PLATE")).ifPresent(PRESSURE_PLATES::add);
+        }
+        PROTECTABLES_DOORS.addAll(WOODEN_DOORS);
+        FENCE_GATES.addAll(WOODEN_FENCE_GATES);
+        TRAP_DOORS.addAll(WOODEN_TRAP_DOORS);
     }
 
     public boolean matches(ProtectionFinder finder) {
