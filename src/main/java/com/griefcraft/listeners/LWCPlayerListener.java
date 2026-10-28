@@ -321,7 +321,7 @@ public class LWCPlayerListener implements Listener {
 
     @EventHandler
     public void storageMinecraftInventoryOpen(InventoryOpenEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
+        InventoryHolder holder = event.getInventory().getHolder(false);
         Player player = (Player) event.getPlayer();
         if ((!(holder instanceof StorageMinecart)) && (!(holder instanceof HopperMinecart))) {
             return;
@@ -452,7 +452,7 @@ public class LWCPlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onMoveItem(InventoryMoveItemEvent event) {
         if (plugin.getLWC().useAlternativeHopperProtection()
-                && !(event.getSource().getHolder() instanceof HopperMinecart || event.getDestination().getHolder() instanceof HopperMinecart)) {
+                && !(isHopperMinecart(event.getSource()) || isHopperMinecart(event.getDestination()))) {
             return;
         }
 
@@ -469,6 +469,16 @@ public class LWCPlayerListener implements Listener {
         if (result) {
             event.setCancelled(true);
         }
+    }
+
+    /**
+     * Check if the inventory is provided by a Hopper Minecart.
+     *
+     * @param inventory The inventory to check
+     * @return true if specified inventory is provided by a Hopper Minecart.
+     */
+    private static boolean isHopperMinecart(Inventory inventory) {
+        return inventory.getType() == InventoryType.HOPPER && inventory.getHolder(false) instanceof HopperMinecart;
     }
 
     /**
@@ -489,8 +499,8 @@ public class LWCPlayerListener implements Listener {
         InventoryHolder initiatorHolder;
 
         try {
-            holder = inventory.getHolder();
-            initiatorHolder = initiator.getHolder();
+            holder = inventory.getHolder(false);
+            initiatorHolder = initiator.getHolder(false);
         } catch (AbstractMethodError e) {
             return false;
         }
@@ -592,7 +602,7 @@ public class LWCPlayerListener implements Listener {
             return;
         }
 
-        BlockState state = block.getState();
+        BlockState state = block.getState(false);
         // Prevent players with lwc.deny from interacting with blocks that have an inventory
         if (state instanceof InventoryHolder && lwc.isProtectable(block)) {
             if (!lwc.hasPermission(player, "lwc.protect") && lwc.hasPermission(player, "lwc.deny")
@@ -611,8 +621,8 @@ public class LWCPlayerListener implements Listener {
             Protection protection = lwc.findProtection(block.getLocation());
             boolean canAccess = lwc.canAccessProtection(player, protection);
 
-            if (canAccess && CHISELED_BOOKSHELF != null && CHISELED_BOOKSHELF.equals(block.getType()) && block.getState() instanceof ChiseledBookshelf && block.getBlockData() instanceof org.bukkit.block.data.type.ChiseledBookshelf) {
-                final ChiseledBookshelf chiseledBookshelf = (ChiseledBookshelf) block.getState();
+            if (canAccess && CHISELED_BOOKSHELF != null && CHISELED_BOOKSHELF.equals(block.getType()) && block.getState(false) instanceof ChiseledBookshelf && block.getBlockData() instanceof org.bukkit.block.data.type.ChiseledBookshelf) {
+                final ChiseledBookshelf chiseledBookshelf = (ChiseledBookshelf) block.getState(false);
                 final org.bukkit.block.data.type.ChiseledBookshelf chiseledBookshelfBlockData = (org.bukkit.block.data.type.ChiseledBookshelf) block.getBlockData();
                 if (chiseledBookshelfBlockData.getFacing() == event.getBlockFace()) {
                     final Vector clickedPosition = event.getClickedPosition();
@@ -778,7 +788,7 @@ public class LWCPlayerListener implements Listener {
         InventoryHolder holder = null;
 
         try {
-            holder = event.getInventory().getHolder();
+            holder = event.getInventory().getHolder(false);
         } catch (AbstractMethodError e) {
             e.printStackTrace();
             return;
@@ -949,7 +959,7 @@ public class LWCPlayerListener implements Listener {
         InventoryHolder holder = null;
 
         try {
-            holder = event.getInventory().getHolder();
+            holder = event.getInventory().getHolder(false);
         } catch (AbstractMethodError e) {
             e.printStackTrace();
             return;

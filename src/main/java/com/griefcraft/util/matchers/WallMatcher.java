@@ -128,7 +128,7 @@ public class WallMatcher implements ProtectionFinder.Matcher {
         // Blocks such as wall signs or banners
         if ((PROTECTABLES_WALL.contains(block.getType()) || PROTECTABLES_LEVERS_ET_AL.contains(block.getType()))
                 && blockData instanceof Directional) {
-            if (((Directional) block.getState().getBlockData()).getFacing() == matchingFace) {
+            if (((Directional) block.getState(false).getBlockData()).getFacing() == matchingFace) {
                 return block;
             }
         }

@@ -280,7 +280,7 @@ public class LWCBlockListener implements Listener {
                 protection.radiusRemoveCache();
 
                 if (protection.getProtectionFinder() != null) {
-                    protection.getProtectionFinder().removeBlock(block.getState());
+                    protection.getProtectionFinder().removeBlock(block.getState(false));
                 }
 
                 lwc.getProtectionCache().addProtection(protection);
@@ -429,7 +429,7 @@ public class LWCBlockListener implements Listener {
             }
 
             // also check if the hopper is pointing into a protection
-            Hopper hopperData = (Hopper) block.getState().getBlockData();
+            Hopper hopperData = (Hopper) block.getState(false).getBlockData();
             Block target = block.getRelative(hopperData.getFacing());
             if (shouldBlockHopperPlacement(player, target)) {
                 event.setCancelled(true);
@@ -439,7 +439,7 @@ public class LWCBlockListener implements Listener {
     }
 
     private boolean shouldBlockHopperPlacement(Player player, Block block) {
-        if (block.getState() instanceof InventoryHolder) { // only care if block has an inventory
+        if (block.getState(false) instanceof InventoryHolder) { // only care if block has an inventory
             LWC lwc = plugin.getLWC();
             Protection protection = lwc.findProtection(block);
             if (protection != null) { // found protection
@@ -528,7 +528,7 @@ public class LWCBlockListener implements Listener {
         }
 
         // If it's a chest, make sure they aren't placing it beside an already registered chest
-        BlockState blockState = block.getState();
+        BlockState blockState = block.getState(false);
         Chest chestData = null;
         try {
             chestData = (Chest) blockState.getBlockData();

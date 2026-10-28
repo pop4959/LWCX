@@ -15,6 +15,10 @@ public class StoreageMinecartBlock extends EntityBlock {
         return (BlockState) this.minecart.getInventory().getHolder();
     }
 
+    public BlockState getState(boolean useSnapshot) {
+        return (BlockState) this.minecart.getInventory().getHolder(useSnapshot);
+    }
+
     public StorageMinecart getMinecart() {
         return this.minecart;
     }

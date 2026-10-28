@@ -15,6 +15,10 @@ public class HopperMinecartBlock extends EntityBlock {
         return (BlockState) this.minecart.getInventory().getHolder();
     }
 
+    public BlockState getState(boolean useSnapshot) {
+        return (BlockState) this.minecart.getInventory().getHolder(useSnapshot);
+    }
+
     public HopperMinecart getMinecart() {
         return this.minecart;
     }

@@ -160,7 +160,7 @@ public class MagnetModule extends JavaModule {
                                     continue;
 
                                 // we only want inventory blocks
-                                if (!(protection.getBlock().getState() instanceof InventoryHolder)) {
+                                if (!(protection.getBlock().getState(false) instanceof InventoryHolder)) {
                                     continue;
                                 }
 
